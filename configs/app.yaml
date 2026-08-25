@@ -1,0 +1,12 @@
+app_name: Card-Testing Sentinel
+app_version: 0.5.0
+host: 127.0.0.1
+port: 8000
+maximum_page_size: 50
+display_speeds: [0.5, 1, 2]
+protected_hashes:
+  model: 8b5df33d59ad43709f4b94b72b7c253623cf747bf9ff8d445c6636c8151f5d64
+  policy: d7a3d631e4c095d1bb36614c21714fc3aa6d19b7a56f04f841c0b6f9836cc604
+  final_metrics: 86ee581580fe3449d4af36cdf999bbc2a2b448c134ecee0648d55d354cf476e8
+  final_events: a2d5cdda73cf62f793c7ecf26c66a93f61fc69bc4847d768d9bc8241129d9e79
+  final_devices: af2ff35d89d4b4214fec9e8544feb39e9b3803e13a2a908ef46437d5f5c005fd

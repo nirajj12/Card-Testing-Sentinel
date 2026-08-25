@@ -1,0 +1,12 @@
+policy_version: v1
+metric_definition_version: sequential-v1
+action_logic_identifier: post_authorization_allow_review_block_next_v1
+maximum_legitimate_device_review_or_higher_rate: 0.05
+maximum_legitimate_device_block_rate: 0.01
+subgroup_block_guardrails:
+  flash_sale: 0.03
+  flash_hard_retry: 0.15
+  normal_bad_luck: 0.10
+primary_detection_action: block_next_attempt
+detection_within_attempt_cutoffs: [1, 3, 5, 10]
+ml_threshold_quantiles: [0.90, 0.95, 0.98, 0.99, 1.00]

@@ -1,0 +1,19 @@
+cross_validation_folds: 3
+primary_false_positive_budget: 0.03
+false_positive_budgets: [0.01, 0.03, 0.05]
+shortcut_f1_limit: 0.90
+near_constant_share: 0.995
+logistic_candidates:
+  - {name: logistic_c_0_1, C: 0.1}
+  - {name: logistic_c_1, C: 1.0}
+  - {name: logistic_c_10, C: 10.0}
+hist_gradient_boosting_candidates:
+  - {name: hgb_small, learning_rate: 0.06, max_leaf_nodes: 15, max_iter: 120, min_samples_leaf: 30, l2_regularization: 1.0}
+  - {name: hgb_medium, learning_rate: 0.08, max_leaf_nodes: 23, max_iter: 150, min_samples_leaf: 25, l2_regularization: 1.0}
+  - {name: hgb_regularized, learning_rate: 0.05, max_leaf_nodes: 15, max_iter: 180, min_samples_leaf: 40, l2_regularization: 2.0}
+rules:
+  velocity: {attempts_trailing_60s: 4, unique_cards_trailing_60s: 3}
+  repeated_declines: {attempts_trailing_5min: 3, decline_ratio_so_far: 0.67}
+  rapid_card_switching: {attempts_trailing_5min: 3, card_switch_rate: 0.67}
+  near_minimum_probing: {attempts_trailing_5min: 3, amount_near_minimum_ratio_5min: 0.50}
+  continued_after_approval: {attempts_after_first_approval: 2, unique_cards_trailing_5min: 3}

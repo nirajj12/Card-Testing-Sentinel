@@ -1,0 +1,38 @@
+# Python and packaging
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+
+# Local environments and secrets
+.venv/
+venv/
+.env
+.env.*
+
+# Tool caches and reports
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Editor and operating-system files
+.idea/
+.vscode/
+.DS_Store
+
+# Local logs and experiment runs
+logs/*.log*
+mlruns/
+
+# Generated runtime and model outputs
+data/runtime/
+artifacts/metrics/
+artifacts/models/
+artifacts/predictions/
+
+# The checksum-locked synthetic v4 CSVs are intentionally available to CI.
+
+.coverage.*
+*.zip

@@ -1,0 +1,56 @@
+{
+  "device_weighted_positive_rate": 0.15,
+  "devices": 8000,
+  "event_type_counts": {
+    "authorization_outcome": 21338,
+    "authorization_request": 21338,
+    "checkout_completion": 6627
+  },
+  "label_devices": {
+    "0": 6800,
+    "1": 1200
+  },
+  "label_rows": {
+    "0": 10428,
+    "1": 10910
+  },
+  "lifecycle_events": 49303,
+  "precheck_rows": 21338,
+  "requests_per_device": {
+    "50%": 1.0,
+    "90%": 7.0,
+    "99%": 17.0,
+    "count": 8000.0,
+    "max": 34.0,
+    "mean": 2.66725,
+    "min": 1.0,
+    "std": 3.2666666996214664
+  },
+  "row_weighted_positive_rate": 0.5112944043490486,
+  "scenario_devices": {
+    "attack_burst": 480,
+    "attack_evasive": 360,
+    "attack_patient": 360,
+    "flash_hard_retry": 400,
+    "flash_standard": 1200,
+    "normal_bad_luck": 400,
+    "normal_standard": 4800
+  },
+  "scope": "training devices only",
+  "sessions": 10127,
+  "sessions_per_device": {
+    "50%": 1.0,
+    "90%": 2.0,
+    "99%": 4.0,
+    "count": 8000.0,
+    "max": 4.0,
+    "mean": 1.265875,
+    "min": 1.0,
+    "std": 0.6226828656056709
+  },
+  "subtype_devices": {
+    "burst": 480,
+    "evasive": 360,
+    "patient": 360
+  }
+}

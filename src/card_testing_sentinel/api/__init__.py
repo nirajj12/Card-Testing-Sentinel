@@ -1,0 +1,1 @@
+"""Judge-facing web application."""

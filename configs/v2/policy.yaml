@@ -1,0 +1,63 @@
+version: v2-phase2-policy-1
+review_assumption: recorded_outcome_is_processed
+percentage_rounding: floor
+budgets:
+  overall_legitimate:
+    denominator: 1700
+    review_or_higher_rate: 0.03
+    review_or_higher_allowance: 51
+    block_rate: 0.01
+    block_allowance: 17
+  normal_standard:
+    denominator: 1200
+    review_or_higher_rate: 0.02
+    review_or_higher_allowance: 24
+    block_rate: 0.005
+    block_allowance: 6
+  normal_bad_luck:
+    denominator: 100
+    review_or_higher_rate: 0.05
+    review_or_higher_allowance: 5
+    block_rate: 0.02
+    block_allowance: 2
+  flash_standard:
+    denominator: 300
+    review_or_higher_rate: 0.05
+    review_or_higher_allowance: 15
+    block_rate: 0.03
+    block_allowance: 9
+  flash_hard_retry:
+    denominator: 100
+    review_or_higher_rate: 0.10
+    review_or_higher_allowance: 10
+    block_rate: 0.05
+    block_allowance: 5
+families:
+  rules_only:
+    review_scores: [2, 3, 4]
+    block_scores: [4, 5, 6]
+  ml_only:
+    review_thresholds: [0.15, 0.25, 0.35, 0.45, 0.55]
+    block_thresholds: [0.60, 0.70, 0.80, 0.90]
+  combined:
+    review_thresholds: [0.25, 0.40]
+    block_thresholds: [0.70, 0.85]
+    review_scores: [2, 3]
+    block_support_scores: [2, 3]
+    relationship: >-
+      Review when either the calibrated probability or rule score reaches its
+      review threshold; block only when both calibrated probability and rule
+      evidence reach their block/support thresholds.
+selection_objective:
+  - maximum_worst_subtype_review_or_higher_coverage
+  - maximum_macro_subtype_review_or_higher_coverage
+  - maximum_worst_subtype_block_coverage
+  - maximum_macro_subtype_block_coverage
+  - minimum_median_processed_authorizations_before_first_action
+  - minimum_legitimate_blocks
+  - minimum_legitimate_reviews
+  - simpler_policy_then_more_conservative_thresholds
+plots:
+  - validation_reliability
+  - matched_budget_policy_comparison
+  - detection_by_request

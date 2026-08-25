@@ -1,0 +1,433 @@
+{
+  "calibration_isolation": [
+    {
+      "all_pairwise_device_overlaps": 0,
+      "base_fit_devices": 4800,
+      "calibrator_fit_devices": 1600,
+      "evaluation_devices": 1600,
+      "outer_fold": 0
+    },
+    {
+      "all_pairwise_device_overlaps": 0,
+      "base_fit_devices": 4800,
+      "calibrator_fit_devices": 1600,
+      "evaluation_devices": 1600,
+      "outer_fold": 1
+    },
+    {
+      "all_pairwise_device_overlaps": 0,
+      "base_fit_devices": 4800,
+      "calibrator_fit_devices": 1600,
+      "evaluation_devices": 1600,
+      "outer_fold": 2
+    },
+    {
+      "all_pairwise_device_overlaps": 0,
+      "base_fit_devices": 4800,
+      "calibrator_fit_devices": 1600,
+      "evaluation_devices": 1600,
+      "outer_fold": 3
+    },
+    {
+      "all_pairwise_device_overlaps": 0,
+      "base_fit_devices": 4800,
+      "calibrator_fit_devices": 1600,
+      "evaluation_devices": 1600,
+      "outer_fold": 4
+    }
+  ],
+  "calibration_objective": [
+    "lowest_device_weighted_brier",
+    "lowest_expected_calibration_error",
+    "lowest_log_loss",
+    "no_material_pr_auc_degradation",
+    "simpler_method"
+  ],
+  "candidate_model_families_and_complete_grids": {
+    "hist_gradient_boosting": [
+      {
+        "l2_regularization": 1.0,
+        "learning_rate": 0.05,
+        "max_iter": 120,
+        "max_leaf_nodes": 15
+      },
+      {
+        "l2_regularization": 2.0,
+        "learning_rate": 0.08,
+        "max_iter": 160,
+        "max_leaf_nodes": 15
+      },
+      {
+        "l2_regularization": 4.0,
+        "learning_rate": 0.05,
+        "max_iter": 160,
+        "max_leaf_nodes": 31
+      }
+    ],
+    "logistic_regression": {
+      "C": [
+        0.1,
+        1.0,
+        10.0
+      ],
+      "max_iter": 500
+    }
+  },
+  "candidate_ranking_objective": [
+    "passes_integrity_gates",
+    "worst_subtype_review_or_higher_coverage_at_primary_budget",
+    "macro_subtype_review_or_higher_coverage_at_primary_budget",
+    "device_weighted_pr_auc",
+    "negative_brier_score",
+    "lower_inference_cost_then_simpler_family"
+  ],
+  "created_utc": "2026-08-25T13:59:19.992315+00:00",
+  "evaluation_weight_audit": {
+    "by_class": {
+      "0": 6800.0,
+      "1": 1200.0
+    },
+    "by_scenario": {
+      "attack_burst": 480.0,
+      "attack_evasive": 360.0,
+      "attack_patient": 360.0,
+      "flash_hard_retry": 400.0,
+      "flash_standard": 1200.0,
+      "normal_bad_luck": 400.0,
+      "normal_standard": 4800.0
+    },
+    "total": 8000.0
+  },
+  "evaluation_weighting": "each device total=1; each request row=1/request_count_for_device",
+  "fold_counts": {
+    "0": 1600,
+    "1": 1600,
+    "2": 1600,
+    "3": 1600,
+    "4": 1600
+  },
+  "fold_device_overlap": 0,
+  "fold_file": "artifacts/v2/training/device_folds.csv",
+  "fold_file_sha256": "af877ab6f0a7ab51acb6d19564a25d933df5ba8e97316603ab86237ec7b55799",
+  "metric_definitions": {
+    "device_intervals": "95% Wilson",
+    "row_probability_metrics": [
+      "device-weighted PR-AUC",
+      "ROC-AUC",
+      "Brier",
+      "log loss",
+      "10-bin ECE"
+    ],
+    "sequential_denominator": "all devices in the reported class/subtype including never-acted devices"
+  },
+  "model_feature_columns": [
+    "prior_attempts_5m",
+    "prior_attempts_1h",
+    "prior_attempts_24h",
+    "prior_attempts_7d",
+    "prospective_requests_10s",
+    "prospective_requests_60s",
+    "distinct_cards_5m",
+    "distinct_cards_1h",
+    "distinct_cards_24h",
+    "distinct_cards_7d",
+    "distinct_bins_5m",
+    "distinct_bins_24h",
+    "cross_session_cards_24h",
+    "cross_session_cards_7d",
+    "prior_decline_streak",
+    "prior_decline_ratio_5m",
+    "prior_decline_ratio_24h",
+    "attempts_before_first_approval",
+    "attempts_after_first_approval",
+    "seconds_since_previous_authorization",
+    "device_age_seconds",
+    "session_age_seconds",
+    "seconds_since_previous_session",
+    "sessions_24h",
+    "sessions_7d",
+    "ip_changes_24h",
+    "devices_per_ip_5m",
+    "requests_per_ip_5m",
+    "same_card_retry_ratio_24h",
+    "card_switches_after_decline_24h",
+    "current_amount",
+    "amount_delta_from_previous",
+    "amount_variation_24h",
+    "near_minimum_ratio_24h",
+    "prior_successful_checkouts",
+    "seconds_since_successful_checkout",
+    "campaign_active"
+  ],
+  "model_feature_columns_sha256": "4ac8db3bb81c2b23dfb952b27773811f0c55eaa1450164fd85d5c547e62113e1",
+  "phase2_frozen_artifact_hashes": {
+    "artifacts/v2/metrics/calibration_comparison.csv": "0870b5b2fde3c2b4d23776f620db68757e84aeb70c0977baaa683e585034239f",
+    "artifacts/v2/metrics/candidate_oof_metrics.csv": "488e64bd0e5101dbd080240ca31ec9d7d91b60db86b06601471106da3826006a",
+    "artifacts/v2/metrics/training_reliability.csv": "81aaa14ba35e4aff5f769cd5299b307a4736c647173cf4389b2f1755df97e3b4",
+    "artifacts/v2/models/calibrated_model.joblib": "80554d3660214c3722784611638b28ac83a49cf8f6ac8113426559150f3f4399",
+    "artifacts/v2/models/model_feature_contract.json": "4547ea8f9b19341835f6a32131d3d37fed66f479e36e81bc25172d0483091e58",
+    "artifacts/v2/models/model_metadata.json": "d14afa5815e50abb808eaf560f0f011b0f54abb8bc9fdb0dcb8ac4d94c1787d0",
+    "artifacts/v2/policy/rules.json": "d93defb52368e1f767f5f33fba892fd257bb2209a8044c498136a3594e1ec30a",
+    "artifacts/v2/predictions/training_oof_predictions.csv": "e66f308c100a778fd0da5c641b91695b448c6a3761cca72b0c1e689ebd134251",
+    "artifacts/v2/training/device_folds.csv": "af877ab6f0a7ab51acb6d19564a25d933df5ba8e97316603ab86237ec7b55799",
+    "configs/v2/policy.yaml": "6fefa91074513f975d315a34b1bdc463fee8e175fe50fb001e7fd2104afa864c",
+    "configs/v2/training.yaml": "3fb401b362c33ffec733c3cc6df348d5c45dffe5927e2ebd23746bea0c5fcc65",
+    "src/card_testing_sentinel/v2/evaluation/calibration.py": "98d00879e938dfe2a7f571702f663d6e4db82ef0eb0aa2fbe76a1a056ef7de1a",
+    "src/card_testing_sentinel/v2/evaluation/metrics.py": "bb58ab95f4741c47379e2dfd492d9166d7f1b9c7f94546296ab7dedd24d8d615",
+    "src/card_testing_sentinel/v2/evaluation/sequential.py": "30c12b9d222f02f235a9e5f7d0fa50c7652d9ba2ad586750c65bebbeda741e44",
+    "src/card_testing_sentinel/v2/modeling/artifacts.py": "83ab2687a4728d3ab9a69f40d8a0dfd4c6d9a5056fb2de9420d1ac7471d5b2ef",
+    "src/card_testing_sentinel/v2/modeling/candidates.py": "ca52c076da7d1a98da21177d1a21cdb36bdd2195eb3907f7667211452f9ec0c4",
+    "src/card_testing_sentinel/v2/modeling/features.py": "aae0fc96d749ce311de87a87a2c6d3f51f0c14c2df857113a98f5e63f93a19cd",
+    "src/card_testing_sentinel/v2/modeling/folds.py": "6135f958c71f5bc04e9209006d89348d2338ec5e8bea10c3ea98cf5a6e4bae2b",
+    "src/card_testing_sentinel/v2/modeling/training.py": "0e6bd08a31bd7049a77e62f3468b0a69676131068a1234cd4d68c226c4a50368",
+    "src/card_testing_sentinel/v2/modeling/weights.py": "460312de762da4d497db2411e6fda889d6a2a326311d604fddfdcaa97bd83136",
+    "src/card_testing_sentinel/v2/policy/engine.py": "0dbacbe0c91d577120a2490280831454748f9f78236eb56f3c2e718efbafc040",
+    "src/card_testing_sentinel/v2/policy/rules.py": "7a5d821bae888247afbe7d5779cabc50467c9b04549807261ed11d8b8abe3aa9",
+    "src/card_testing_sentinel/v2/policy/selection.py": "d3a006866cf418716a74604fb6ffb8782fdea0bcb18221b61a926c5f82262d10"
+  },
+  "plot_definitions": [
+    "validation_reliability",
+    "matched_budget_policy_comparison",
+    "detection_by_request"
+  ],
+  "protected_input_hashes": {
+    "configs/v2/features.yaml": "64b31ae7ce33fb25f6da2fae489bdca8c461e411571be67d1b60cbab80180492",
+    "configs/v2/generation.yaml": "fa57f16bd4260e5ae8917e2c101ae4e96b55ef8b69025d1c0953bb4a88da5f59",
+    "configs/v2/split.yaml": "8310cac885920ca2c30cfabef0a0b8d668deb8e5f8447f2723bab5f9c0ecdf87",
+    "data/v2/development/device_splits.csv": "c14524c2c601237e969edeb1b36edb3f67e9aabea1f875e5e1daf361181feefe",
+    "data/v2/development/events_with_features.csv": "9fd1a9eabfa73a65362c93fa7f0595f9987bd274b324edf53b922984a076e3e4",
+    "data/v2/development/manifest.json": "a5ec79c35de862bf50e4c69e56692e2d7feda8bcea7c01d5b3f47e68dd443693",
+    "data/v2/development/raw_events.csv": "9232c7049916cb638d7eedd3faf922b1569c38d74850df100eb98622ab73614f",
+    "src/card_testing_sentinel/v2/features/engine.py": "036a275bc350784fd3b86c2c7aa07e5dc737075f37a618f44074ca95e588bf7e",
+    "src/card_testing_sentinel/v2/features/spec.py": "8773d0c82bd15354c19f51b096b11ee03e4af8bb0bb2fe87514898bb52520c4c",
+    "src/card_testing_sentinel/v2/features/state.py": "a18647783eb5ad63a7b91c442016e6f0e65725e4c10a4bcdc8b2dc6de6d84561"
+  },
+  "removed_features": {
+    "prior_attempts_10s": "Training-only correlation above 0.98 with prospective_requests_10s; the prospective feature is the operational precheck quantity.",
+    "prior_attempts_60s": "Training-only correlation above 0.99 with prospective_requests_60s; retaining both adds no useful independent information."
+  },
+  "reproduction": {
+    "calibration_identical": true,
+    "folds_identical": true,
+    "oof_probabilities_match": true,
+    "probability_absolute_tolerance": 1e-12,
+    "selection_identical": true,
+    "serialization_reload_parity": true
+  },
+  "rule_definitions": {
+    "definitions_frozen_from_training_only": true,
+    "maximum_score": 10,
+    "rules": [
+      {
+        "contribution": 2,
+        "rationale": "Four or more request-known attempts within 60 seconds.",
+        "reason_code": "RAPID_REQUEST_VELOCITY"
+      },
+      {
+        "contribution": 1,
+        "rationale": "Five or more processed attempts within five minutes.",
+        "reason_code": "PROCESSED_VELOCITY"
+      },
+      {
+        "contribution": 1,
+        "rationale": "Three or more distinct cards within 24 hours.",
+        "reason_code": "CARD_DIVERSITY"
+      },
+      {
+        "contribution": 1,
+        "rationale": "At least two consecutive prior processor declines.",
+        "reason_code": "DECLINE_STREAK"
+      },
+      {
+        "contribution": 1,
+        "rationale": "A prior decline is followed by card switching.",
+        "reason_code": "CARD_SWITCH_AFTER_DECLINE"
+      },
+      {
+        "contribution": 2,
+        "rationale": "At least three sessions and four prior attempts over seven days.",
+        "reason_code": "MULTI_SESSION_PERSISTENCE"
+      },
+      {
+        "contribution": 1,
+        "rationale": "Eight or more request-known attempts on the IP within five minutes.",
+        "reason_code": "SHARED_IP_INTENSITY"
+      },
+      {
+        "contribution": 1,
+        "rationale": "Low-value behavior is supporting evidence only when cards vary.",
+        "reason_code": "LOW_AMOUNT_WITH_DIVERSITY"
+      }
+    ]
+  },
+  "runtime": {
+    "joblib": "1.4.2",
+    "numpy": "1.26.4",
+    "pandas": "2.2.3",
+    "platform": "macOS-26.5.2-arm64-arm-64bit-Mach-O",
+    "python": "3.13.2 (v3.13.2:4f8bb3947cf, Feb  4 2025, 11:51:10) [Clang 15.0.0 (clang-1500.3.9.4)]",
+    "scikit_learn": "1.6.1"
+  },
+  "seed": 20260825,
+  "selected_base_model": {
+    "candidate": "hist_gradient_boosting__04",
+    "family": "hist_gradient_boosting",
+    "parameters": {
+      "l2_regularization": 2.0,
+      "learning_rate": 0.08,
+      "max_iter": 160,
+      "max_leaf_nodes": 15
+    }
+  },
+  "selected_calibration_method": "isotonic",
+  "training_weight_audit": {
+    "by_class": {
+      "0": 0.49999999999999994,
+      "1": 0.5
+    },
+    "by_scenario": {
+      "attack_burst": 0.2,
+      "attack_evasive": 0.15000000000000002,
+      "attack_patient": 0.15000000000000002,
+      "flash_hard_retry": 0.029411764705882353,
+      "flash_standard": 0.08823529411764705,
+      "normal_bad_luck": 0.029411764705882353,
+      "normal_standard": 0.3529411764705882
+    },
+    "total": 1.0
+  },
+  "training_weighting": "each class total=0.5; each device within class equal; device mass divided over its request rows",
+  "v1_release_entry_hashes": {
+    "artifacts/metrics/final_test_metrics.json": "86ee581580fe3449d4af36cdf999bbc2a2b448c134ecee0648d55d354cf476e8",
+    "artifacts/metrics/validation_sequential_metrics.json": "bb9be202da28408336a897380d6e0ea307c44570b295565d68a33f31819fe3a3",
+    "artifacts/models/champion_metadata.json": "84940d2fe596ba345e6598bbae919b910c511940144d200ae0abfc1ad3a17642",
+    "artifacts/models/hist_gradient_boosting.joblib": "8b5df33d59ad43709f4b94b72b7c253623cf747bf9ff8d445c6636c8151f5d64",
+    "artifacts/models/logistic_regression.joblib": "63249ea90dbad2532c41fb70a69f00ffb5e6d34528218f81b7f50d9f2fbe1c66",
+    "artifacts/policy/frozen_policy.json": "d7a3d631e4c095d1bb36614c21714fc3aa6d19b7a56f04f841c0b6f9836cc604",
+    "artifacts/predictions/final_test_device_summary.csv": "af2ff35d89d4b4214fec9e8544feb39e9b3803e13a2a908ef46437d5f5c005fd",
+    "artifacts/predictions/final_test_event_decisions.csv": "a2d5cdda73cf62f793c7ecf26c66a93f61fc69bc4847d768d9bc8241129d9e79",
+    "artifacts/predictions/validation_predictions.csv": "d474986958143f96662e13eaf458c5cf2cb482b5e485b536e09ed3bc5fa2fb83",
+    "configs/base.yaml": "b8ecc42388eee9d0ae917120a2b1cdb5f2573ec179f94a482462e50069b3eb58",
+    "configs/policy.yaml": "5819bcadb5baee639384fa7ebc3a7b9fb81ff4877fcd77212eae81fd0ebadb4e",
+    "configs/training.yaml": "8d7f2b683f7b78771e00ed7994cec858393afdc2d41315f8bc56490ed7765f64",
+    "data/frozen/device_splits.csv": "b6562785964dbcf1eaa8340791fa07711e07c69c231ab14360fb00962704678b",
+    "data/frozen/events_with_features.csv": "c9d5f3ea2a62a97ce9e2aa6e7e7f14a8e53828514701adebcee10ea7fb264aaa",
+    "data/frozen/manifest.json": "71140fd04ec9a8ebe6ea5b054ce1d20daaf8aa4a1824b5993e1c2f9af74eccdc",
+    "data/frozen/raw_events.csv": "1d9bc5a1da647cbe33637d904516e5045e7a4bc3f5c88841490e8bd2e5d17e34",
+    "razorpay (1).zip": "9171004f903729b150564b8c53d3127523b22530e6f292e97ebe836433bf85f6",
+    "reports/figures/final_test_detection_by_attempt.png": "32603460347e0fd27b9db9cbaf3f48052bc6acc6ad8f8e1ffa01d9760ca02e53",
+    "reports/figures/final_test_policy_comparison.png": "a2a55fe7245c049c83ba3911ce4a145976ecfd7b5e93f2dbcf5e2dc22e6e840b",
+    "src/card_testing_sentinel/api/app.py": "9cf869695ea735455a9badf32f2a8bdabb71d144c72a271f1d9ca1cc2a11bcc4",
+    "src/card_testing_sentinel/static/dashboard.css": "d690ee1fcd7489f8755ec8f9d166d2a52568e09efd4d6589205b4395786968bb",
+    "src/card_testing_sentinel/static/dashboard.js": "a7a6828350709ff2f33c92cf32d8a1eabd78495316010124c2d87a843d419489",
+    "src/card_testing_sentinel/templates/dashboard.html": "64966fa36cef966340759e8218eb0bf063068f1181841db13e2d7f2ef46274df"
+  },
+  "validation_performance_computed": false,
+  "validation_policy_config": {
+    "budgets": {
+      "flash_hard_retry": {
+        "block_allowance": 5,
+        "block_rate": 0.05,
+        "denominator": 100,
+        "review_or_higher_allowance": 10,
+        "review_or_higher_rate": 0.1
+      },
+      "flash_standard": {
+        "block_allowance": 9,
+        "block_rate": 0.03,
+        "denominator": 300,
+        "review_or_higher_allowance": 15,
+        "review_or_higher_rate": 0.05
+      },
+      "normal_bad_luck": {
+        "block_allowance": 2,
+        "block_rate": 0.02,
+        "denominator": 100,
+        "review_or_higher_allowance": 5,
+        "review_or_higher_rate": 0.05
+      },
+      "normal_standard": {
+        "block_allowance": 6,
+        "block_rate": 0.005,
+        "denominator": 1200,
+        "review_or_higher_allowance": 24,
+        "review_or_higher_rate": 0.02
+      },
+      "overall_legitimate": {
+        "block_allowance": 17,
+        "block_rate": 0.01,
+        "denominator": 1700,
+        "review_or_higher_allowance": 51,
+        "review_or_higher_rate": 0.03
+      }
+    },
+    "families": {
+      "combined": {
+        "block_support_scores": [
+          2,
+          3
+        ],
+        "block_thresholds": [
+          0.7,
+          0.85
+        ],
+        "relationship": "Review when either the calibrated probability or rule score reaches its review threshold; block only when both calibrated probability and rule evidence reach their block/support thresholds.",
+        "review_scores": [
+          2,
+          3
+        ],
+        "review_thresholds": [
+          0.25,
+          0.4
+        ]
+      },
+      "ml_only": {
+        "block_thresholds": [
+          0.6,
+          0.7,
+          0.8,
+          0.9
+        ],
+        "review_thresholds": [
+          0.15,
+          0.25,
+          0.35,
+          0.45,
+          0.55
+        ]
+      },
+      "rules_only": {
+        "block_scores": [
+          4,
+          5,
+          6
+        ],
+        "review_scores": [
+          2,
+          3,
+          4
+        ]
+      }
+    },
+    "percentage_rounding": "floor",
+    "plots": [
+      "validation_reliability",
+      "matched_budget_policy_comparison",
+      "detection_by_request"
+    ],
+    "review_assumption": "recorded_outcome_is_processed",
+    "selection_objective": [
+      "maximum_worst_subtype_review_or_higher_coverage",
+      "maximum_macro_subtype_review_or_higher_coverage",
+      "maximum_worst_subtype_block_coverage",
+      "maximum_macro_subtype_block_coverage",
+      "minimum_median_processed_authorizations_before_first_action",
+      "minimum_legitimate_blocks",
+      "minimum_legitimate_reviews",
+      "simpler_policy_then_more_conservative_thresholds"
+    ],
+    "version": "v2-phase2-policy-1"
+  },
+  "validation_sealed": true,
+  "version": "v2-phase2-training-freeze-1"
+}

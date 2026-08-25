@@ -1,0 +1,1101 @@
+{
+  "archive_provenance": {
+    "checksum": "9171004f903729b150564b8c53d3127523b22530e6f292e97ebe836433bf85f6",
+    "internal_csv_provenance": {
+      "device_splits.csv": true,
+      "events_with_features.csv": true,
+      "raw_events.csv": true
+    },
+    "required_contents_verified": true
+  },
+  "causal_recomputation": {
+    "feature_names": [
+      "attempts_trailing_60s",
+      "attempts_trailing_5min",
+      "unique_cards_trailing_60s",
+      "decline_ratio_so_far",
+      "current_decline_streak",
+      "attempts_before_first_approval",
+      "attempts_this_session",
+      "checkout_completed_so_far",
+      "ip_device_count_trailing_5min"
+    ],
+    "sample_size": 10
+  },
+  "checks": [
+    {
+      "expected": "v4",
+      "message": "manifest version matches configured frozen dataset version",
+      "name": "manifest.dataset_version",
+      "observed": "v4",
+      "passed": true
+    },
+    {
+      "expected": [
+        "event_id",
+        "event_sequence",
+        "timestamp",
+        "device_id",
+        "session_id",
+        "ip_hash",
+        "event_type",
+        "card_token",
+        "card_bin",
+        "amount",
+        "declined",
+        "decline_reason",
+        "population",
+        "attack_subtype",
+        "scenario_tag",
+        "entity_label"
+      ],
+      "message": "columns and order match the frozen contract",
+      "name": "schema.raw_events.exact_columns",
+      "observed": [
+        "event_id",
+        "event_sequence",
+        "timestamp",
+        "device_id",
+        "session_id",
+        "ip_hash",
+        "event_type",
+        "card_token",
+        "card_bin",
+        "amount",
+        "declined",
+        "decline_reason",
+        "population",
+        "attack_subtype",
+        "scenario_tag",
+        "entity_label"
+      ],
+      "passed": true
+    },
+    {
+      "expected": [
+        "event_id",
+        "event_sequence",
+        "timestamp",
+        "device_id",
+        "session_id",
+        "ip_hash",
+        "event_type",
+        "card_token",
+        "card_bin",
+        "amount",
+        "declined",
+        "decline_reason",
+        "population",
+        "attack_subtype",
+        "scenario_tag",
+        "entity_label",
+        "attempts_trailing_10s",
+        "attempts_trailing_60s",
+        "attempts_trailing_5min",
+        "mean_interarrival_s",
+        "var_interarrival_s",
+        "unique_cards_trailing_60s",
+        "unique_cards_trailing_5min",
+        "unique_bins_trailing_60s",
+        "unique_bins_trailing_5min",
+        "decline_ratio_so_far",
+        "current_decline_streak",
+        "approval_ratio_so_far",
+        "attempts_before_first_approval",
+        "amount_near_minimum_ratio_5min",
+        "amount_variance_so_far",
+        "repeated_amount_ratio",
+        "unique_amount_ratio",
+        "cards_this_session",
+        "session_age_s",
+        "attempts_this_session",
+        "checkout_completed_so_far",
+        "attempts_after_first_approval",
+        "device_reuse_count",
+        "card_switch_rate",
+        "ip_session_count_trailing_5min",
+        "ip_device_count_trailing_5min"
+      ],
+      "message": "columns and order match the frozen contract",
+      "name": "schema.enriched_events.exact_columns",
+      "observed": [
+        "event_id",
+        "event_sequence",
+        "timestamp",
+        "device_id",
+        "session_id",
+        "ip_hash",
+        "event_type",
+        "card_token",
+        "card_bin",
+        "amount",
+        "declined",
+        "decline_reason",
+        "population",
+        "attack_subtype",
+        "scenario_tag",
+        "entity_label",
+        "attempts_trailing_10s",
+        "attempts_trailing_60s",
+        "attempts_trailing_5min",
+        "mean_interarrival_s",
+        "var_interarrival_s",
+        "unique_cards_trailing_60s",
+        "unique_cards_trailing_5min",
+        "unique_bins_trailing_60s",
+        "unique_bins_trailing_5min",
+        "decline_ratio_so_far",
+        "current_decline_streak",
+        "approval_ratio_so_far",
+        "attempts_before_first_approval",
+        "amount_near_minimum_ratio_5min",
+        "amount_variance_so_far",
+        "repeated_amount_ratio",
+        "unique_amount_ratio",
+        "cards_this_session",
+        "session_age_s",
+        "attempts_this_session",
+        "checkout_completed_so_far",
+        "attempts_after_first_approval",
+        "device_reuse_count",
+        "card_switch_rate",
+        "ip_session_count_trailing_5min",
+        "ip_device_count_trailing_5min"
+      ],
+      "passed": true
+    },
+    {
+      "expected": [
+        "device_id",
+        "group",
+        "split"
+      ],
+      "message": "columns and order match the frozen contract",
+      "name": "schema.device_splits.exact_columns",
+      "observed": [
+        "device_id",
+        "group",
+        "split"
+      ],
+      "passed": true
+    },
+    {
+      "expected": [
+        "device_splits.csv",
+        "events_with_features.csv",
+        "raw_events.csv"
+      ],
+      "message": "configured frozen filenames must exactly match the manifest",
+      "name": "integrity.filenames_match_contract",
+      "observed": [
+        "device_splits.csv",
+        "events_with_features.csv",
+        "raw_events.csv"
+      ],
+      "passed": true
+    },
+    {
+      "expected": null,
+      "message": "frozen artifact must exist as a regular file",
+      "name": "integrity.device_splits.csv.regular_file",
+      "observed": null,
+      "passed": true
+    },
+    {
+      "expected": "b6562785964dbcf1eaa8340791fa07711e07c69c231ab14360fb00962704678b",
+      "message": "destination checksum matches frozen manifest",
+      "name": "integrity.device_splits.csv.sha256",
+      "observed": "b6562785964dbcf1eaa8340791fa07711e07c69c231ab14360fb00962704678b",
+      "passed": true
+    },
+    {
+      "expected": 4250,
+      "message": "CSV data-row count matches the manifest",
+      "name": "integrity.device_splits.csv.row_count",
+      "observed": 4250,
+      "passed": true
+    },
+    {
+      "expected": null,
+      "message": "frozen artifact must exist as a regular file",
+      "name": "integrity.events_with_features.csv.regular_file",
+      "observed": null,
+      "passed": true
+    },
+    {
+      "expected": "c9d5f3ea2a62a97ce9e2aa6e7e7f14a8e53828514701adebcee10ea7fb264aaa",
+      "message": "destination checksum matches frozen manifest",
+      "name": "integrity.events_with_features.csv.sha256",
+      "observed": "c9d5f3ea2a62a97ce9e2aa6e7e7f14a8e53828514701adebcee10ea7fb264aaa",
+      "passed": true
+    },
+    {
+      "expected": 14110,
+      "message": "CSV data-row count matches the manifest",
+      "name": "integrity.events_with_features.csv.row_count",
+      "observed": 14110,
+      "passed": true
+    },
+    {
+      "expected": null,
+      "message": "frozen artifact must exist as a regular file",
+      "name": "integrity.raw_events.csv.regular_file",
+      "observed": null,
+      "passed": true
+    },
+    {
+      "expected": "1d9bc5a1da647cbe33637d904516e5045e7a4bc3f5c88841490e8bd2e5d17e34",
+      "message": "destination checksum matches frozen manifest",
+      "name": "integrity.raw_events.csv.sha256",
+      "observed": "1d9bc5a1da647cbe33637d904516e5045e7a4bc3f5c88841490e8bd2e5d17e34",
+      "passed": true
+    },
+    {
+      "expected": 14110,
+      "message": "CSV data-row count matches the manifest",
+      "name": "integrity.raw_events.csv.row_count",
+      "observed": 14110,
+      "passed": true
+    },
+    {
+      "expected": "9171004f903729b150564b8c53d3127523b22530e6f292e97ebe836433bf85f6",
+      "message": "provenance archive checksum matches",
+      "name": "integrity.provenance_archive_sha256",
+      "observed": "9171004f903729b150564b8c53d3127523b22530e6f292e97ebe836433bf85f6",
+      "passed": true
+    },
+    {
+      "expected": null,
+      "message": "archive contains specification, scripts, reports, plots, and CSVs",
+      "name": "integrity.provenance_required_contents",
+      "observed": null,
+      "passed": true
+    },
+    {
+      "expected": {
+        "device_splits.csv": true,
+        "events_with_features.csv": true,
+        "raw_events.csv": true
+      },
+      "message": "all internal CSV bytes match the frozen manifest",
+      "name": "integrity.archive_csvs_match_manifest",
+      "observed": {
+        "device_splits.csv": true,
+        "events_with_features.csv": true,
+        "raw_events.csv": true
+      },
+      "passed": true
+    },
+    {
+      "expected": null,
+      "message": "raw event IDs must be unique",
+      "name": "identity.raw_event_ids_unique",
+      "observed": null,
+      "passed": true
+    },
+    {
+      "expected": null,
+      "message": "enriched event IDs must be unique",
+      "name": "identity.enriched_event_ids_unique",
+      "observed": null,
+      "passed": true
+    },
+    {
+      "expected": null,
+      "message": "raw and enriched files must contain identical event IDs",
+      "name": "identity.raw_enriched_event_ids_match",
+      "observed": null,
+      "passed": true
+    },
+    {
+      "expected": null,
+      "message": "event sequence must uniquely cover one through total event rows",
+      "name": "ordering.event_sequence_complete_unique_range",
+      "observed": null,
+      "passed": true
+    },
+    {
+      "expected": null,
+      "message": "CSV rows must be globally non-decreasing by timestamp",
+      "name": "ordering.global_timestamp_nondecreasing",
+      "observed": null,
+      "passed": true
+    },
+    {
+      "expected": null,
+      "message": "timestamp ties must be ordered by event_sequence",
+      "name": "ordering.timestamp_ties_use_event_sequence",
+      "observed": null,
+      "passed": true
+    },
+    {
+      "expected": null,
+      "message": "device histories must follow timestamp and event_sequence tie-breaking",
+      "name": "ordering.device_history_nondecreasing",
+      "observed": null,
+      "passed": true
+    },
+    {
+      "expected": [
+        "authorization",
+        "completion"
+      ],
+      "message": "event types must be exactly authorization and completion",
+      "name": "semantics.allowed_event_types",
+      "observed": [
+        "authorization",
+        "completion"
+      ],
+      "passed": true
+    },
+    {
+      "expected": null,
+      "message": "every event timestamp must parse deterministically",
+      "name": "schema.timestamps_parsed",
+      "observed": null,
+      "passed": true
+    },
+    {
+      "expected": null,
+      "message": "authorization payment and outcome fields must be present",
+      "name": "semantics.authorization_fields_present",
+      "observed": null,
+      "passed": true
+    },
+    {
+      "expected": null,
+      "message": "authorization amounts must be finite and positive",
+      "name": "semantics.authorization_amounts_finite_positive",
+      "observed": null,
+      "passed": true
+    },
+    {
+      "expected": null,
+      "message": "decline reasons exist only for declined authorizations",
+      "name": "semantics.decline_reason_matches_outcome",
+      "observed": null,
+      "passed": true
+    },
+    {
+      "expected": null,
+      "message": "completion rows must retain null payment and outcome fields",
+      "name": "semantics.completion_payment_fields_null",
+      "observed": null,
+      "passed": true
+    },
+    {
+      "expected": null,
+      "message": "population must be stable within each device",
+      "name": "entity.device_stable_population",
+      "observed": null,
+      "passed": true
+    },
+    {
+      "expected": null,
+      "message": "attack_subtype must be stable within each device",
+      "name": "entity.device_stable_attack_subtype",
+      "observed": null,
+      "passed": true
+    },
+    {
+      "expected": null,
+      "message": "entity_label must be stable within each device",
+      "name": "entity.device_stable_entity_label",
+      "observed": null,
+      "passed": true
+    },
+    {
+      "expected": null,
+      "message": "device_id must be stable within each session",
+      "name": "entity.session_stable_device_id",
+      "observed": null,
+      "passed": true
+    },
+    {
+      "expected": null,
+      "message": "scenario_tag must be stable within each session",
+      "name": "entity.session_stable_scenario_tag",
+      "observed": null,
+      "passed": true
+    },
+    {
+      "expected": null,
+      "message": "each card token must map to one normalized BIN",
+      "name": "entity.card_token_maps_to_one_bin",
+      "observed": null,
+      "passed": true
+    },
+    {
+      "expected": [
+        "attack",
+        "flash_sale",
+        "normal"
+      ],
+      "message": "population values must match the frozen categories",
+      "name": "entity.allowed_populations",
+      "observed": [
+        "attack",
+        "flash_sale",
+        "normal"
+      ],
+      "passed": true
+    },
+    {
+      "expected": null,
+      "message": "subtype is required for attacks and blank for legitimate populations",
+      "name": "entity.attack_subtype_semantics",
+      "observed": null,
+      "passed": true
+    },
+    {
+      "expected": null,
+      "message": "label must be binary and equal one exactly for attack rows",
+      "name": "entity.label_matches_population",
+      "observed": null,
+      "passed": true
+    },
+    {
+      "expected": null,
+      "message": "all 16 base fields must agree after in-memory normalization",
+      "name": "consistency.raw_enriched_base_fields_match",
+      "observed": null,
+      "passed": true
+    },
+    {
+      "expected": null,
+      "message": "allowlisted features must contain no NaN or infinity",
+      "name": "features.all_finite_and_present",
+      "observed": null,
+      "passed": true
+    },
+    {
+      "expected": null,
+      "message": "count features must be non-negative whole numbers",
+      "name": "features.counts_nonnegative_whole_numbers",
+      "observed": null,
+      "passed": true
+    },
+    {
+      "expected": null,
+      "message": "ratio features must lie within [0, 1]",
+      "name": "features.ratios_in_unit_interval",
+      "observed": null,
+      "passed": true
+    },
+    {
+      "expected": null,
+      "message": "duration, inter-arrival, and variance features must be non-negative",
+      "name": "features.durations_and_variances_nonnegative",
+      "observed": null,
+      "passed": true
+    },
+    {
+      "expected": null,
+      "message": "decline and approval ratios must sum to one after observed history",
+      "name": "features.decline_approval_ratios_complementary",
+      "observed": null,
+      "passed": true
+    },
+    {
+      "expected": null,
+      "message": "feature relationship holds",
+      "name": "features.unique_cards_60s_within_attempts",
+      "observed": null,
+      "passed": true
+    },
+    {
+      "expected": null,
+      "message": "feature relationship holds",
+      "name": "features.unique_cards_5min_within_attempts",
+      "observed": null,
+      "passed": true
+    },
+    {
+      "expected": null,
+      "message": "feature relationship holds",
+      "name": "features.unique_bins_60s_within_attempts",
+      "observed": null,
+      "passed": true
+    },
+    {
+      "expected": null,
+      "message": "feature relationship holds",
+      "name": "features.unique_bins_5min_within_attempts",
+      "observed": null,
+      "passed": true
+    },
+    {
+      "expected": null,
+      "message": "feature relationship holds",
+      "name": "features.session_cards_within_attempts",
+      "observed": null,
+      "passed": true
+    },
+    {
+      "expected": null,
+      "message": "feature relationship holds",
+      "name": "features.ip_devices_within_sessions",
+      "observed": null,
+      "passed": true
+    },
+    {
+      "expected": null,
+      "message": "feature relationship holds",
+      "name": "features.checkout_state_binary",
+      "observed": null,
+      "passed": true
+    },
+    {
+      "expected": null,
+      "message": "completion state changes on completion and remains visible later",
+      "name": "causality.checkout_state_matches_prior_completions",
+      "observed": null,
+      "passed": true
+    },
+    {
+      "expected": 0,
+      "message": "every completion must follow an approved authorization",
+      "name": "causality.every_completion_follows_approval",
+      "observed": 0,
+      "passed": true
+    },
+    {
+      "expected": 0,
+      "message": "normal and flash-sale sessions stop authorizing after completion",
+      "name": "causality.no_legitimate_authorization_after_session_completion",
+      "observed": 0,
+      "passed": true
+    },
+    {
+      "expected": 108,
+      "message": "intentional attacker continuation count must be preserved",
+      "name": "causality.attack_authorizations_after_session_completion",
+      "observed": 108,
+      "passed": true
+    },
+    {
+      "expected": null,
+      "message": "each split device must appear exactly once",
+      "name": "splits.one_row_per_device",
+      "observed": null,
+      "passed": true
+    },
+    {
+      "expected": [
+        "test",
+        "train",
+        "validation"
+      ],
+      "message": "split values must be exactly train, validation, and test",
+      "name": "splits.allowed_values",
+      "observed": [
+        "test",
+        "train",
+        "validation"
+      ],
+      "passed": true
+    },
+    {
+      "expected": {
+        "extra": 0,
+        "missing": 0
+      },
+      "message": "split devices must exactly match event devices",
+      "name": "splits.complete_device_membership",
+      "observed": {
+        "extra": 0,
+        "missing": 0
+      },
+      "passed": true
+    },
+    {
+      "expected": 0,
+      "message": "train, validation, and test device sets must be disjoint",
+      "name": "splits.pairwise_disjoint",
+      "observed": 0,
+      "passed": true
+    },
+    {
+      "expected": null,
+      "message": "split group must match population or attacker subtype",
+      "name": "splits.group_matches_device_metadata",
+      "observed": null,
+      "passed": true
+    },
+    {
+      "expected": null,
+      "message": "every session scenario must occur in every split",
+      "name": "splits.every_scenario_represented",
+      "observed": null,
+      "passed": true
+    },
+    {
+      "expected": 10603,
+      "message": "authorization_rows matches the frozen manifest",
+      "name": "counts.authorization_rows",
+      "observed": 10603,
+      "passed": true
+    },
+    {
+      "expected": 3507,
+      "message": "completion_rows matches the frozen manifest",
+      "name": "counts.completion_rows",
+      "observed": 3507,
+      "passed": true
+    },
+    {
+      "expected": 4250,
+      "message": "devices matches the frozen manifest",
+      "name": "counts.devices",
+      "observed": 4250,
+      "passed": true
+    },
+    {
+      "expected": 14110,
+      "message": "event_rows matches the frozen manifest",
+      "name": "counts.event_rows",
+      "observed": 14110,
+      "passed": true
+    },
+    {
+      "expected": 26,
+      "message": "model_features matches the frozen manifest",
+      "name": "counts.model_features",
+      "observed": 26,
+      "passed": true
+    },
+    {
+      "expected": 4625,
+      "message": "sessions matches the frozen manifest",
+      "name": "counts.sessions",
+      "observed": 4625,
+      "passed": true
+    },
+    {
+      "expected": {
+        "attack": 450,
+        "flash_sale": 800,
+        "normal": 3000
+      },
+      "message": "observed counts match the frozen manifest",
+      "name": "counts.devices_by_population",
+      "observed": {
+        "attack": 450,
+        "flash_sale": 800,
+        "normal": 3000
+      },
+      "passed": true
+    },
+    {
+      "expected": {
+        "burst": 247,
+        "evasive": 135,
+        "patient": 68
+      },
+      "message": "observed counts match the frozen manifest",
+      "name": "counts.attacker_devices_by_subtype",
+      "observed": {
+        "burst": 247,
+        "evasive": 135,
+        "patient": 68
+      },
+      "passed": true
+    },
+    {
+      "expected": {
+        "0": 3800,
+        "1": 450
+      },
+      "message": "observed counts match the frozen manifest",
+      "name": "counts.devices_by_label",
+      "observed": {
+        "0": 3800,
+        "1": 450
+      },
+      "passed": true
+    },
+    {
+      "expected": {
+        "attack_burst": 247,
+        "attack_evasive": 135,
+        "attack_patient": 133,
+        "flash_hard_retry": 119,
+        "flash_processor_strain": 168,
+        "flash_typical": 513,
+        "normal_bad_luck": 327,
+        "normal_standard": 2983
+      },
+      "message": "observed counts match the frozen manifest",
+      "name": "counts.sessions_by_scenario",
+      "observed": {
+        "attack_burst": 247,
+        "attack_evasive": 135,
+        "attack_patient": 133,
+        "flash_hard_retry": 119,
+        "flash_processor_strain": 168,
+        "flash_typical": 513,
+        "normal_bad_luck": 327,
+        "normal_standard": 2983
+      },
+      "passed": true
+    },
+    {
+      "expected": {
+        "attack_burst": 247,
+        "attack_evasive": 135,
+        "attack_patient": 68,
+        "flash_hard_retry": 119,
+        "flash_processor_strain": 168,
+        "flash_typical": 513,
+        "normal_bad_luck": 325,
+        "normal_standard": 2730
+      },
+      "message": "observed counts match the frozen manifest",
+      "name": "counts.distinct_devices_ever_tagged_by_scenario",
+      "observed": {
+        "attack_burst": 247,
+        "attack_evasive": 135,
+        "attack_patient": 68,
+        "flash_hard_retry": 119,
+        "flash_processor_strain": 168,
+        "flash_typical": 513,
+        "normal_bad_luck": 325,
+        "normal_standard": 2730
+      },
+      "passed": true
+    },
+    {
+      "expected": {
+        "bad_luck_only": 270,
+        "both": 55,
+        "returning_with_second_session": 310,
+        "standard_only": 2675,
+        "total_normal_devices": 3000,
+        "total_normal_sessions": 3310
+      },
+      "message": "observed counts match the frozen manifest",
+      "name": "counts.normal_device_scenario_membership",
+      "observed": {
+        "bad_luck_only": 270,
+        "both": 55,
+        "returning_with_second_session": 310,
+        "standard_only": 2675,
+        "total_normal_devices": 3000,
+        "total_normal_sessions": 3310
+      },
+      "passed": true
+    },
+    {
+      "expected": {
+        "test": 638,
+        "train": 2975,
+        "validation": 637
+      },
+      "message": "observed counts match the frozen manifest",
+      "name": "counts.devices_by_split",
+      "observed": {
+        "test": 638,
+        "train": 2975,
+        "validation": 637
+      },
+      "passed": true
+    },
+    {
+      "expected": {
+        "burst": {
+          "test": 37,
+          "train": 173,
+          "validation": 37
+        },
+        "evasive": {
+          "test": 21,
+          "train": 94,
+          "validation": 20
+        },
+        "flash_sale": {
+          "test": 120,
+          "train": 560,
+          "validation": 120
+        },
+        "normal": {
+          "test": 450,
+          "train": 2100,
+          "validation": 450
+        },
+        "patient": {
+          "test": 10,
+          "train": 48,
+          "validation": 10
+        }
+      },
+      "message": "observed counts match the frozen manifest",
+      "name": "counts.devices_by_group_and_split",
+      "observed": {
+        "burst": {
+          "test": 37,
+          "train": 173,
+          "validation": 37
+        },
+        "evasive": {
+          "test": 21,
+          "train": 94,
+          "validation": 20
+        },
+        "flash_sale": {
+          "test": 120,
+          "train": 560,
+          "validation": 120
+        },
+        "normal": {
+          "test": 450,
+          "train": 2100,
+          "validation": 450
+        },
+        "patient": {
+          "test": 10,
+          "train": 48,
+          "validation": 10
+        }
+      },
+      "passed": true
+    },
+    {
+      "expected": [
+        "first_authorization_of_device",
+        "repeated_authorization_in_session",
+        "completion_event",
+        "attack_authorization_after_completion",
+        "shared_ip_flash_sale",
+        "attacker_subtype_burst",
+        "attacker_subtype_evasive",
+        "attacker_subtype_patient",
+        "normal_bad_luck",
+        "flash_hard_retry"
+      ],
+      "message": "deterministic sample covers all required behavioral cases",
+      "name": "causal_sample.required_coverage",
+      "observed": [
+        "first_authorization_of_device",
+        "repeated_authorization_in_session",
+        "completion_event",
+        "attack_authorization_after_completion",
+        "shared_ip_flash_sale",
+        "attacker_subtype_burst",
+        "attacker_subtype_evasive",
+        "attacker_subtype_patient",
+        "normal_bad_luck",
+        "flash_hard_retry"
+      ],
+      "passed": true
+    },
+    {
+      "expected": {
+        "matched": 10,
+        "sample_size": 10
+      },
+      "message": "independent raw-history recomputation matches frozen feature",
+      "name": "causal_recomputation.attempts_trailing_60s",
+      "observed": {
+        "matched": 10,
+        "sample_size": 10
+      },
+      "passed": true
+    },
+    {
+      "expected": {
+        "matched": 10,
+        "sample_size": 10
+      },
+      "message": "independent raw-history recomputation matches frozen feature",
+      "name": "causal_recomputation.attempts_trailing_5min",
+      "observed": {
+        "matched": 10,
+        "sample_size": 10
+      },
+      "passed": true
+    },
+    {
+      "expected": {
+        "matched": 10,
+        "sample_size": 10
+      },
+      "message": "independent raw-history recomputation matches frozen feature",
+      "name": "causal_recomputation.unique_cards_trailing_60s",
+      "observed": {
+        "matched": 10,
+        "sample_size": 10
+      },
+      "passed": true
+    },
+    {
+      "expected": {
+        "matched": 10,
+        "sample_size": 10
+      },
+      "message": "independent raw-history recomputation matches frozen feature",
+      "name": "causal_recomputation.decline_ratio_so_far",
+      "observed": {
+        "matched": 10,
+        "sample_size": 10
+      },
+      "passed": true
+    },
+    {
+      "expected": {
+        "matched": 10,
+        "sample_size": 10
+      },
+      "message": "independent raw-history recomputation matches frozen feature",
+      "name": "causal_recomputation.current_decline_streak",
+      "observed": {
+        "matched": 10,
+        "sample_size": 10
+      },
+      "passed": true
+    },
+    {
+      "expected": {
+        "matched": 10,
+        "sample_size": 10
+      },
+      "message": "independent raw-history recomputation matches frozen feature",
+      "name": "causal_recomputation.attempts_before_first_approval",
+      "observed": {
+        "matched": 10,
+        "sample_size": 10
+      },
+      "passed": true
+    },
+    {
+      "expected": {
+        "matched": 10,
+        "sample_size": 10
+      },
+      "message": "independent raw-history recomputation matches frozen feature",
+      "name": "causal_recomputation.attempts_this_session",
+      "observed": {
+        "matched": 10,
+        "sample_size": 10
+      },
+      "passed": true
+    },
+    {
+      "expected": {
+        "matched": 10,
+        "sample_size": 10
+      },
+      "message": "independent raw-history recomputation matches frozen feature",
+      "name": "causal_recomputation.checkout_completed_so_far",
+      "observed": {
+        "matched": 10,
+        "sample_size": 10
+      },
+      "passed": true
+    },
+    {
+      "expected": {
+        "matched": 10,
+        "sample_size": 10
+      },
+      "message": "independent raw-history recomputation matches frozen feature",
+      "name": "causal_recomputation.ip_device_count_trailing_5min",
+      "observed": {
+        "matched": 10,
+        "sample_size": 10
+      },
+      "passed": true
+    }
+  ],
+  "dataset_version": "v4",
+  "file_checksums": {
+    "device_splits.csv": "b6562785964dbcf1eaa8340791fa07711e07c69c231ab14360fb00962704678b",
+    "events_with_features.csv": "c9d5f3ea2a62a97ce9e2aa6e7e7f14a8e53828514701adebcee10ea7fb264aaa",
+    "raw_events.csv": "1d9bc5a1da647cbe33637d904516e5045e7a4bc3f5c88841490e8bd2e5d17e34"
+  },
+  "numeric_tolerance": 1e-09,
+  "overall_status": "pass",
+  "structural_counts": {
+    "attacker_devices_by_subtype": {
+      "burst": 247,
+      "evasive": 135,
+      "patient": 68
+    },
+    "authorization_rows": 10603,
+    "completion_rows": 3507,
+    "devices": 4250,
+    "devices_by_group_and_split": {
+      "burst": {
+        "test": 37,
+        "train": 173,
+        "validation": 37
+      },
+      "evasive": {
+        "test": 21,
+        "train": 94,
+        "validation": 20
+      },
+      "flash_sale": {
+        "test": 120,
+        "train": 560,
+        "validation": 120
+      },
+      "normal": {
+        "test": 450,
+        "train": 2100,
+        "validation": 450
+      },
+      "patient": {
+        "test": 10,
+        "train": 48,
+        "validation": 10
+      }
+    },
+    "devices_by_label": {
+      "0": 3800,
+      "1": 450
+    },
+    "devices_by_population": {
+      "attack": 450,
+      "flash_sale": 800,
+      "normal": 3000
+    },
+    "devices_by_split": {
+      "test": 638,
+      "train": 2975,
+      "validation": 637
+    },
+    "distinct_devices_ever_tagged_by_scenario": {
+      "attack_burst": 247,
+      "attack_evasive": 135,
+      "attack_patient": 68,
+      "flash_hard_retry": 119,
+      "flash_processor_strain": 168,
+      "flash_typical": 513,
+      "normal_bad_luck": 325,
+      "normal_standard": 2730
+    },
+    "event_rows": 14110,
+    "model_features": 26,
+    "normal_device_scenario_membership": {
+      "bad_luck_only": 270,
+      "both": 55,
+      "returning_with_second_session": 310,
+      "standard_only": 2675,
+      "total_normal_devices": 3000,
+      "total_normal_sessions": 3310
+    },
+    "sessions": 4625,
+    "sessions_by_scenario": {
+      "attack_burst": 247,
+      "attack_evasive": 135,
+      "attack_patient": 133,
+      "flash_hard_retry": 119,
+      "flash_processor_strain": 168,
+      "flash_typical": 513,
+      "normal_bad_luck": 327,
+      "normal_standard": 2983
+    }
+  },
+  "total_checks_failed": 0,
+  "total_checks_passed": 86
+}

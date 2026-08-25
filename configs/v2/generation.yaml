@@ -1,0 +1,14 @@
+version: v2-development-1
+seed: 20260825
+start_timestamp: 2026-01-01T00:00:00+00:00
+currency: USD
+device_counts:
+  normal_standard: 6000
+  normal_bad_luck: 500
+  flash_standard: 1500
+  flash_hard_retry: 500
+  attack_burst: 600
+  attack_evasive: 450
+  attack_patient: 450
+validation_fraction: 0.20
+minimum_validation_subgroup_devices: 80

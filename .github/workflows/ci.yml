@@ -1,0 +1,31 @@
+name: Quality checks
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash -el {0}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Create Conda environment
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          activate-environment: card-testing-sentinel
+          environment-file: environment.yml
+          auto-activate-base: false
+
+      - name: Check formatting
+        run: ruff format --check .
+
+      - name: Lint
+        run: ruff check .
+
+      - name: Run tests
+        run: pytest --cov-report=term-missing

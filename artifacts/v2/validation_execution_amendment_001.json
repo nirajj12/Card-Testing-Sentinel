@@ -1,0 +1,100 @@
+{
+  "amendment_id": "v2-validation-execution-amendment-001",
+  "append_only": true,
+  "status": "PHASE 2 CLOSED — BLOCKED / NO FEASIBLE POLICY",
+  "freeze_history": {
+    "original_training_freeze_created_filesystem_time": "2026-08-25T19:23:06+05:30",
+    "original_training_freeze_sha256": "103e835f0a17e7ea7c5757e7c2abd49ecfa4b3586f6b853412e96789e88e791c",
+    "authoritative_pre_validation_created_utc": "2026-08-25T13:59:19.992315+00:00",
+    "authoritative_pre_validation_sha256": "b3eee5234af43bb87cb8fe957089961f25b0b90da22227ced41431e36d0aae13",
+    "authoritative_freeze_hash_file_contents": "b3eee5234af43bb87cb8fe957089961f25b0b90da22227ced41431e36d0aae13"
+  },
+  "timeline": [
+    {
+      "event": "authoritative training freeze written",
+      "timestamp": "2026-08-25T13:59:19.992315+00:00"
+    },
+    {
+      "event": "first validation access",
+      "timestamp": "2026-08-25T13:59:34.470123+00:00"
+    },
+    {
+      "event": "strict 1e-12 feature-parity run stopped before policy scoring",
+      "timestamp": null,
+      "audit_limitation": "The runner did not persist a UTC stop timestamp; the event occurred after first validation access and before the cache edit."
+    },
+    {
+      "event": "parity tolerance corrected from 1e-12 to the Phase 1 CSV contract of 5e-7",
+      "timestamp": null,
+      "audit_limitation": "The intermediate edit timestamp was overwritten by the later file modification time."
+    },
+    {
+      "event": "uncached exhaustive run stopped before candidate-table creation",
+      "timestamp": null,
+      "audit_limitation": "The runner did not persist a UTC stop timestamp."
+    },
+    {
+      "event": "raw-probability duplicate-call cache edit",
+      "timestamp": "2026-08-25T19:53:59+05:30"
+    },
+    {
+      "event": "complete authoritative candidate table created by final run",
+      "timestamp": "2026-08-25T20:46:39+05:30"
+    },
+    {
+      "event": "blocked metrics and report created",
+      "timestamp": "2026-08-25T20:48:19+05:30"
+    }
+  ],
+  "execution_source_amendments": [
+    {
+      "file": "src/card_testing_sentinel/v2/policy/evaluation.py",
+      "change": "feature parity tolerance 1e-12 to 5e-7",
+      "old_sha256": "6fae0dbf9eaf4e2c0becbd5f4065d5ea02539dd1eaf032fb8e6da8a49ac15f58",
+      "new_sha256": "877433116cf7d26e88f8b920e4dca6fcc719c7787282a4fe58eea242fe230163"
+    },
+    {
+      "file": "src/card_testing_sentinel/v2/policy/evaluation.py",
+      "change": "reuse the immediately preceding raw probability during calibration",
+      "old_sha256": "877433116cf7d26e88f8b920e4dca6fcc719c7787282a4fe58eea242fe230163",
+      "new_sha256": "97663487b796f7c2c4e78ca393cdaa00979359e9a0481e7e0f93ce4aa93d77c5"
+    }
+  ],
+  "freeze_disclosure": {
+    "evaluation_py_was_in_authoritative_source_hash_list": false,
+    "statement": "The authoritative freeze remained byte-identical, but evaluation.py was not included in its 23-entry source/artifact hash list. The file changed after access and is therefore governed by this controlled execution amendment, not by a claim that all execution source remained byte-identical."
+  },
+  "no_result_before_amendment_evidence": {
+    "candidate_table_birth_time": "2026-08-25T20:46:39+05:30",
+    "cache_edit_time": "2026-08-25T19:53:59+05:30",
+    "pre_table_directory_check_result": "No post-access candidate or policy artifact was present.",
+    "limitation": "The pre-table directory check is preserved in the execution transcript, not in a separately timestamped cryptographic log."
+  },
+  "semantic_invariance_proof": {
+    "raw_probability_max_absolute_difference_all_5422_static_validation_rows": 0.0,
+    "calibrated_probability_max_absolute_difference_all_5422_static_validation_rows": 0.0,
+    "sequential_source_sha256_unchanged": "30c12b9d222f02f235a9e5f7d0fa50c7652d9ba2ad586750c65bebbeda741e44",
+    "policy_selection_source_sha256_unchanged": "d3a006866cf418716a74604fb6ffb8782fdea0bcb18221b61a926c5f82262d10",
+    "rules_source_sha256_unchanged": "7a5d821bae888247afbe7d5779cabc50467c9b04549807261ed11d8b8abe3aa9",
+    "policy_config_sha256_unchanged": "6fefa91074513f975d315a34b1bdc463fee8e175fe50fb001e7fd2104afa864c",
+    "model_artifact_sha256_unchanged": "80554d3660214c3722784611638b28ac83a49cf8f6ac8113426559150f3f4399",
+    "candidate_table_matches_frozen_enumeration": true,
+    "candidate_ids_unique": true,
+    "suppressed_outcomes_causal_state_grids_budgets_objectives_changed": false
+  },
+  "candidate_count_correction": {
+    "requested_count": 36,
+    "authoritative_frozen_enumeration_count": 32,
+    "evaluated_table_count": 32,
+    "explanation": "The frozen strict combined rule permits only review_score 2 with block_support_score 3. Frozen counts are 8 rules-only, 20 ML-only, and 4 combined. Claiming 36 would be false."
+  },
+  "validation_result": {
+    "complete_frozen_candidates_evaluated": 32,
+    "feasible_candidates": 0,
+    "partial_table_accepted": false,
+    "champion_selected": false,
+    "v2_policy_frozen": false,
+    "blind_challenge_created_or_accessed": false
+  }
+}
+
