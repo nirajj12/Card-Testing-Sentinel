@@ -1,309 +1,405 @@
 # Card-Testing Sentinel
 
-Card-Testing Sentinel is a defensive machine-learning project for identifying
-payment card-testing attacks while controlling false positives on legitimate
-customers and flash-sale traffic. Phase 5 serves the frozen Phase 3 model and
-Phase 4 rules-only policy through a local FastAPI application and same-origin,
-read-only replay dashboard. It does not retrain, retune, or rerun final evaluation.
+> Stop card-testing attacks before authorization.
 
-V1 is now an immutable historical release. Its evaluated split is the **legacy
-seen V1 benchmark** and cannot support V2 selection or generalization claims.
-V2 Phase 1 is a separate pre-authorization data and causal-feature foundation;
-it contains development train/validation data only and no trained V2 model,
-calibration, policy, blind-test seed, blind-test rows, or V2 inference API.
+## Problem
 
-## V2 Phase 1 commands
+Card testing uses small, repeated payment attempts to discover which stolen credentials remain valid, creating processor costs, noisy declines, customer friction and downstream fraud. Card-Testing Sentinel is a Razorpay AI Buildathon demonstration that returns `allow`, `review` or `block` before the current request reaches the bank.
 
-Generate the deterministic development lifecycle bundle, rebuild causal
-features through the shared incremental engine, and validate it:
+## Product demo
 
-```bash
-python scripts/v2/generate_development_data.py
-python scripts/v2/build_development_features.py
-python scripts/v2/validate_development_data.py
-```
+[Live demo: deployment pending explicit approval](#local-setup)
 
-Run a second clean generation into a separate directory by calling
-`write_development_bundle(config_path, output_dir)` and compare the three hashes
-recorded in `data/v2/development/manifest.json`. The checked release produces
-10,000 devices, 12,686 sessions, 26,760 scored authorization requests, and
-61,862 lifecycle events. Device splits are 8,000 train and 2,000 validation.
+![Card-Testing Sentinel desktop product page](docs/screenshots/live-protection-1440.png)
 
-V2 decisions are pre-authorization: a request emits one causal feature row,
-the later processor outcome commits history without scoring, and a later
-checkout completion updates history without scoring. See `docs/v2/` for the
-data, evaluation, live-serving, limitation, and blind-challenge contracts.
+Additional verified viewports: [1024 × 900](docs/screenshots/live-protection-1024.png), [768 × 900](docs/screenshots/live-protection-768.png), and [390 × 844](docs/screenshots/live-protection-390.png).
 
-## Dataset safeguards
-
-The synthetic v4 dataset is frozen. It must not be regenerated, normalized, or
-have its distributions tuned after evaluation. These authoritative files are
-locked by SHA-256:
-
-- `raw_events.csv`: `1d9bc5a1da647cbe33637d904516e5045e7a4bc3f5c88841490e8bd2e5d17e34`
-- `events_with_features.csv`: `c9d5f3ea2a62a97ce9e2aa6e7e7f14a8e53828514701adebcee10ea7fb264aaa`
-- `device_splits.csv`: `b6562785964dbcf1eaa8340791fa07711e07c69c231ab14360fb00962704678b`
-
-The verified provenance archive has SHA-256
-`9171004f903729b150564b8c53d3127523b22530e6f292e97ebe836433bf85f6`.
-Its three internal CSVs are byte-identical to the files in `data/frozen/`.
-
-An authorization will be scored immediately after its outcome is observed. Its
-features may include that authorization and its observed outcome, but never a
-later event. A decision therefore affects the next authorization. Model rows
-are authorization events only. Checkout-completion events affect causal state
-but are excluded from model training and authorization scoring.
-
-Future training must select the ordered 26-column allowlist from
-`features/spec.py` directly. It must never infer features by subtracting a
-blacklist. Population, subtype, scenario, label, identifiers, raw amount, and
-raw outcome fields are excluded. `scenario_tag` is evaluation-only session
-metadata: it is stable within a session but can change between sessions for a
-returning device.
-
-The frozen train, validation, and test assignments are device-level. No device
-may cross partitions, and the test partition is reserved for integrity checks
-until the model, threshold, and policy are frozen.
-
-## Setup and checks
-
-Create or update the Conda environment from the repository root:
+Quick start on Python 3.11:
 
 ```bash
-conda env update --file environment.yml
-conda activate card-testing-sentinel
-python -m pip install -e '.[dev]'
+python3.11 -m venv .venv && source .venv/bin/activate
+python -m pip install --upgrade pip==26.2.1 setuptools==84.0.0
+python -m pip install --no-deps -r requirements-runtime.lock
+python -m pip install --no-deps --no-build-isolation -e .
+CTS_HMAC_SECRET='replace-with-a-long-private-local-secret' python scripts/run_app.py
 ```
 
-Run the same checks used by CI:
+> **Synthetic-data disclosure:** no Razorpay, merchant or cardholder data was used. Every scenario, training row and evaluation result is synthetic.
+
+## Headline results
+
+Synthetic blind-evaluation results:
+
+| Verified result | Value |
+|---|---:|
+| Attacker devices reaching review or higher | **90.33%** |
+| Attacker devices blocked | **77.67%** |
+| Legitimate devices reviewed | **2 of 1,700** |
+| Legitimate devices blocked | **0 of 1,700** |
+
+## How it works
+
+1. Receive a strict raw pre-authorization request.
+2. Build 44 causal behavioral features from previously committed events.
+3. Apply the frozen calibrated model and deterministic stateful policy.
+4. Return `allow`, `review` or `block` for the current attempt.
+5. Persist the request, then record any later processor outcome and checkout completion as separate lifecycle events.
+
+The demonstration additionally proves:
+
+- The current authorization request is scored before its processor outcome exists.
+- The browser sends no feature vector, risk score, label or scenario metadata to the model.
+- Device, session, card and IP references are HMAC-protected before state or persistence.
+- A blocked request is suppressed, so the bank is not contacted and no outcome is created.
+- Later requests continue to be independently scored after an earlier block.
+- Exact retries return the original decision and state version without rescoring.
+- Changed retries and impossible lifecycle transitions fail with HTTP 409.
+- Frozen blind-evaluation rows are displayed as read-only evidence and are never rescored.
+
+The LLM is not part of the fraud-decision path. Decisions come from the frozen model, causal feature engine, deterministic rules and operational policy.
+
+## Architecture
+
+```text
+Raw lifecycle event
+        │
+        ▼
+Strict Pydantic contract ── rejects credentials, labels and client features
+        │
+        ▼
+HMAC identifier boundary ── device / session / card / IP domains
+        │
+        ▼
+Causal state engine ── 44 server-side behavioral features
+        │
+        ├── frozen logistic model + isotonic calibration ── risk score
+        └── deterministic behavioral rules
+        │
+        ▼
+Stateful operational policy ── allow / review / block
+        │
+        ▼
+SQLite WAL persistence ── idempotency / audit / restart reconstruction
+```
+
+An authorization request is validated and protected before it reaches the feature engine. Features are computed from prior committed state plus values already known on the current request. The model and policy run before request state is committed. Processor outcomes and checkout completions arrive later and can affect only future requests.
+
+One asynchronous transition lock preserves global order in this single-process prototype. SQLite uses WAL, full synchronous writes, foreign keys, unique lifecycle constraints and explicit transactions. Startup reconstructs state by replaying sanitized persisted events and verifies historical decisions and state versions.
+
+## Live request lifecycle
+
+The system accepts three event types:
+
+1. `authorization_request` — scored immediately before authorization.
+2. `authorization_outcome` — later `approved` or `declined` processor result.
+3. `checkout_completion` — later completion linked to an approved request.
+
+The request and outcome separation is the central leakage control. A request cannot contain `authorization_result`, labels, scenario names, client-computed features, PAN, CVV or expiry. Outcomes cannot cross device/session boundaries. A checkout must link to an existing approval. Blocked requests reject outcomes and checkouts because no authorization was sent.
+
+Every normalized lifecycle payload receives a SHA-256 digest. Repeating the same request or transition returns the stored result with `idempotent_replay: true`; it does not recompute features, call the model, duplicate a timeline row or advance state. Reusing an identifier with changed content returns HTTP 409.
+
+SQLite stores requests and later lifecycle events with uniqueness constraints, WAL journaling, `synchronous=FULL` and foreign keys. Restart recovery replays sanitized stored transitions and checks that decisions and state versions reproduce. Demo reset clears only the browser/demo cursor—persisted audit history remains intact.
+
+## Dataset and scenarios
+
+All training, validation and blind-evaluation evidence in this repository is synthetic. No Razorpay, merchant or cardholder data was used. Results therefore demonstrate implementation discipline on the generated behavior families; they do not establish production detection or false-positive performance.
+
+The deterministic development generator creates 10,000 devices:
+
+| Scenario | Devices | Intended behavior |
+|---|---:|---|
+| Normal standard | 6,000 | Ordinary purchases and low retry activity |
+| Normal bad luck | 500 | Genuine customers experiencing repeated declines |
+| Flash standard | 1,500 | Campaign traffic and quick same-card retries |
+| Flash hard retry | 500 | More aggressive legitimate retries under load |
+| Burst attack | 600 | Seconds-scale card testing with rapid card rotation |
+| Evasive attack | 450 | Selective card/session/IP rotation and mixed pauses |
+| Patient attack | 450 | Hours-scale attempts spread across sessions |
+
+Devices—not rows—are assigned to train or validation partitions. With the configured 20% validation fraction, the development split contains 8,000 training devices and 2,000 validation devices. Batch feature creation replays each partition with isolated fresh state.
+
+The separate frozen blind set contains 2,000 devices and 12,205 lifecycle events:
+
+| Scenario | Devices |
+|---|---:|
+| Normal standard | 1,200 |
+| Normal bad luck | 100 |
+| Flash standard | 300 |
+| Flash hard retry | 100 |
+| Burst attack | 120 |
+| Evasive attack | 90 |
+| Patient attack | 90 |
+
+Its identifiers have zero overlap with development, fresh-validation and confirmation datasets according to the frozen integrity evidence.
+
+## Causal features
+
+The ordered model contract contains 44 numeric features:
+
+- Request and processed velocity over seconds, minutes, hours and days.
+- Distinct cards and BINs across multiple windows.
+- Cross-session card diversity and session persistence.
+- Prior decline streaks and decline ratios.
+- Attempts before and after the first approval.
+- Device age, session age and inter-attempt timing.
+- IP sharing, IP changes and IP-rotation behavior.
+- Same-card retries and card switching after declines.
+- Current amount, amount deltas, variation and 30-day continuity.
+- Near-minimum transaction behavior.
+- Prior successful checkouts and completion lag.
+- Explicit flash-sale campaign context.
+
+Labels, population, subtype, scenario, split, outcome, raw device/session identifiers and token fingerprints are forbidden model inputs. Undefined long-history behavior uses explicit numeric semantics and availability indicators rather than future information.
+
+## Model, calibration and policy
+
+### Model comparison and selection
+
+Training evaluates six candidates using five deterministic device-grouped folds:
+
+- Logistic regression with `C ∈ {0.1, 1.0, 10.0}`.
+- Histogram gradient boosting with three learning-rate/leaf/regularization configurations.
+
+Training weights balance legitimate and attack device classes. Evaluation weights give every device equal total mass, preventing devices with many attempts from dominating metrics. Calibration devices are isolated from base-model fit devices, and each outer fold reports zero pairwise device overlap.
+
+The selected candidate is logistic regression with `C=10` and `max_iter=500`. The selection considered integrity gates, worst-subtype coverage at the primary intervention budget, macro subtype coverage, device-weighted PR-AUC, Brier score and inference simplicity. The saved metadata records 21,338 complete out-of-fold authorization predictions.
+
+### Calibration
+
+The pipeline compares no calibration, sigmoid calibration and isotonic calibration on isolated devices. Isotonic calibration was selected during development and is stored in the same immutable Joblib artifact as the base estimator.
+
+The blind set provides an important honest caveat: calibration did not improve every unweighted diagnostic on this distribution.
+
+| Blind authorization-row diagnostic | Raw | Isotonic-calibrated |
+|---|---:|---:|
+| ROC-AUC | 0.9263 | 0.9259 |
+| PR-AUC | 0.9428 | 0.9343 |
+| Brier score | 0.1055 | 0.1137 |
+| ECE, 10 bins | 0.0553 | 0.0894 |
+| Log loss | 0.3418 | 0.3925 |
+
+For that reason, the production-facing output is always called a **risk score**, not a guaranteed fraud probability.
+
+### Frozen operational policy
+
+The selected policy is `persistent_ml`:
+
+- Review after three recent scores at or above `0.50`.
+- Block after four recent scores at or above `0.60`.
+- Retain up to 16 recent request scores.
+- Use a 336-hour high-risk window.
+- Review when deterministic rule score reaches 5.
+- Block when deterministic rule score reaches 6.
+
+Rules corroborate rapid request velocity, processed velocity, card diversity, decline streaks, card switching after decline, multi-session persistence, shared-IP intensity and low-value behavior with diversity. Successful checkouts, stable same-card retries, time decay and campaign adjustments are supported policy mechanisms. A device is never permanently banned: every later request still receives an independent decision.
+
+## Blind evaluation
+
+The frozen blind evaluation includes 1,700 legitimate devices and 300 attacker devices. All 5,254 generated authorization requests received exactly one decision.
+
+| Headline result | Frozen value |
+|---|---:|
+| Attacker devices reviewed or blocked | 271 / 300 — **90.33%** |
+| Attacker devices blocked | 233 / 300 — **77.67%** |
+| Legitimate devices reviewed | 2 / 1,700 — **0.12%** |
+| Legitimate devices blocked | 0 / 1,700 — **0.00%** |
+
+### Attacker subtype results
+
+| Behavior | Reviewed or blocked | Blocked | Never detected |
+|---|---:|---:|---:|
+| Burst | 120 / 120 | 113 / 120 | 0 |
+| Evasive | 79 / 90 | 65 / 90 | 11 |
+| Patient | 72 / 90 | 55 / 90 | 18 |
+
+### Detection by attempt
+
+| Requests scored through attempt | Reviewed or blocked | Blocked |
+|---:|---:|---:|
+| 1 | 0 / 300 | 0 / 300 |
+| 3 | 0 / 300 | 0 / 300 |
+| 5 | 171 / 300 | 2 / 300 |
+| 10 | 271 / 300 | 233 / 300 |
+
+Median first review occurred at attempt 5. Median first block occurred at attempt 7. Twenty-nine of 300 attackers were never detected. The saved count of 760 later attempts after first block is an offline upper bound, not observed or causal fraud prevention.
+
+## False-positive cost
+
+Only two normal-bad-luck devices reached review. No normal-standard, flash-standard or flash-hard-retry device reached review, and no legitimate device was blocked. Every frozen safety budget passed. Review is still operational work and customer friction, so the relevant cost is not hidden behind an aggregate rate: two genuine synthetic customers would have required intervention.
+
+## Latency benchmark
+
+The optimized runtime scorer extracts the frozen imputer, scaler, logistic coefficients and isotonic thresholds once at startup. It avoids per-request DataFrame construction and retains golden-fixture parity with the serialized scikit-learn artifact.
+
+Run the local repeatable API benchmark with:
+
+```bash
+python scripts/benchmark.py
+```
+
+The benchmark uses a non-blind 44-feature golden fixture for model-only timing and a fresh temporary SQLite database for real `POST /api/precheck` traffic. The end-to-end boundary includes Pydantic validation, HMAC protection, state loading, causal features, model, isotonic calibration, policy, SQLite persistence, middleware, serialization and response. It is an in-process ASGI HTTP measurement, so it excludes remote network and payment-processor latency.
+
+Model-only results used 2,000 warmups and 20,000 measurements per component:
+
+| Prepared-array path | p50 | p95 | p99 | Mean | Maximum | Throughput |
+|---|---:|---:|---:|---:|---:|---:|
+| Raw logistic output | 0.0015 ms | 0.0015 ms | 0.0016 ms | 0.0015 ms | 0.0667 ms | 676,782/s |
+| Isotonic calibration | 0.0012 ms | 0.0013 ms | 0.0013 ms | 0.0012 ms | 0.0258 ms | 843,492/s |
+| Policy decision | 0.0306 ms | 0.0335 ms | 0.0525 ms | 0.0347 ms | 33.5513 ms | 28,814/s |
+| Combined model + calibration + policy | **0.0372 ms** | **0.0410 ms** | **0.0625 ms** | **0.0409 ms** | **41.9929 ms** | **24,442/s** |
+
+End-to-end warm-request results used 20 valid warmup requests and unique request identifiers:
+
+| Traffic | Requests | p50 | p95 | p99 | Mean | Maximum | Sequential throughput | Failures |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| Normal customer | 250 | 2.643 ms | 4.404 ms | 4.838 ms | 3.054 ms | 5.879 ms | 327.5/s | 0 |
+| Burst attack | 320 | 2.957 ms | 4.852 ms | 5.443 ms | 3.456 ms | 34.639 ms | 289.4/s | 0 |
+| Mixed | 250 | 2.966 ms | 4.905 ms | 5.043 ms | 3.413 ms | 5.165 ms | 293.0/s | 0 |
+
+Cold startup through readiness was 342.914 ms. A separately labelled 500-request idempotent-retry run measured 1.527 ms p50, 2.519 ms p95 and 2.702 ms p99 with zero rescoring and exact original decision/state preservation. Artifacts loaded once, blind-row load count and per-request DataFrame construction count were both zero, and the temporary database reported WAL with `quick_check = ok`. Results vary with hardware and should be regenerated on the deployment target. Full methodology is in [`scripts/benchmark.py`](scripts/benchmark.py).
+
+## Privacy and security design
+
+- Strict Pydantic schemas reject extra fields and future outcome information.
+- Device, session, card and IP values use domain-separated HMAC-SHA256.
+- PAN, CVV and expiry are never accepted by the API or demo UI.
+- The HMAC secret must contain at least 16 characters and is never persisted.
+- Response projections omit raw identifiers, internal thresholds and the full feature vector.
+- The operations UI receives only six allowlisted causal signals.
+- Unknown reason codes fail closed rather than receiving invented explanations.
+- Content Security Policy, frame denial, MIME sniffing prevention and no-referrer headers are set on every response.
+- Frontend rendering uses `textContent`/DOM construction, not untrusted HTML insertion or dynamic evaluation.
+- The release manifest protects the model, calibrator, feature contract, policy, evaluation evidence and application configuration.
+- Runtime dependency compatibility is checked before Joblib deserialization.
+
+The prototype has no authentication, authorization or rate limiting; those are required before any production exposure.
+
+Dependency scanning on August 26, 2026 found no npm vulnerabilities. The Python audit improved from 51 advisory records across 10 packages to zero known vulnerabilities in the clean patched environment. Web-facing FastAPI, Starlette, Jinja2, Uvicorn and h11 were upgraded together; frozen scikit-learn, NumPy, SciPy and Joblib versions were not changed. The complete package-by-package classification is in [`reports/dependency_security_audit.md`](reports/dependency_security_audit.md).
+
+## Reproducibility and frozen hashes
+
+Python 3.11 is required. The model artifact requires the exact recorded NumPy, SciPy, Joblib and scikit-learn versions; startup fails closed on mismatch.
+
+<details>
+<summary>Protected release hashes</summary>
+
+| Protected release item | SHA-256 |
+|---|---|
+| Model plus fitted isotonic calibrator | `6c638fc05ca321e98c8b5417c477a58e2649bdd7e056bcd56e0d119d3eb80f88` |
+| Feature contract | `40ba9345c649a91cad9805b2d48b9607e9c179b042e70a682e71958e2d9bb634` |
+| Model metadata | `98160e5f03c58fc9a5c442ecbf9b847dc56e70501543e9b1a279bb738bde98a2` |
+| Operational policy | `9afeba2df176c87287e86ff0402ef96b58e9386608d003b5702986be02b6ae95` |
+| Blind metrics | `5fba17e8a8458c290934dece38ef70ef28d5b6eed93709ba9b8f3950a3130ef6` |
+| Blind device summary | `b5c6a7ff1e925dfeff66d815b39bcc9716be06239e4d1276e931fd798c7f1a55` |
+| Blind event decisions | `e6e6b2481c09edb44c1782165b97c5c59864890fd03ddbfdb991b1ec41605817` |
+| Release manifest | `919a81a49c75b6b9ddf0697782357994752a9c5c0cdca1a9aaacb3594eea248b` |
+
+</details>
+
+Verification:
+
+```bash
+python scripts/verify_release.py
+```
+
+The command checks the manifest checksum, every protected byte, the ordered 44-feature contract and model/runtime compatibility. It reports `blind_rows_rescored: False`.
+
+<details>
+<summary>Tests and coverage</summary>
 
 ```bash
 ruff format --check .
 ruff check .
-pytest --cov-report=term-missing
+npm test
+pytest --cov-report=term-missing --cov-fail-under=80
+python scripts/verify_release.py
 ```
 
-Validate the complete frozen data contract:
+The Python suite covers strict API contracts, lifecycle causality, concurrency, idempotency, conflicts, post-block scoring, HMAC storage, SQLite WAL, restart recovery, artifact tampering, dependency compatibility, golden 44-feature/score parity, demo orchestration, dashboard safety and the development ML pipeline.
+
+The Node/jsdom suite imports the exact browser modules served by FastAPI and verifies customer/operations separation, the six-signal allowlist, three-decimal risk display, fail-closed reason explanations, idempotent replay disclosure and exact blocked lifecycle text.
+
+CI enforces a minimum whole-repository Python coverage of 80%.
+
+The August 26, 2026 final verification ran **112 Python tests with 91.58% total coverage** and **15 browser-module tests**, with all tests passing. Ruff formatting and lint checks also passed. The suite fails immediately if a protected blind-row CSV is opened.
+
+</details>
+
+<details>
+<summary>Development-only reproducibility pipeline</summary>
+
+The following commands create development-only outputs and never read or replace saved blind evidence:
 
 ```bash
-python scripts/validate_dataset.py --config configs/base.yaml
+python pipelines/generate_synthetic_data.py
+python pipelines/build_features.py
+python pipelines/validate_dataset.py
+python pipelines/analyze_training_data.py
+python pipelines/train_model.py
+python pipelines/evaluate_model.py
 ```
 
-The deterministic result is written to
-`reports/data_validation_report.json`. An overall status of `pass` means every
-required integrity, schema, relationship, split, feature-domain, and sampled
-causality check passed. Row, session, device, and overlapping scenario-device
-counts are reported with explicit units.
+</details>
 
-Run the Phase 3 pipeline in order:
+## Limitations
+
+- The dataset and every evaluation result are synthetic.
+- The risk score is not certainty or a guaranteed probability of fraud.
+- Twenty-nine of 300 blind attacker devices were never detected.
+- No blind attacker was detected during the first three attempts.
+- Patient and evasive attacks remain harder to detect than burst attacks.
+- SQLite plus a global transition lock makes this a single-process prototype.
+- The offline potentially-preventable count is not observed fraud prevention.
+- The LLM is not used to make fraud decisions.
+- There is no production authentication, authorization, tenant isolation, rate limiting or secret manager integration.
+- There is no distributed state or model-drift monitoring.
+- Production use requires merchant validation, partitioned transactional state, durable streaming, distributed idempotency, state migrations, monitoring, alerting, review feedback and formal audit controls.
+
+## Local setup
 
 ```bash
-python scripts/analyze_training_data.py \
-  --config configs/base.yaml \
-  --training-config configs/training.yaml
-python scripts/train_baselines.py \
-  --config configs/base.yaml \
-  --training-config configs/training.yaml
-```
-
-The training command refuses to fit if the Phase 2 report is failed or stale,
-if frozen checksums change, or if the checksum-current EDA summary is not
-passed. Inspect local experiment runs with:
-
-```bash
-MLFLOW_ALLOW_FILE_STORE=true mlflow ui --backend-store-uri ./mlruns
-```
-
-## Phase 3 findings
-
-EDA used 7,372 training authorization rows from 2,975 training devices. It
-constructed no validation or test model view and recorded zero held-out rows.
-The training set contains 2,660 legitimate devices producing 4,347 rows and
-315 attacker devices producing 3,025 rows. A device produced a median of one
-authorization and a maximum of 20, so unweighted rows would substantially
-overrepresent high-volume attackers.
-
-No feature is near-constant. The strongest one-feature threshold was
-`cards_this_session >= 2`, with device-weighted training F1 0.6924 and average
-precision 0.6884; it did not trigger the 0.90 shortcut guardrail. Thirty pairs
-have absolute Pearson or Spearman correlation of at least 0.95. These include
-the exact complements `decline_ratio_so_far`/`approval_ratio_so_far` and
-`repeated_amount_ratio`/`unique_amount_ratio`, the identical IP session/device
-counts, and several velocity/card-count features. All 26 frozen features remain
-in the baseline. Because of this redundancy, individual Logistic Regression
-coefficients are not independently reliable even with L2 regularization.
-
-Training-only subgroup medians confirm intentional hard-negative overlap.
-`flash_hard_retry` and `normal_bad_luck` both have median cumulative decline
-ratio 1.0, compared with 0.667 for evasive and 0.5 for patient attacks.
-Flash processor-strain traffic has median five-minute IP device count 9, while
-burst attacks have median 1. These are row-distribution measurements, not
-device prevalence or final performance claims.
-
-Every validation device has aggregate evaluation weight 1. Training combines
-inverse rows-per-device with inverse device-class frequency; the aggregate
-class weights are equal. Three-fold `StratifiedGroupKFold` uses device groups,
-with holdout device counts 991, 992, and 992 and zero overlap in every fold.
-Training-CV selected `C=10` for Logistic Regression (mean PR-AUC 0.8926) and
-the regularized HistGradientBoosting configuration (mean PR-AUC 0.9140).
-
-At the primary validation-only 3% legitimate false-positive budget:
-
-| Method | Actual FPR | Precision | Attacker row recall | PR-AUC |
-|---|---:|---:|---:|---:|
-| Fixed rules | 1.30% | 83.41% | 55.44% | n/a |
-| Logistic Regression | 2.67% | 79.31% | 87.00% | 0.9112 |
-| HistGradientBoosting | 2.60% | 80.14% | 89.37% | 0.9346 |
-
-HistGradientBoosting is the Phase 3 validation-stage champion. Its row-level
-recall is 96.15% for burst, 80.62% for evasive, and 81.78% for patient attacks.
-Its false-positive rates are 1.41% on normal, 7.06% on flash-sale,
-38.51% on `flash_hard_retry`, and 7.49% on `normal_bad_luck`. The high
-hard-retry rate is an important warning: a good aggregate false-positive rate
-does not mean the difficult legitimate subgroups are solved. Rules are more
-precise but do not match ML recall at the same budget.
-
-These are validation-stage, device-weighted authorization-row metrics. They do
-not measure unique-device detection, time to detection, intervention outcomes,
-or final test performance.
-
-## Phase 3 artifacts
-
-- EDA summary and tables: `artifacts/metrics/training_eda_summary.json`,
-  `training_feature_summary.csv`, `training_feature_correlations.csv`, and
-  `training_univariate_strength.csv`.
-- CV and validation results: `artifacts/metrics/cross_validation_results.csv`,
-  `validation_metrics.json`, and `validation_operating_points.csv`.
-- Models: `artifacts/models/logistic_regression.joblib`,
-  `hist_gradient_boosting.joblib`, and `champion_metadata.json`.
-- Validation-only predictions: `artifacts/predictions/validation_predictions.csv`.
-- Four EDA and three validation figures: `reports/figures/`.
-- Local experiment tracking: `mlruns/`, experiment
-  `card-testing-sentinel-baselines`.
-
-## Project layout
-
-- `configs/` contains non-secret application defaults.
-- `src/card_testing_sentinel/common/` contains configuration, logging, and the
-  small exception layer.
-- `data/frozen/` contains the manifest and approved immutable dataset artifacts;
-  `data/runtime/` is for temporary application state.
-- `artifacts/`, `reports/`, `logs/`, and `mlruns/` hold generated local output.
-- `tests/unit/` contains focused foundation tests.
-
-Future code must not log full card tokens, payment credentials, secrets, raw
-user data, or complete event rows. Identifiers and dataset counts must be logged
-only when deliberate and privacy-safe.
-
-The local API and dashboard are documented below. No database, deployment, or
-monitoring service is implemented. Phase 4 documents the frozen sequential
-policy and its guarded one-time final evaluation.
-
-## Phase 4 sequential policy and final evaluation
-
-Phase 4 uses post-authorization timing: authorization `k` is processed, its
-outcome and causal features are scored, and the selected action applies to
-authorization `k + 1`. Consequently, `block_next_attempt` never prevents the
-authorization that triggered it. Rows recorded after the first block are
-marked only as replay-estimated potentially preventable attempts.
-
-Three fixed policy forms were selected using validation devices only:
-
-- Rules-only reviews and blocks at frozen integer rule-score boundaries.
-- ML-only uses separate frozen HGB review and block score boundaries.
-- Combined uses the frozen ML block boundary, a fixed ML/rule joint block,
-  then ML-or-rule review logic.
-
-The buildathon validation assumptions allow at most 5% of legitimate devices
-to receive review-or-higher, 1% to be blocked, 3% of flash-sale devices to be
-blocked, 15% of devices ever tagged `flash_hard_retry` to be blocked, and 10%
-of devices ever tagged `normal_bad_luck` to be blocked. These are synthetic
-evaluation assumptions, not production Razorpay limits.
-
-Validation selected rules-only with review and block rule score 3. It blocked
-47/67 attacker devices (70.15%) and 4/570 legitimate devices (0.70%). The
-flash-sale result was 3/120 and the hard-retry result was 3/22, both within the
-integer validation allowances. ML-only and combined each blocked 29/67
-attacker devices using frozen ML threshold `0.999410363031`.
-
-Detection coverage always divides by every attacker device, including devices
-never detected. Detection position is one-indexed. Attempts processed through
-detection include the triggering authorization; cards before detection exclude
-its card, while cards processed through detection include it. Duration starts
-at the device's first authorization. Row recall and unique-device detection
-coverage are separate metrics.
-
-The guarded final test ran once on 1,652 authorizations from 638 devices. The
-static frozen HGB threshold produced PR-AUC 0.9267, ROC-AUC 0.9825, precision
-87.18%, row recall 85.18%, F1 0.8617, and row FPR 1.49%.
-
-The frozen rules policy blocked 47/68 attacker devices (69.12%): 37/37 burst,
-10/21 evasive, and 0/10 patient devices. It detected 0/68 by attempt 1, 12/68
-by attempt 3, 42/68 by attempt 5, and 47/68 by attempt 10. Twenty-one attackers
-(30.88%) were never detected. Among detected attackers, median attempts
-processed through detection was 4, median distinct cards before detection was
-2, median distinct cards through detection was 3, and median time to detection
-was 11.58 seconds.
-
-The rules policy blocked/reviewed 4/570 legitimate devices (0.70%): 0/450
-normal, 4/120 flash-sale, 0/54 bad-luck, and 3/22 hard-retry devices. The test
-flash-sale block rate was therefore 3.33%, exceeding the frozen 3% guardrail by
-one device. This is preserved as an honest held-out warning; the policy was not
-changed after test access. ML-only and combined each blocked 29/68 attackers
-(42.65%) and 0/570 legitimate devices.
-
-The replay estimates 377 later recorded authorizations after rules-policy
-detection. This is an offline upper-bound under the assumption that blocking
-the next attempt ends the sequence, not observed fraud prevention or a causal
-business result.
-
-Authoritative Phase 4 artifacts are under `artifacts/policy/`,
-`artifacts/metrics/`, and `artifacts/predictions/`. Validation and final-test
-figures are under `reports/figures/`. The frozen policy SHA-256 is
-`d7a3d631e4c095d1bb36614c21714fc3aa6d19b7a56f04f841c0b6f9836cc604`.
-The final-test command is non-overwriting and now refuses a second execution.
-
-All results are synthetic buildathon evidence, not production Razorpay
-performance or production-ready intervention thresholds. Database, deployment,
-and monitoring remain unimplemented.
-
-## Phase 5 application
-
-The local application loads and verifies the frozen model, policy, final
-metrics, and replay artifacts once at startup. It never trains, selects a
-threshold, or reruns final evaluation.
-
-```text
-feature snapshot -> advisory HGB + frozen rules -> frozen policy action
-frozen final artifacts -> read-only API -> same-origin replay dashboard
-```
-
-Install and launch:
-
-```bash
-conda activate card-testing-sentinel
-python -m pip install -e '.[dev]'
+python3.11 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip==26.2.1 setuptools==84.0.0
+python -m pip install --no-deps -r requirements-runtime.lock
+python -m pip install --no-deps --no-build-isolation -e .
+export CTS_HMAC_SECRET='replace-with-a-long-private-local-secret'
 python scripts/run_app.py
 ```
 
-Open `http://127.0.0.1:8000`. JSON endpoints are `/health/live`,
-`/health/ready`, `/api/v1/system`, `/api/v1/evaluate`, `/api/v1/metrics`,
-`/api/v1/devices`, and `/api/v1/devices/{device_id}/timeline`.
+Open `http://127.0.0.1:8000`. Keep the same HMAC secret across restarts if persisted identity continuity is required.
 
-`POST /api/v1/evaluate` accepts optional synthetic correlation IDs and a
-`features` mapping containing exactly the 26 finite numeric frozen features.
-It does not accept card data, IPs, labels, population, subtype, or scenarios.
-Raw-transaction online feature state is outside this milestone. The HGB result
-is advisory; rules-only remains the immutable intervention champion and
-`block_next_attempt` affects only a later authorization.
+Docker is the canonical deployment-shaped runtime:
 
-The offline dashboard shows immutable metrics, the flash-sale target miss,
-10/10 missed patient attackers, frozen-method comparison, and safe synthetic
-device replays. It maps tokens to `Card 1`, `Card 2`, and so on without exposing
-the underlying values. There are no CDN, threshold, retraining, test-rerun,
-attack-generation, or raw-export controls.
+```bash
+docker build -t card-testing-sentinel .
+docker run --rm \
+  -p 8000:8000 \
+  -e CTS_HMAC_SECRET='replace-with-a-long-private-local-secret' \
+  -v card_testing_state:/app/data/runtime \
+  card-testing-sentinel
+```
 
-If readiness returns 503, verify the protected hashes in `configs/app.yaml`
-against the authoritative artifacts. Never regenerate an artifact to make
-readiness pass. This remains a synthetic, defense-only student prototype—not a
-production system or evidence of real Razorpay performance.
+See [deployment preparation](docs/deployment.md) for the single-instance SQLite, persistent-volume, health-check and hosting constraints. No external deployment has been authorized.
+
+## API reference
+
+| Method | Route | Purpose |
+|---|---|---|
+| `GET` | `/health/live` | Process liveness |
+| `GET` | `/health/ready` | Verified runtime readiness |
+| `GET` | `/api/system` | Safe runtime and storage status |
+| `POST` | `/api/precheck` | Score a raw authorization request |
+| `POST` | `/api/outcomes` | Record a later processor outcome |
+| `POST` | `/api/checkouts` | Record a completed approved checkout |
+| `GET` | `/api/runtime/decisions` | Sanitized recent live decisions |
+| `GET` | `/api/runtime/devices/{device_id}/timeline` | Sanitized live lifecycle timeline |
+| `GET` | `/api/metrics/blind` | Frozen blind headline evidence |
+| `GET` | `/api/replay/devices` | Filter immutable blind device rows |
+| `GET` | `/api/replay/devices/{device_id}/timeline` | Immutable blind decision timeline |
+
+See [docs/api.md](docs/api.md) for request examples and transition rules.
+
+## License
+
+See [LICENSE](LICENSE).

@@ -1,1 +1,0 @@
-"""Causal model-feature contracts."""

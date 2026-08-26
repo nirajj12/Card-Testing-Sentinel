@@ -1,1 +1,1 @@
-"""Judge-facing web application."""
+"""HTTP API routers."""

@@ -1,4 +1,0 @@
-seed: 20260825
-strategy: deterministic_stratified_device_hash
-assignments: [train, validation]
-validation_fraction: 0.20

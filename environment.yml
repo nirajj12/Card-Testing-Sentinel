@@ -1,9 +1,9 @@
 name: card-testing-sentinel
 channels:
-  - defaults
+  - conda-forge
 dependencies:
-  - python=3.11
-  - pip
+  - python=3.11.15
+  - pip=26.2.1
   - pip:
-      - -e .[dev]
-
+      - -r requirements-runtime.lock
+      - -r requirements-dev.lock

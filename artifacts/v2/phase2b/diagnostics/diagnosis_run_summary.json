@@ -1,8 +1,0 @@
-{
-  "max_rule_score": 10,
-  "model_family": "hist_gradient_boosting",
-  "note": "All scores computed here are development-only diagnosis of the already-inspected, already-blocked Phase 2 validation population. None of these numbers are, or should be cited as, fresh validation performance.",
-  "train_devices": 8000,
-  "training_freeze_sha256_verified": true,
-  "validation_devices": 2000
-}

@@ -1,11 +1,13 @@
-"""Run the local judge-facing application."""
-
 import uvicorn
 
+from card_testing_sentinel.app import create_app
+
 if __name__ == "__main__":
+    application = create_app()
+    config = application.state.runtime.config
     uvicorn.run(
-        "card_testing_sentinel.api.app:create_app",
-        factory=True,
-        host="127.0.0.1",
-        port=8000,
+        application,
+        host=str(config["host"]),
+        port=int(config["port"]),
+        log_level=str(config["log_level"]).lower(),
     )

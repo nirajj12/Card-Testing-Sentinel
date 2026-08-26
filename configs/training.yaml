@@ -1,19 +1,39 @@
-cross_validation_folds: 3
-primary_false_positive_budget: 0.03
-false_positive_budgets: [0.01, 0.03, 0.05]
-shortcut_f1_limit: 0.90
-near_constant_share: 0.995
-logistic_candidates:
-  - {name: logistic_c_0_1, C: 0.1}
-  - {name: logistic_c_1, C: 1.0}
-  - {name: logistic_c_10, C: 10.0}
-hist_gradient_boosting_candidates:
-  - {name: hgb_small, learning_rate: 0.06, max_leaf_nodes: 15, max_iter: 120, min_samples_leaf: 30, l2_regularization: 1.0}
-  - {name: hgb_medium, learning_rate: 0.08, max_leaf_nodes: 23, max_iter: 150, min_samples_leaf: 25, l2_regularization: 1.0}
-  - {name: hgb_regularized, learning_rate: 0.05, max_leaf_nodes: 15, max_iter: 180, min_samples_leaf: 40, l2_regularization: 2.0}
-rules:
-  velocity: {attempts_trailing_60s: 4, unique_cards_trailing_60s: 3}
-  repeated_declines: {attempts_trailing_5min: 3, decline_ratio_so_far: 0.67}
-  rapid_card_switching: {attempts_trailing_5min: 3, card_switch_rate: 0.67}
-  near_minimum_probing: {attempts_trailing_5min: 3, amount_near_minimum_ratio_5min: 0.50}
-  continued_after_approval: {attempts_after_first_approval: 2, unique_cards_trailing_5min: 3}
+seed: 20260825
+folds: 5
+probability_tolerance: 1.0e-12
+ece_bins: 10
+calibration_device_fraction: 0.20
+calibration_minimum_positive_devices: 50
+candidate_grids:
+  logistic_regression:
+    C: [0.1, 1.0, 10.0]
+    max_iter: 500
+  hist_gradient_boosting:
+    - learning_rate: 0.05
+      max_leaf_nodes: 15
+      max_iter: 120
+      l2_regularization: 1.0
+    - learning_rate: 0.08
+      max_leaf_nodes: 15
+      max_iter: 160
+      l2_regularization: 2.0
+    - learning_rate: 0.05
+      max_leaf_nodes: 31
+      max_iter: 160
+      l2_regularization: 4.0
+calibration_methods: [none, sigmoid, isotonic]
+diagnostic_review_rates: [0.01, 0.03, 0.05]
+synthetic_data:
+  dataset_name: development-synthetic-1
+  seed: 20260825
+  start_timestamp: 2026-01-01T00:00:00+00:00
+  currency: USD
+  validation_fraction: 0.20
+  device_counts:
+    normal_standard: 6000
+    normal_bad_luck: 500
+    flash_standard: 1500
+    flash_hard_retry: 500
+    attack_burst: 600
+    attack_evasive: 450
+    attack_patient: 450

@@ -1,0 +1,489 @@
+{
+  "catalog": {
+    "burst_attacker": {
+      "attempts": 8,
+      "label": "Burst attacker"
+    },
+    "evasive_attacker": {
+      "attempts": 9,
+      "label": "Evasive attacker"
+    },
+    "flash_hard_retry": {
+      "attempts": 5,
+      "label": "Flash hard retry"
+    },
+    "flash_standard": {
+      "attempts": 3,
+      "label": "Flash sale"
+    },
+    "normal_bad_luck": {
+      "attempts": 4,
+      "label": "Normal bad luck"
+    },
+    "normal_customer": {
+      "attempts": 2,
+      "label": "Normal customer"
+    },
+    "patient_attacker": {
+      "attempts": 9,
+      "label": "Patient attacker"
+    }
+  },
+  "note": "Deterministic scenario input fixtures (Stage 3). These are the exact raw-event shapes (identity suffixes, timing gaps, amounts, campaign flag, honest processor-outcome guess) SCENARIO_PLANS produces -- no randomness, no scenario label leaking into any field a fraud decision ever sees, and no expected decision recorded here. What each real run actually decides is left for the real FraudDetectionService to determine.",
+  "plans": {
+    "burst_attacker": [
+      {
+        "amount": 2.0,
+        "attempt": 1,
+        "authorization_result": "declined",
+        "campaign_active": false,
+        "card_suffix": "card1",
+        "decline_reason": "do_not_honor",
+        "gap_seconds": 0,
+        "ip_suffix": "ip1",
+        "session_suffix": "session1"
+      },
+      {
+        "amount": 3.0,
+        "attempt": 2,
+        "authorization_result": "declined",
+        "campaign_active": false,
+        "card_suffix": "card2",
+        "decline_reason": "do_not_honor",
+        "gap_seconds": 4,
+        "ip_suffix": "ip1",
+        "session_suffix": "session1"
+      },
+      {
+        "amount": 2.0,
+        "attempt": 3,
+        "authorization_result": "declined",
+        "campaign_active": false,
+        "card_suffix": "card3",
+        "decline_reason": "do_not_honor",
+        "gap_seconds": 3,
+        "ip_suffix": "ip1",
+        "session_suffix": "session1"
+      },
+      {
+        "amount": 5.0,
+        "attempt": 4,
+        "authorization_result": "declined",
+        "campaign_active": false,
+        "card_suffix": "card4",
+        "decline_reason": "do_not_honor",
+        "gap_seconds": 4,
+        "ip_suffix": "ip2",
+        "session_suffix": "session1"
+      },
+      {
+        "amount": 2.0,
+        "attempt": 5,
+        "authorization_result": "declined",
+        "campaign_active": false,
+        "card_suffix": "card5",
+        "decline_reason": "do_not_honor",
+        "gap_seconds": 3,
+        "ip_suffix": "ip2",
+        "session_suffix": "session1"
+      },
+      {
+        "amount": 4.0,
+        "attempt": 6,
+        "authorization_result": "declined",
+        "campaign_active": false,
+        "card_suffix": "card6",
+        "decline_reason": "do_not_honor",
+        "gap_seconds": 4,
+        "ip_suffix": "ip2",
+        "session_suffix": "session1"
+      },
+      {
+        "amount": 2.0,
+        "attempt": 7,
+        "authorization_result": "declined",
+        "campaign_active": false,
+        "card_suffix": "card7",
+        "decline_reason": "do_not_honor",
+        "gap_seconds": 3,
+        "ip_suffix": "ip3",
+        "session_suffix": "session1"
+      },
+      {
+        "amount": 3.0,
+        "attempt": 8,
+        "authorization_result": "declined",
+        "campaign_active": false,
+        "card_suffix": "card8",
+        "decline_reason": "do_not_honor",
+        "gap_seconds": 4,
+        "ip_suffix": "ip3",
+        "session_suffix": "session1"
+      }
+    ],
+    "evasive_attacker": [
+      {
+        "amount": 5.0,
+        "attempt": 1,
+        "authorization_result": "declined",
+        "campaign_active": false,
+        "card_suffix": "card1",
+        "decline_reason": "do_not_honor",
+        "gap_seconds": 0,
+        "ip_suffix": "ip1",
+        "session_suffix": "session1"
+      },
+      {
+        "amount": 8.0,
+        "attempt": 2,
+        "authorization_result": "declined",
+        "campaign_active": false,
+        "card_suffix": "card1",
+        "decline_reason": "do_not_honor",
+        "gap_seconds": 40,
+        "ip_suffix": "ip1",
+        "session_suffix": "session1"
+      },
+      {
+        "amount": 4.0,
+        "attempt": 3,
+        "authorization_result": "declined",
+        "campaign_active": false,
+        "card_suffix": "card1",
+        "decline_reason": "do_not_honor",
+        "gap_seconds": 180,
+        "ip_suffix": "ip1",
+        "session_suffix": "session1"
+      },
+      {
+        "amount": 6.0,
+        "attempt": 4,
+        "authorization_result": "declined",
+        "campaign_active": false,
+        "card_suffix": "card2",
+        "decline_reason": "do_not_honor",
+        "gap_seconds": 45,
+        "ip_suffix": "ip2",
+        "session_suffix": "session2"
+      },
+      {
+        "amount": 9.0,
+        "attempt": 5,
+        "authorization_result": "declined",
+        "campaign_active": false,
+        "card_suffix": "card2",
+        "decline_reason": "do_not_honor",
+        "gap_seconds": 35,
+        "ip_suffix": "ip2",
+        "session_suffix": "session2"
+      },
+      {
+        "amount": 5.0,
+        "attempt": 6,
+        "authorization_result": "declined",
+        "campaign_active": false,
+        "card_suffix": "card2",
+        "decline_reason": "do_not_honor",
+        "gap_seconds": 190,
+        "ip_suffix": "ip2",
+        "session_suffix": "session2"
+      },
+      {
+        "amount": 7.0,
+        "attempt": 7,
+        "authorization_result": "declined",
+        "campaign_active": false,
+        "card_suffix": "card3",
+        "decline_reason": "do_not_honor",
+        "gap_seconds": 50,
+        "ip_suffix": "ip3",
+        "session_suffix": "session3"
+      },
+      {
+        "amount": 4.0,
+        "attempt": 8,
+        "authorization_result": "declined",
+        "campaign_active": false,
+        "card_suffix": "card3",
+        "decline_reason": "do_not_honor",
+        "gap_seconds": 40,
+        "ip_suffix": "ip3",
+        "session_suffix": "session3"
+      },
+      {
+        "amount": 6.0,
+        "attempt": 9,
+        "authorization_result": "declined",
+        "campaign_active": false,
+        "card_suffix": "card3",
+        "decline_reason": "do_not_honor",
+        "gap_seconds": 185,
+        "ip_suffix": "ip3",
+        "session_suffix": "session3"
+      }
+    ],
+    "flash_hard_retry": [
+      {
+        "amount": 1499.0,
+        "attempt": 1,
+        "authorization_result": "declined",
+        "campaign_active": true,
+        "card_suffix": "card1",
+        "decline_reason": "generic_decline",
+        "gap_seconds": 0,
+        "ip_suffix": "ip1",
+        "session_suffix": "session1"
+      },
+      {
+        "amount": 1499.0,
+        "attempt": 2,
+        "authorization_result": "declined",
+        "campaign_active": true,
+        "card_suffix": "card1",
+        "decline_reason": "generic_decline",
+        "gap_seconds": 22,
+        "ip_suffix": "ip1",
+        "session_suffix": "session1"
+      },
+      {
+        "amount": 1499.0,
+        "attempt": 3,
+        "authorization_result": "declined",
+        "campaign_active": true,
+        "card_suffix": "card1",
+        "decline_reason": "generic_decline",
+        "gap_seconds": 20,
+        "ip_suffix": "ip1",
+        "session_suffix": "session1"
+      },
+      {
+        "amount": 1499.0,
+        "attempt": 4,
+        "authorization_result": "declined",
+        "campaign_active": true,
+        "card_suffix": "card1",
+        "decline_reason": "generic_decline",
+        "gap_seconds": 25,
+        "ip_suffix": "ip1",
+        "session_suffix": "session1"
+      },
+      {
+        "amount": 1499.0,
+        "attempt": 5,
+        "authorization_result": "approved",
+        "campaign_active": true,
+        "card_suffix": "card2",
+        "decline_reason": null,
+        "gap_seconds": 28,
+        "ip_suffix": "ip1",
+        "session_suffix": "session1"
+      }
+    ],
+    "flash_standard": [
+      {
+        "amount": 999.0,
+        "attempt": 1,
+        "authorization_result": "declined",
+        "campaign_active": true,
+        "card_suffix": "card1",
+        "decline_reason": "generic_decline",
+        "gap_seconds": 0,
+        "ip_suffix": "ip1",
+        "session_suffix": "session1"
+      },
+      {
+        "amount": 999.0,
+        "attempt": 2,
+        "authorization_result": "declined",
+        "campaign_active": true,
+        "card_suffix": "card1",
+        "decline_reason": "generic_decline",
+        "gap_seconds": 32,
+        "ip_suffix": "ip1",
+        "session_suffix": "session1"
+      },
+      {
+        "amount": 999.0,
+        "attempt": 3,
+        "authorization_result": "approved",
+        "campaign_active": true,
+        "card_suffix": "card1",
+        "decline_reason": null,
+        "gap_seconds": 30,
+        "ip_suffix": "ip1",
+        "session_suffix": "session1"
+      }
+    ],
+    "normal_bad_luck": [
+      {
+        "amount": 1899.0,
+        "attempt": 1,
+        "authorization_result": "declined",
+        "campaign_active": false,
+        "card_suffix": "card1",
+        "decline_reason": "do_not_honor",
+        "gap_seconds": 0,
+        "ip_suffix": "ip1",
+        "session_suffix": "session1"
+      },
+      {
+        "amount": 1899.0,
+        "attempt": 2,
+        "authorization_result": "declined",
+        "campaign_active": false,
+        "card_suffix": "card1",
+        "decline_reason": "insufficient_funds",
+        "gap_seconds": 55,
+        "ip_suffix": "ip1",
+        "session_suffix": "session1"
+      },
+      {
+        "amount": 1899.0,
+        "attempt": 3,
+        "authorization_result": "declined",
+        "campaign_active": false,
+        "card_suffix": "card2",
+        "decline_reason": "generic_decline",
+        "gap_seconds": 60,
+        "ip_suffix": "ip2",
+        "session_suffix": "session1"
+      },
+      {
+        "amount": 1899.0,
+        "attempt": 4,
+        "authorization_result": "approved",
+        "campaign_active": false,
+        "card_suffix": "card2",
+        "decline_reason": null,
+        "gap_seconds": 50,
+        "ip_suffix": "ip2",
+        "session_suffix": "session1"
+      }
+    ],
+    "normal_customer": [
+      {
+        "amount": 2400.0,
+        "attempt": 1,
+        "authorization_result": "declined",
+        "campaign_active": false,
+        "card_suffix": "card1",
+        "decline_reason": "generic_decline",
+        "gap_seconds": 0,
+        "ip_suffix": "ip1",
+        "session_suffix": "session1"
+      },
+      {
+        "amount": 2400.0,
+        "attempt": 2,
+        "authorization_result": "approved",
+        "campaign_active": false,
+        "card_suffix": "card1",
+        "decline_reason": null,
+        "gap_seconds": 95,
+        "ip_suffix": "ip1",
+        "session_suffix": "session1"
+      }
+    ],
+    "patient_attacker": [
+      {
+        "amount": 3.0,
+        "attempt": 1,
+        "authorization_result": "declined",
+        "campaign_active": false,
+        "card_suffix": "card1",
+        "decline_reason": "do_not_honor",
+        "gap_seconds": 0,
+        "ip_suffix": "ip1",
+        "session_suffix": "session1"
+      },
+      {
+        "amount": 6.0,
+        "attempt": 2,
+        "authorization_result": "declined",
+        "campaign_active": false,
+        "card_suffix": "card1",
+        "decline_reason": "do_not_honor",
+        "gap_seconds": 21600,
+        "ip_suffix": "ip1",
+        "session_suffix": "session2"
+      },
+      {
+        "amount": 4.0,
+        "attempt": 3,
+        "authorization_result": "declined",
+        "campaign_active": false,
+        "card_suffix": "card2",
+        "decline_reason": "do_not_honor",
+        "gap_seconds": 18000,
+        "ip_suffix": "ip2",
+        "session_suffix": "session3"
+      },
+      {
+        "amount": 7.0,
+        "attempt": 4,
+        "authorization_result": "declined",
+        "campaign_active": false,
+        "card_suffix": "card2",
+        "decline_reason": "do_not_honor",
+        "gap_seconds": 25200,
+        "ip_suffix": "ip2",
+        "session_suffix": "session4"
+      },
+      {
+        "amount": 3.0,
+        "attempt": 5,
+        "authorization_result": "declined",
+        "campaign_active": false,
+        "card_suffix": "card3",
+        "decline_reason": "do_not_honor",
+        "gap_seconds": 21600,
+        "ip_suffix": "ip3",
+        "session_suffix": "session5"
+      },
+      {
+        "amount": 5.0,
+        "attempt": 6,
+        "authorization_result": "declined",
+        "campaign_active": false,
+        "card_suffix": "card3",
+        "decline_reason": "do_not_honor",
+        "gap_seconds": 28800,
+        "ip_suffix": "ip3",
+        "session_suffix": "session6"
+      },
+      {
+        "amount": 4.0,
+        "attempt": 7,
+        "authorization_result": "declined",
+        "campaign_active": false,
+        "card_suffix": "card4",
+        "decline_reason": "do_not_honor",
+        "gap_seconds": 18000,
+        "ip_suffix": "ip4",
+        "session_suffix": "session7"
+      },
+      {
+        "amount": 6.0,
+        "attempt": 8,
+        "authorization_result": "declined",
+        "campaign_active": false,
+        "card_suffix": "card4",
+        "decline_reason": "do_not_honor",
+        "gap_seconds": 32400,
+        "ip_suffix": "ip4",
+        "session_suffix": "session8"
+      },
+      {
+        "amount": 3.0,
+        "attempt": 9,
+        "authorization_result": "declined",
+        "campaign_active": false,
+        "card_suffix": "card5",
+        "decline_reason": "do_not_honor",
+        "gap_seconds": 21600,
+        "ip_suffix": "ip5",
+        "session_suffix": "session9"
+      }
+    ]
+  }
+}

@@ -1,1 +1,0 @@
-"""Transparent deterministic detection rules."""

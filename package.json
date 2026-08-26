@@ -1,0 +1,16 @@
+{
+  "name": "card-testing-sentinel-frontend-tests",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Minimal Node tooling for the fraud-operations dashboard. This does NOT run the fraud backend -- it only drives deterministic DOM-module tests (node:test + jsdom) against the real static JS modules the FastAPI app serves as-is.",
+  "type": "module",
+  "engines": {
+    "node": "22.23.2"
+  },
+  "scripts": {
+    "test": "node --test tests/frontend/*.test.mjs"
+  },
+  "devDependencies": {
+    "jsdom": "^27.0.0"
+  }
+}

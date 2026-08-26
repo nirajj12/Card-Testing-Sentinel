@@ -1,33 +1,34 @@
 [build-system]
-requires = ["setuptools>=75,<82"]
+requires = ["setuptools==84.0.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "card-testing-sentinel"
-version = "0.1.0"
-description = "Defensive detection of payment card-testing attacks"
+version = "1.0.0"
+description = "Real-time pre-authorization card-testing detection"
 readme = "README.md"
 requires-python = ">=3.11,<3.12"
 dependencies = [
-    "numpy>=1.26,<3",
-    "pandas>=2.2,<3",
-    "pydantic>=2.9,<3",
-    "PyYAML>=6,<7",
-    "joblib>=1.4,<2",
-    "matplotlib>=3.9,<4",
-    "mlflow>=3.0,<4",
-    "scikit-learn>=1.5,<2",
-    "fastapi>=0.115,<1",
-    "uvicorn>=0.30,<1",
-    "Jinja2>=3.1,<4",
+    "fastapi==0.141.1",
+    "Jinja2==3.1.6",
+    "joblib==1.4.2",
+    "numpy==1.26.4",
+    "pandas==3.0.5",
+    "pydantic==2.13.4",
+    "PyYAML==6.0.2",
+    "scikit-learn==1.6.1",
+    "scipy==1.14.1",
+    "uvicorn==0.52.4",
 ]
 
 [project.optional-dependencies]
 dev = [
-    "pytest>=8.3,<9",
-    "pytest-cov>=5,<7",
-    "ruff>=0.8,<1",
-    "httpx>=0.27,<1",
+    "httpx==0.28.1",
+    "matplotlib==3.11.1",
+    "pandas==3.0.5",
+    "pytest==9.1.1",
+    "pytest-cov==7.1.0",
+    "ruff==0.8.4",
 ]
 
 [tool.setuptools.packages.find]
@@ -35,62 +36,11 @@ where = ["src"]
 
 [tool.pytest.ini_options]
 addopts = "--cov=card_testing_sentinel --cov-report=term-missing"
-markers = ["integration: validates the complete frozen dataset"]
 testpaths = ["tests"]
 
 [tool.ruff]
 line-length = 88
 target-version = "py311"
 
-[tool.ruff.format]
-# Formatting (unlike the per-file lint ignores below) has no per-rule
-# granularity: a file is either reformatted or left alone. These are exactly
-# the same frozen-evidence files documented under [tool.ruff.lint.per-file-ignores]
-# below -- 2 V1-frozen files (byte-identity required by
-# docs/v1/release_manifest.sha256) and 7 Phase-2-frozen source files hashed in
-# artifacts/v2/training/training_freeze.json. They are excluded from
-# `ruff format` only; `ruff check` still lints them (see per-file-ignores).
-exclude = [
-    "src/card_testing_sentinel/api/app.py",
-    "src/card_testing_sentinel/data/validation.py",
-    "src/card_testing_sentinel/v2/evaluation/calibration.py",
-    "src/card_testing_sentinel/v2/evaluation/metrics.py",
-    "src/card_testing_sentinel/v2/evaluation/sequential.py",
-    "src/card_testing_sentinel/v2/modeling/artifacts.py",
-    "src/card_testing_sentinel/v2/modeling/candidates.py",
-    "src/card_testing_sentinel/v2/modeling/features.py",
-    "src/card_testing_sentinel/v2/modeling/folds.py",
-    "src/card_testing_sentinel/v2/modeling/training.py",
-    "src/card_testing_sentinel/v2/modeling/weights.py",
-    "src/card_testing_sentinel/v2/policy/engine.py",
-    "src/card_testing_sentinel/v2/policy/rules.py",
-    "src/card_testing_sentinel/v2/policy/selection.py",
-]
-
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]
-
-[tool.ruff.lint.per-file-ignores]
-# V1 is frozen and must remain byte-identical (see docs/v1/release_manifest.sha256).
-# These two files predate the Phase 2B lint pass and carry one modernizable
-# isinstance() form each (UP038); they are left untouched rather than
-# reformatted, to preserve V1 byte identity. No other rule is silenced here.
-"src/card_testing_sentinel/api/app.py" = ["UP038"]
-"src/card_testing_sentinel/data/validation.py" = ["UP038"]
-
-# Phase 2 is an honest blocked experiment. The files below are hashed inside
-# artifacts/v2/training/training_freeze.json ("phase2_frozen_artifact_hashes")
-# as part of the immutable evidence proving exactly which source code produced
-# the frozen (blocked) model and policy grid. Reformatting them would change
-# their bytes, break that hash chain, and make the historical blocked snapshot
-# look different than it actually was -- so they are left untouched rather
-# than reformatted, exactly as V1 is above. Only the specific pre-existing
-# violations they contain are silenced; no other rule is affected, and no
-# other Phase 2B file in this project uses these ignores.
-"src/card_testing_sentinel/v2/evaluation/calibration.py" = ["E501"]
-"src/card_testing_sentinel/v2/evaluation/metrics.py" = ["E501"]
-"src/card_testing_sentinel/v2/evaluation/sequential.py" = ["E501", "F401"]
-"src/card_testing_sentinel/v2/modeling/candidates.py" = ["E501"]
-"src/card_testing_sentinel/v2/modeling/training.py" = ["E501", "UP017"]
-"src/card_testing_sentinel/v2/policy/rules.py" = ["E501"]
-"src/card_testing_sentinel/v2/policy/selection.py" = ["E501"]
