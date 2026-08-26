@@ -1,0 +1,85 @@
+{
+  "generated_by": "Phase 2B Gate 1 audit (corrective pass)",
+  "git_baseline": "git status --short / git diff --name-only HEAD / git diff --stat HEAD, all read-only",
+  "categories": {
+    "1_new_phase2b": {
+      "description": "New Phase 2B implementation, test, configuration, artifact, or report (untracked, entirely new namespaces).",
+      "paths": [
+        "artifacts/v2/phase2b/",
+        "configs/v2/phase2b/",
+        "reports/v2/phase2b/",
+        "scripts/v2/phase2b/",
+        "src/card_testing_sentinel/v2/phase2b/",
+        "tests/v2/phase2b/"
+      ]
+    },
+    "2_shared_tooling_change": {
+      "description": "Required shared tooling/dependency configuration change (affects the whole repo's lint config, not scoped to a Phase 2B directory).",
+      "paths": ["pyproject.toml"],
+      "diff_verified": "Adds [tool.ruff.format] exclude and [tool.ruff.lint.per-file-ignores] entries only; no other section changed. Full diff reviewed line-by-line."
+    },
+    "3_intentional_v2_source_repair": {
+      "description": "Intentional current (non-frozen) V2 source repair for Ruff compliance -- verified value-preserving by reviewing the full diff of every file.",
+      "paths": [
+        "scripts/v2/analyze_training_data.py",
+        "scripts/v2/freeze_policy.py",
+        "scripts/v2/report_blocked_phase2.py",
+        "scripts/v2/train_candidates.py",
+        "src/card_testing_sentinel/v2/evaluation/__init__.py",
+        "src/card_testing_sentinel/v2/evaluation/access.py",
+        "src/card_testing_sentinel/v2/evaluation/eda.py",
+        "src/card_testing_sentinel/v2/modeling/__init__.py",
+        "src/card_testing_sentinel/v2/policy/__init__.py",
+        "src/card_testing_sentinel/v2/policy/blocked.py",
+        "src/card_testing_sentinel/v2/policy/evaluation.py",
+        "tests/v2/unit/test_phase2_contracts.py"
+      ],
+      "diff_verified_per_file": {
+        "scripts/v2/analyze_training_data.py": "trailing blank line removed only",
+        "scripts/v2/freeze_policy.py": "trailing blank line removed only",
+        "scripts/v2/report_blocked_phase2.py": "trailing blank line removed only",
+        "scripts/v2/train_candidates.py": "trailing blank line removed only",
+        "src/card_testing_sentinel/v2/evaluation/__init__.py": "trailing blank line removed only",
+        "src/card_testing_sentinel/v2/modeling/__init__.py": "trailing blank line removed only",
+        "src/card_testing_sentinel/v2/policy/__init__.py": "trailing blank line removed only",
+        "src/card_testing_sentinel/v2/evaluation/access.py": "PHASE1_PROTECTED_HASHES dict values rewrapped (identical hash strings) + datetime.timezone.utc -> datetime.UTC alias (semantically identical)",
+        "src/card_testing_sentinel/v2/policy/blocked.py": "ruff-format reflow of long dict/f-string literals (implicit string concatenation, identical text) + one added trailing newline removed",
+        "src/card_testing_sentinel/v2/policy/evaluation.py": "ruff-format reflow of long dict/call literals and f-strings (identical text) + one real fix: removed an unused local variable assignment (F841), replacing `training_freeze = verify_training_freeze()` with a bare call -- the freeze verification itself is unchanged and still runs + datetime.timezone.utc -> datetime.UTC alias",
+        "src/card_testing_sentinel/v2/evaluation/eda.py": "ruff-format method-chain and dict-literal reflow only, no text changed",
+        "tests/v2/unit/test_phase2_contracts.py": "ruff-format reflow of dict/list literals + datetime.timezone.utc -> datetime.UTC alias; no assertion or fixture value changed"
+      }
+    },
+    "4_unauthorized_v1_change": {
+      "description": "Unauthorized V1 change.",
+      "paths": [],
+      "note": "None present in the current working tree. Two V1 files (api/app.py, data/validation.py) were transiently modified earlier this session by an over-broad `ruff check --fix`, caught via the V1 release-manifest hash check, and restored to byte-identical content via `git show HEAD:<path>` (read-only) before this audit; both verify against docs/v1/release_manifest.sha256 now."
+    },
+    "5_unauthorized_historical_phase2_change": {
+      "description": "Unauthorized historical Phase 2 evidence/source change.",
+      "paths": [],
+      "note": "None present in the current working tree. Twelve source files hashed inside artifacts/v2/training/training_freeze.json's phase2_frozen_artifact_hashes were transiently reformatted earlier this session (v2/evaluation/{calibration,metrics,sequential}.py, v2/modeling/{artifacts,candidates,features,folds,training,weights}.py, v2/policy/{engine,rules,selection}.py), caught when verify_training_freeze() raised PermissionError, and restored to byte-identical content via `git show HEAD:<path>` (read-only) before this audit; all twelve now match training_freeze.json's recorded hashes exactly."
+    },
+    "6_local_cache_or_temp": {
+      "description": "Local cache, environment, or temporary file that is not project evidence.",
+      "paths": [
+        "src/card_testing_sentinel/v2/phase2b/__pycache__/",
+        "tests/v2/phase2b/__pycache__/",
+        "$HOME/envs/card-testing-sentinel-v2b/ (diagnostic venv, outside the repo)",
+        "$HOME/miniforge3/ (failed Conda bootstrap, outside the repo)",
+        "/tmp/phase2b_coverage/, /tmp/phase2b_gate_e/ (outside the repo)"
+      ]
+    }
+  },
+  "counts": {
+    "1_new_phase2b_top_level_dirs": 6,
+    "2_shared_tooling_change": 1,
+    "3_intentional_v2_source_repair": 12,
+    "4_unauthorized_v1_change_remaining": 0,
+    "4_unauthorized_v1_change_caught_and_restored_this_session": 2,
+    "5_unauthorized_historical_phase2_change_remaining": 0,
+    "5_unauthorized_historical_phase2_change_caught_and_restored_this_session": 12,
+    "6_local_cache_or_temp": "not counted as project evidence"
+  },
+  "restoration_method": "git show HEAD:<path> (read-only) piped to a normal file write, followed by a per-file SHA-256 comparison against the recorded protected hash. No git checkout, reset, restore, clean, stash, or any other mutating git command was used at any point.",
+  "honest_disclosure": "pyproject.toml is a shared, repo-wide tooling file, not a Phase 2B-namespaced file, and its change affects Ruff behavior for the entire repository (adds exclude/ignore entries only). This is reported explicitly rather than folded into the Phase 2B new-work bucket."
+}

@@ -1,0 +1,44 @@
+version: v2b-training-1
+seed: 20260825
+folds: 5
+probability_tolerance: 1.0e-12
+parity_tolerance: 1.0e-12
+ece_bins: 10
+primary_legitimate_intervention_rate: 0.03
+single_feature_max_f1: 0.85
+shuffled_label_max_roc_auc: 0.60
+full_model_min_roc_auc: 0.60
+scenario_separator_max_f1: 0.95
+near_constant_unique_values: 1
+high_correlation_threshold: 0.95
+candidate_grids:
+  logistic_regression:
+    C: [0.1, 1.0, 10.0]
+    max_iter: 500
+  hist_gradient_boosting:
+    - learning_rate: 0.05
+      max_leaf_nodes: 15
+      max_iter: 120
+      l2_regularization: 1.0
+    - learning_rate: 0.08
+      max_leaf_nodes: 15
+      max_iter: 160
+      l2_regularization: 2.0
+    - learning_rate: 0.05
+      max_leaf_nodes: 31
+      max_iter: 160
+      l2_regularization: 4.0
+calibration_methods: [none, sigmoid, isotonic]
+ranking_objective:
+  - passes_integrity_gates
+  - worst_subtype_review_or_higher_coverage_at_primary_budget
+  - macro_subtype_review_or_higher_coverage_at_primary_budget
+  - device_weighted_pr_auc
+  - negative_brier_score
+  - lower_inference_cost_then_simpler_family
+calibration_objective:
+  - lowest_device_weighted_brier
+  - lowest_expected_calibration_error
+  - lowest_log_loss
+  - no_material_pr_auc_degradation
+  - simpler_method

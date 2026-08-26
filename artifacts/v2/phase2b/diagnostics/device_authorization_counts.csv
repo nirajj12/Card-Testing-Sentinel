@@ -1,0 +1,15 @@
+split,population,scenario_tag,label,device_count,authorization_event_count
+train,attack,attack_burst,1,480,5183
+train,attack,attack_evasive,1,360,2955
+train,attack,attack_patient,1,360,2772
+train,flash_sale,flash_hard_retry,0,400,1441
+train,flash_sale,flash_standard,0,1200,1500
+train,normal,normal_bad_luck,0,400,1487
+train,normal,normal_standard,0,4800,6000
+validation,attack,attack_burst,1,120,1341
+validation,attack,attack_evasive,1,90,737
+validation,attack,attack_patient,1,90,658
+validation,flash_sale,flash_hard_retry,0,100,405
+validation,flash_sale,flash_standard,0,300,377
+validation,normal,normal_bad_luck,0,100,375
+validation,normal,normal_standard,0,1200,1529

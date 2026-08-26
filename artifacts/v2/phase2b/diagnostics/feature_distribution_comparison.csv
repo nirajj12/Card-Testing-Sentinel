@@ -1,0 +1,15 @@
+split,scenario_tag,row_count,prospective_requests_60s_median,prospective_requests_60s_p90,prior_attempts_5m_median,prior_attempts_5m_p90,distinct_cards_24h_median,distinct_cards_24h_p90,prior_decline_streak_median,prior_decline_streak_p90,card_switches_after_decline_24h_median,card_switches_after_decline_24h_p90,sessions_7d_median,sessions_7d_p90,requests_per_ip_5m_median,requests_per_ip_5m_p90,near_minimum_ratio_24h_median,near_minimum_ratio_24h_p90,same_card_retry_ratio_24h_median,same_card_retry_ratio_24h_p90
+train,attack_burst,5183,4.0,9.0,4.0,8.0,3.0,5.0,0.0,3.0,1.0,3.0,1.0,2.0,3.0,5.0,0.0,0.285714,0.0,1.0
+validation,attack_burst,1341,5.0,9.0,4.0,8.0,3.0,5.0,1.0,3.0,1.0,3.0,1.0,2.0,3.0,5.0,0.0,0.25,0.0,1.0
+train,attack_evasive,2955,1.0,2.0,2.0,3.0,2.0,4.0,0.0,2.0,0.0,2.0,1.0,2.0,2.0,4.0,0.0,0.333333,0.142857,1.0
+validation,attack_evasive,737,1.0,2.0,2.0,3.0,2.0,4.0,0.0,3.0,0.0,2.0,1.0,2.0,2.0,4.0,0.0,0.333333,0.125,1.0
+train,attack_patient,2772,1.0,1.0,0.0,0.0,1.0,2.0,0.0,3.0,0.0,0.0,2.0,3.0,1.0,1.0,0.0,0.0,0.0,1.0
+validation,attack_patient,658,1.0,1.0,0.0,0.0,1.0,3.0,0.0,2.0,0.0,1.0,2.0,3.0,1.0,1.0,0.0,0.0,0.0,1.0
+train,flash_hard_retry,1441,1.0,2.0,1.0,2.0,1.0,2.0,1.0,2.0,0.0,0.0,1.0,2.0,2.0,3.0,0.0,0.0,1.0,1.0
+validation,flash_hard_retry,405,1.0,2.0,1.0,2.0,1.0,2.0,1.0,2.0,0.0,0.0,1.0,2.0,2.0,3.0,0.0,0.0,1.0,1.0
+train,flash_standard,1500,1.0,1.0,0.0,0.0,1.0,1.0,0.0,0.0,0.0,0.0,1.0,2.0,1.0,1.0,0.0,0.0,0.0,0.0
+validation,flash_standard,377,1.0,1.0,0.0,0.0,1.0,1.0,0.0,0.0,0.0,0.0,1.0,2.0,1.0,1.0,0.0,0.0,0.0,0.0
+train,normal_bad_luck,1487,1.0,2.0,1.0,2.0,1.0,2.0,1.0,2.0,0.0,1.0,1.0,2.0,2.0,3.0,0.0,0.0,0.0,1.0
+validation,normal_bad_luck,375,1.0,2.0,1.0,2.0,1.0,2.0,1.0,2.0,0.0,1.0,1.0,2.0,2.0,3.0,0.0,0.0,0.0,1.0
+train,normal_standard,6000,1.0,1.0,0.0,0.0,1.0,1.0,0.0,0.0,0.0,0.0,1.0,2.0,1.0,1.0,0.0,0.0,0.0,0.0
+validation,normal_standard,1529,1.0,1.0,0.0,0.0,1.0,1.0,0.0,0.0,0.0,0.0,1.0,2.0,1.0,1.0,0.0,0.0,0.0,0.0

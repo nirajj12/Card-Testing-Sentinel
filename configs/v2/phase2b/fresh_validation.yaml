@@ -1,0 +1,18 @@
+version: v2-phase2b-fresh-validation-1
+seed: 20260826
+start_timestamp: 2026-03-01T00:00:00+00:00
+currency: USD
+validation_fraction: 0.0
+device_counts:
+  normal_standard: 1200
+  normal_bad_luck: 100
+  flash_standard: 300
+  flash_hard_retry: 100
+  attack_burst: 120
+  attack_evasive: 90
+  attack_patient: 90
+expected_counts:
+  devices: 2000
+  legitimate_devices: 1700
+  attacker_devices: 300
+identifier_namespace: fv_20260826

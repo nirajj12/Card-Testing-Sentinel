@@ -1,0 +1,56 @@
+{
+  "attack_decisions": [
+    "allow",
+    "allow",
+    "allow",
+    "block",
+    "block",
+    "block",
+    "block",
+    "block",
+    "block",
+    "block",
+    "block"
+  ],
+  "blocked_outcome_http_status": 409,
+  "checkout_http_status": 200,
+  "conflicting_retry_http_status": 409,
+  "endpoint_http_statuses": {
+    "/": 200,
+    "/api/v2/demo/scenarios": 200,
+    "/api/v2/metrics/blind": 200,
+    "/api/v2/replay/devices": 200,
+    "/api/v2/runtime/decisions": 200,
+    "/api/v2/system": 200,
+    "/health/live": 200,
+    "/health/ready": 200
+  },
+  "first_block_attempt": 4,
+  "identical_retry_idempotent": true,
+  "identical_retry_same_decision": true,
+  "identical_retry_same_state_version": true,
+  "later_requests_after_block_scored": 7,
+  "outcome_http_status": 200,
+  "precheck_http_status": 200,
+  "restart": {
+    "latest_decision": "block",
+    "max_recovered_state_version": 14,
+    "ready": true,
+    "recovered_decisions": 12,
+    "recovered_timeline_items": 14
+  },
+  "runtime_sqlite": {
+    "event_rows": 5,
+    "foreign_key_present": true,
+    "journal_mode": "wal",
+    "quick_check": "ok",
+    "raw_card_tokens_absent": true,
+    "raw_ip_references_absent": true,
+    "payment_credentials_absent": true,
+    "hmac_secret_absent": true,
+    "request_rows": 12
+  },
+  "server_stopped_after_verification": true,
+  "status": "passed",
+  "temporary_database_excluded_from_release": true
+}

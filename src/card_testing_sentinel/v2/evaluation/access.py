@@ -1,6 +1,6 @@
 import hashlib
 import json
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 import pandas as pd
@@ -11,16 +11,36 @@ FREEZE_PATH = ROOT / "artifacts/v2/training/training_freeze.json"
 FREEZE_DIGEST_PATH = ROOT / "artifacts/v2/training/training_freeze.sha256"
 
 PHASE1_PROTECTED_HASHES = {
-    "data/v2/development/raw_events.csv": "9232c7049916cb638d7eedd3faf922b1569c38d74850df100eb98622ab73614f",
-    "data/v2/development/events_with_features.csv": "9fd1a9eabfa73a65362c93fa7f0595f9987bd274b324edf53b922984a076e3e4",
-    "data/v2/development/device_splits.csv": "c14524c2c601237e969edeb1b36edb3f67e9aabea1f875e5e1daf361181feefe",
-    "data/v2/development/manifest.json": "a5ec79c35de862bf50e4c69e56692e2d7feda8bcea7c01d5b3f47e68dd443693",
-    "configs/v2/generation.yaml": "fa57f16bd4260e5ae8917e2c101ae4e96b55ef8b69025d1c0953bb4a88da5f59",
-    "configs/v2/features.yaml": "64b31ae7ce33fb25f6da2fae489bdca8c461e411571be67d1b60cbab80180492",
-    "configs/v2/split.yaml": "8310cac885920ca2c30cfabef0a0b8d668deb8e5f8447f2723bab5f9c0ecdf87",
-    "src/card_testing_sentinel/v2/features/spec.py": "8773d0c82bd15354c19f51b096b11ee03e4af8bb0bb2fe87514898bb52520c4c",
-    "src/card_testing_sentinel/v2/features/state.py": "a18647783eb5ad63a7b91c442016e6f0e65725e4c10a4bcdc8b2dc6de6d84561",
-    "src/card_testing_sentinel/v2/features/engine.py": "036a275bc350784fd3b86c2c7aa07e5dc737075f37a618f44074ca95e588bf7e",
+    "data/v2/development/raw_events.csv": (
+        "9232c7049916cb638d7eedd3faf922b1569c38d74850df100eb98622ab73614f"
+    ),
+    "data/v2/development/events_with_features.csv": (
+        "9fd1a9eabfa73a65362c93fa7f0595f9987bd274b324edf53b922984a076e3e4"
+    ),
+    "data/v2/development/device_splits.csv": (
+        "c14524c2c601237e969edeb1b36edb3f67e9aabea1f875e5e1daf361181feefe"
+    ),
+    "data/v2/development/manifest.json": (
+        "a5ec79c35de862bf50e4c69e56692e2d7feda8bcea7c01d5b3f47e68dd443693"
+    ),
+    "configs/v2/generation.yaml": (
+        "fa57f16bd4260e5ae8917e2c101ae4e96b55ef8b69025d1c0953bb4a88da5f59"
+    ),
+    "configs/v2/features.yaml": (
+        "64b31ae7ce33fb25f6da2fae489bdca8c461e411571be67d1b60cbab80180492"
+    ),
+    "configs/v2/split.yaml": (
+        "8310cac885920ca2c30cfabef0a0b8d668deb8e5f8447f2723bab5f9c0ecdf87"
+    ),
+    "src/card_testing_sentinel/v2/features/spec.py": (
+        "8773d0c82bd15354c19f51b096b11ee03e4af8bb0bb2fe87514898bb52520c4c"
+    ),
+    "src/card_testing_sentinel/v2/features/state.py": (
+        "a18647783eb5ad63a7b91c442016e6f0e65725e4c10a4bcdc8b2dc6de6d84561"
+    ),
+    "src/card_testing_sentinel/v2/features/engine.py": (
+        "036a275bc350784fd3b86c2c7aa07e5dc737075f37a618f44074ca95e588bf7e"
+    ),
 }
 
 
@@ -100,7 +120,7 @@ def open_validation() -> tuple[pd.DataFrame, pd.DataFrame, dict]:
     if len(features) != 5_422 or len(validation_ids) != 2_000:
         raise RuntimeError("validation structural denominator mismatch")
     access = {
-        "first_validation_access_utc": datetime.now(timezone.utc).isoformat(),
+        "first_validation_access_utc": datetime.now(UTC).isoformat(),
         "training_freeze_created_utc": freeze["created_utc"],
         "training_freeze_sha256": sha256_file(FREEZE_PATH),
     }

@@ -1,0 +1,525 @@
+{
+  "delta": {
+    "attacker_block_rate": 0.37000000000000005,
+    "attacker_review_or_higher_rate": 0.43666666666666665,
+    "never_detected_attackers": -131
+  },
+  "phase2b": {
+    "metrics": {
+      "attacker_block": {
+        "denominator": 300,
+        "numerator": 119,
+        "rate": 0.39666666666666667
+      },
+      "attacker_review_or_higher": {
+        "denominator": 300,
+        "numerator": 143,
+        "rate": 0.4766666666666667
+      },
+      "budget_results": {
+        "flash_hard_retry": {
+          "block_allowance_devices": 5,
+          "block_devices": 0,
+          "block_excess_devices": 0,
+          "denominator_devices": 100,
+          "passed": true,
+          "review_allowance_devices": 10,
+          "review_excess_devices": 0,
+          "review_only_devices": 3,
+          "review_or_higher_devices": 3
+        },
+        "flash_standard": {
+          "block_allowance_devices": 9,
+          "block_devices": 0,
+          "block_excess_devices": 0,
+          "denominator_devices": 300,
+          "passed": true,
+          "review_allowance_devices": 15,
+          "review_excess_devices": 0,
+          "review_only_devices": 0,
+          "review_or_higher_devices": 0
+        },
+        "normal_bad_luck": {
+          "block_allowance_devices": 2,
+          "block_devices": 1,
+          "block_excess_devices": 0,
+          "denominator_devices": 100,
+          "passed": true,
+          "review_allowance_devices": 5,
+          "review_excess_devices": 0,
+          "review_only_devices": 1,
+          "review_or_higher_devices": 2
+        },
+        "normal_standard": {
+          "block_allowance_devices": 6,
+          "block_devices": 0,
+          "block_excess_devices": 0,
+          "denominator_devices": 1200,
+          "passed": true,
+          "review_allowance_devices": 24,
+          "review_excess_devices": 0,
+          "review_only_devices": 0,
+          "review_or_higher_devices": 0
+        },
+        "overall_legitimate": {
+          "block_allowance_devices": 17,
+          "block_devices": 1,
+          "block_excess_devices": 0,
+          "denominator_devices": 1700,
+          "passed": true,
+          "review_allowance_devices": 51,
+          "review_excess_devices": 0,
+          "review_only_devices": 4,
+          "review_or_higher_devices": 5
+        }
+      },
+      "failed_constraints": [],
+      "feasible": true,
+      "intervention_distributions": {
+        "authorizations_processed_before_first_action": {
+          "count": 143,
+          "mean": 4.986013986013986,
+          "median": 5.0,
+          "p90": 8.0
+        },
+        "distinct_cards_processed_before_first_action": {
+          "count": 143,
+          "mean": 2.4475524475524475,
+          "median": 2.0,
+          "p90": 3.0
+        },
+        "distinct_cards_requested_through_first_action": {
+          "count": 143,
+          "mean": 3.0839160839160837,
+          "median": 3.0,
+          "p90": 4.0
+        },
+        "requests_scored_through_first_action": {
+          "count": 143,
+          "mean": 6.111888111888112,
+          "median": 6.0,
+          "p90": 9.0
+        },
+        "seconds_to_first_review": {
+          "count": 143,
+          "mean": 82316.08391608391,
+          "median": 14.0,
+          "p90": 346904.4
+        }
+      },
+      "legitimate_blocks": 1,
+      "legitimate_review_or_higher": 5,
+      "macro_subtype_block_coverage": 0.34722222222222215,
+      "macro_subtype_review_coverage": 0.42407407407407405,
+      "median_processed_authorizations_before_first_action": 5.0,
+      "never_detected_attackers": 157,
+      "potentially_preventable_later_attempts_offline_upper_bound": 392,
+      "subtype": {
+        "burst": {
+          "block": {
+            "denominator": 120,
+            "numerator": 101,
+            "rate": 0.8416666666666667
+          },
+          "never_blocked": 19,
+          "never_reviewed": 6,
+          "review_or_higher": {
+            "denominator": 120,
+            "numerator": 114,
+            "rate": 0.95
+          },
+          "within_attempt": {
+            "1": {
+              "block": 0,
+              "denominator": 120,
+              "review_or_higher": 0
+            },
+            "10": {
+              "block": 95,
+              "denominator": 120,
+              "review_or_higher": 113
+            },
+            "3": {
+              "block": 0,
+              "denominator": 120,
+              "review_or_higher": 0
+            },
+            "5": {
+              "block": 25,
+              "denominator": 120,
+              "review_or_higher": 62
+            }
+          }
+        },
+        "evasive": {
+          "block": {
+            "denominator": 90,
+            "numerator": 1,
+            "rate": 0.011111111111111112
+          },
+          "never_blocked": 89,
+          "never_reviewed": 88,
+          "review_or_higher": {
+            "denominator": 90,
+            "numerator": 2,
+            "rate": 0.022222222222222223
+          },
+          "within_attempt": {
+            "1": {
+              "block": 0,
+              "denominator": 90,
+              "review_or_higher": 0
+            },
+            "10": {
+              "block": 0,
+              "denominator": 90,
+              "review_or_higher": 1
+            },
+            "3": {
+              "block": 0,
+              "denominator": 90,
+              "review_or_higher": 0
+            },
+            "5": {
+              "block": 0,
+              "denominator": 90,
+              "review_or_higher": 1
+            }
+          }
+        },
+        "patient": {
+          "block": {
+            "denominator": 90,
+            "numerator": 17,
+            "rate": 0.18888888888888888
+          },
+          "never_blocked": 73,
+          "never_reviewed": 63,
+          "review_or_higher": {
+            "denominator": 90,
+            "numerator": 27,
+            "rate": 0.3
+          },
+          "within_attempt": {
+            "1": {
+              "block": 0,
+              "denominator": 90,
+              "review_or_higher": 0
+            },
+            "10": {
+              "block": 16,
+              "denominator": 90,
+              "review_or_higher": 25
+            },
+            "3": {
+              "block": 0,
+              "denominator": 90,
+              "review_or_higher": 0
+            },
+            "5": {
+              "block": 1,
+              "denominator": 90,
+              "review_or_higher": 1
+            }
+          }
+        }
+      },
+      "within_attempt": {
+        "1": {
+          "block": 0,
+          "denominator": 300,
+          "review_or_higher": 0
+        },
+        "10": {
+          "block": 111,
+          "denominator": 300,
+          "review_or_higher": 139
+        },
+        "3": {
+          "block": 0,
+          "denominator": 300,
+          "review_or_higher": 0
+        },
+        "5": {
+          "block": 26,
+          "denominator": 300,
+          "review_or_higher": 64
+        }
+      },
+      "worst_subtype_block_coverage": 0.011111111111111112,
+      "worst_subtype_review_coverage": 0.022222222222222223
+    },
+    "policy_sha256": "d57c60d5eb0f08e2d2452944e1b7db623e62de36d261506516056c42378095a3"
+  },
+  "phase2c": {
+    "metrics": {
+      "attacker_block": {
+        "denominator": 300,
+        "numerator": 230,
+        "rate": 0.7666666666666667
+      },
+      "attacker_review_or_higher": {
+        "denominator": 300,
+        "numerator": 274,
+        "rate": 0.9133333333333333
+      },
+      "budget_results": {
+        "flash_hard_retry": {
+          "block_allowance_devices": 5,
+          "block_devices": 0,
+          "block_excess_devices": 0,
+          "denominator_devices": 100,
+          "passed": true,
+          "review_allowance_devices": 10,
+          "review_excess_devices": 0,
+          "review_only_devices": 0,
+          "review_or_higher_devices": 0
+        },
+        "flash_standard": {
+          "block_allowance_devices": 9,
+          "block_devices": 0,
+          "block_excess_devices": 0,
+          "denominator_devices": 300,
+          "passed": true,
+          "review_allowance_devices": 15,
+          "review_excess_devices": 0,
+          "review_only_devices": 0,
+          "review_or_higher_devices": 0
+        },
+        "normal_bad_luck": {
+          "block_allowance_devices": 2,
+          "block_devices": 0,
+          "block_excess_devices": 0,
+          "denominator_devices": 100,
+          "passed": true,
+          "review_allowance_devices": 5,
+          "review_excess_devices": 0,
+          "review_only_devices": 5,
+          "review_or_higher_devices": 5
+        },
+        "normal_standard": {
+          "block_allowance_devices": 6,
+          "block_devices": 0,
+          "block_excess_devices": 0,
+          "denominator_devices": 1200,
+          "passed": true,
+          "review_allowance_devices": 24,
+          "review_excess_devices": 0,
+          "review_only_devices": 0,
+          "review_or_higher_devices": 0
+        },
+        "overall_legitimate": {
+          "block_allowance_devices": 17,
+          "block_devices": 0,
+          "block_excess_devices": 0,
+          "denominator_devices": 1700,
+          "passed": true,
+          "review_allowance_devices": 51,
+          "review_excess_devices": 0,
+          "review_only_devices": 5,
+          "review_or_higher_devices": 5
+        }
+      },
+      "effectiveness_failures": [],
+      "effectiveness_passed": true,
+      "effectiveness_results": {
+        "burst_review_or_higher": {
+          "actual": 1.0,
+          "minimum": 0.9,
+          "passed": true
+        },
+        "evasive_review_or_higher": {
+          "actual": 0.9444444444444444,
+          "minimum": 0.5,
+          "passed": true
+        },
+        "overall_block": {
+          "actual": 0.7666666666666667,
+          "minimum": 0.5,
+          "passed": true
+        },
+        "overall_review_or_higher": {
+          "actual": 0.9133333333333333,
+          "minimum": 0.7,
+          "passed": true
+        },
+        "patient_review_or_higher": {
+          "actual": 0.7666666666666667,
+          "minimum": 0.4,
+          "passed": true
+        }
+      },
+      "failed_constraints": [],
+      "feasible": true,
+      "intervention_distributions": {
+        "authorizations_processed_before_first_action": {
+          "count": 274,
+          "mean": 4.2846715328467155,
+          "median": 4.0,
+          "p90": 5.0
+        },
+        "distinct_cards_processed_before_first_action": {
+          "count": 274,
+          "mean": 2.2518248175182483,
+          "median": 2.0,
+          "p90": 3.0
+        },
+        "distinct_cards_requested_through_first_action": {
+          "count": 274,
+          "mean": 2.6204379562043796,
+          "median": 3.0,
+          "p90": 4.0
+        },
+        "requests_scored_through_first_action": {
+          "count": 274,
+          "mean": 5.361313868613139,
+          "median": 5.0,
+          "p90": 6.0
+        },
+        "seconds_to_first_review": {
+          "count": 274,
+          "mean": 67434.95620437956,
+          "median": 324.0,
+          "p90": 260640.5
+        }
+      },
+      "legitimate_blocks": 0,
+      "legitimate_review_or_higher": 5,
+      "never_detected_attackers": 26,
+      "potentially_preventable_later_attempts_offline_upper_bound": 786,
+      "safety_failures": [],
+      "safety_passed": true,
+      "subtype": {
+        "burst": {
+          "block": {
+            "denominator": 120,
+            "numerator": 112,
+            "rate": 0.9333333333333333
+          },
+          "never_detected": 0,
+          "review_or_higher": {
+            "denominator": 120,
+            "numerator": 120,
+            "rate": 1.0
+          },
+          "within_attempt": {
+            "1": {
+              "block": 0,
+              "denominator": 120,
+              "review_or_higher": 0
+            },
+            "10": {
+              "block": 112,
+              "denominator": 120,
+              "review_or_higher": 120
+            },
+            "3": {
+              "block": 0,
+              "denominator": 120,
+              "review_or_higher": 0
+            },
+            "5": {
+              "block": 3,
+              "denominator": 120,
+              "review_or_higher": 83
+            }
+          }
+        },
+        "evasive": {
+          "block": {
+            "denominator": 90,
+            "numerator": 69,
+            "rate": 0.7666666666666667
+          },
+          "never_detected": 5,
+          "review_or_higher": {
+            "denominator": 90,
+            "numerator": 85,
+            "rate": 0.9444444444444444
+          },
+          "within_attempt": {
+            "1": {
+              "block": 0,
+              "denominator": 90,
+              "review_or_higher": 0
+            },
+            "10": {
+              "block": 69,
+              "denominator": 90,
+              "review_or_higher": 85
+            },
+            "3": {
+              "block": 0,
+              "denominator": 90,
+              "review_or_higher": 0
+            },
+            "5": {
+              "block": 0,
+              "denominator": 90,
+              "review_or_higher": 54
+            }
+          }
+        },
+        "patient": {
+          "block": {
+            "denominator": 90,
+            "numerator": 49,
+            "rate": 0.5444444444444444
+          },
+          "never_detected": 21,
+          "review_or_higher": {
+            "denominator": 90,
+            "numerator": 69,
+            "rate": 0.7666666666666667
+          },
+          "within_attempt": {
+            "1": {
+              "block": 0,
+              "denominator": 90,
+              "review_or_higher": 0
+            },
+            "10": {
+              "block": 49,
+              "denominator": 90,
+              "review_or_higher": 69
+            },
+            "3": {
+              "block": 0,
+              "denominator": 90,
+              "review_or_higher": 0
+            },
+            "5": {
+              "block": 1,
+              "denominator": 90,
+              "review_or_higher": 29
+            }
+          }
+        }
+      },
+      "within_attempt": {
+        "1": {
+          "block": 0,
+          "denominator": 300,
+          "review_or_higher": 0
+        },
+        "10": {
+          "block": 230,
+          "denominator": 300,
+          "review_or_higher": 274
+        },
+        "3": {
+          "block": 0,
+          "denominator": 300,
+          "review_or_higher": 0
+        },
+        "5": {
+          "block": 4,
+          "denominator": 300,
+          "review_or_higher": 166
+        }
+      },
+      "worst_subtype_review_coverage": 0.7666666666666667
+    },
+    "policy_sha256": "9afeba2df176c87287e86ff0402ef96b58e9386608d003b5702986be02b6ae95"
+  }
+}

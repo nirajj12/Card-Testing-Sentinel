@@ -3,6 +3,5 @@
 
 from card_testing_sentinel.v2.modeling.training import run_training_phase
 
-
 if __name__ == "__main__":
     run_training_phase()

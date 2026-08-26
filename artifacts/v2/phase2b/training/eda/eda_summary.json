@@ -1,0 +1,60 @@
+{
+  "authorization_rows": 21338,
+  "device_class_distribution": {
+    "0": 6800,
+    "1": 1200
+  },
+  "devices": 8000,
+  "missing_model_values": 0,
+  "near_constant_features": [],
+  "new_features": [
+    "prior_attempts_14d",
+    "distinct_cards_14d",
+    "amount_continuity_score_30d",
+    "amount_continuity_history_available",
+    "ip_rotation_ratio_24h",
+    "checkout_completion_lag_seconds",
+    "checkout_completion_lag_available"
+  ],
+  "row_class_distribution": {
+    "0": 10428,
+    "1": 10910
+  },
+  "rows_per_device": {
+    "25%": 1.0,
+    "50%": 1.0,
+    "75%": 3.0,
+    "count": 8000.0,
+    "max": 34.0,
+    "mean": 2.66725,
+    "min": 1.0,
+    "std": 3.2666666996214664
+  },
+  "scenario_device_distribution": {
+    "attack_burst": 480,
+    "attack_evasive": 360,
+    "attack_patient": 360,
+    "flash_hard_retry": 400,
+    "flash_standard": 1200,
+    "normal_bad_luck": 400,
+    "normal_standard": 4800
+  },
+  "scope": "training-only; not held-out performance",
+  "sessions": 10127,
+  "sessions_per_device": {
+    "25%": 1.0,
+    "50%": 1.0,
+    "75%": 1.0,
+    "count": 8000.0,
+    "max": 4.0,
+    "mean": 1.265875,
+    "min": 1.0,
+    "std": 0.6226828656056709
+  },
+  "strongest_single_feature": {
+    "direction": ">=",
+    "f1": 0.738164832822055,
+    "feature": "amount_continuity_history_available",
+    "threshold": 1.0
+  }
+}

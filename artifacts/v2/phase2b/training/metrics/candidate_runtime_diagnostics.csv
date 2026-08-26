@@ -1,0 +1,7 @@
+candidate,training_seconds
+logistic_regression__00,8.19745187496
+logistic_regression__01,7.83250770799
+logistic_regression__02,7.886691291
+hist_gradient_boosting__03,9.54028299998
+hist_gradient_boosting__04,12.094088
+hist_gradient_boosting__05,11.995893417

@@ -1,0 +1,14 @@
+{
+  "features_compared": 44,
+  "latency_microseconds": {
+    "diagnostic_only": true,
+    "p50": 139.375,
+    "p95": 328.38129999999995,
+    "p99": 421.1885800000002
+  },
+  "maximum_absolute_difference": 0.0,
+  "mismatched_features": 0,
+  "mismatched_rows": 0,
+  "rows_compared": 21338,
+  "tolerance": 1e-12
+}

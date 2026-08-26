@@ -21,22 +21,46 @@ def training_eda(features: pd.DataFrame, raw: pd.DataFrame, output: Path) -> dic
         "lifecycle_events": int(len(raw)),
         "label_devices": {
             str(key): int(value)
-            for key, value in features.drop_duplicates("device_id").groupby("label").size().items()
+            for key, value in features.drop_duplicates("device_id")
+            .groupby("label")
+            .size()
+            .items()
         },
-        "label_rows": {str(key): int(value) for key, value in features.groupby("label").size().items()},
-        "device_weighted_positive_rate": float(np.average(features.label, weights=weights)),
+        "label_rows": {
+            str(key): int(value)
+            for key, value in features.groupby("label").size().items()
+        },
+        "device_weighted_positive_rate": float(
+            np.average(features.label, weights=weights)
+        ),
         "row_weighted_positive_rate": float(features.label.mean()),
         "scenario_devices": {
             str(key): int(value)
-            for key, value in features.drop_duplicates("device_id").groupby("scenario_tag").size().items()
+            for key, value in features.drop_duplicates("device_id")
+            .groupby("scenario_tag")
+            .size()
+            .items()
         },
         "subtype_devices": {
             str(key): int(value)
-            for key, value in features.drop_duplicates("device_id").dropna(subset=["attack_subtype"]).groupby("attack_subtype").size().items()
+            for key, value in features.drop_duplicates("device_id")
+            .dropna(subset=["attack_subtype"])
+            .groupby("attack_subtype")
+            .size()
+            .items()
         },
-        "requests_per_device": features.groupby("device_id").size().describe(percentiles=[0.5, 0.9, 0.99]).to_dict(),
-        "sessions_per_device": raw.groupby("device_id").session_id.nunique().describe(percentiles=[0.5, 0.9, 0.99]).to_dict(),
-        "event_type_counts": {str(key): int(value) for key, value in raw.groupby("event_type").size().items()},
+        "requests_per_device": features.groupby("device_id")
+        .size()
+        .describe(percentiles=[0.5, 0.9, 0.99])
+        .to_dict(),
+        "sessions_per_device": raw.groupby("device_id")
+        .session_id.nunique()
+        .describe(percentiles=[0.5, 0.9, 0.99])
+        .to_dict(),
+        "event_type_counts": {
+            str(key): int(value)
+            for key, value in raw.groupby("event_type").size().items()
+        },
     }
     feature_rows = []
     for name in MODEL_FEATURE_COLUMNS:
@@ -56,51 +80,85 @@ def training_eda(features: pd.DataFrame, raw: pd.DataFrame, output: Path) -> dic
                 "p75": float(q3),
                 "p99": float(values.quantile(0.99)),
                 "maximum": float(values.max()),
-                "iqr_outliers": int(((values < q1 - 3 * iqr) | (values > q3 + 3 * iqr)).sum()),
-                "near_constant": bool(values.value_counts(normalize=True, dropna=False).iloc[0] >= 0.995),
+                "iqr_outliers": int(
+                    ((values < q1 - 3 * iqr) | (values > q3 + 3 * iqr)).sum()
+                ),
+                "near_constant": bool(
+                    values.value_counts(normalize=True, dropna=False).iloc[0] >= 0.995
+                ),
             }
         )
-    pd.DataFrame(feature_rows).to_csv(output / "training_feature_summary.csv", index=False)
-    distribution = (
-        features.groupby(["scenario_tag", "attack_subtype"], dropna=False)[list(MODEL_FEATURE_COLUMNS)]
-        .agg(["mean", "median"])
+    pd.DataFrame(feature_rows).to_csv(
+        output / "training_feature_summary.csv", index=False
     )
+    distribution = features.groupby(["scenario_tag", "attack_subtype"], dropna=False)[
+        list(MODEL_FEATURE_COLUMNS)
+    ].agg(["mean", "median"])
     distribution.columns = ["__".join(value) for value in distribution.columns]
-    distribution.reset_index().to_csv(output / "training_scenario_feature_distributions.csv", index=False)
+    distribution.reset_index().to_csv(
+        output / "training_scenario_feature_distributions.csv", index=False
+    )
     correlations = features.loc[:, MODEL_FEATURE_COLUMNS].corr()
     correlations.to_csv(output / "training_feature_correlations.csv")
     high_pairs = [
-        {"left": left, "right": right, "absolute_pearson": float(abs(correlations.loc[left, right]))}
+        {
+            "left": left,
+            "right": right,
+            "absolute_pearson": float(abs(correlations.loc[left, right])),
+        }
         for index, left in enumerate(MODEL_FEATURE_COLUMNS)
         for right in MODEL_FEATURE_COLUMNS[index + 1 :]
         if abs(correlations.loc[left, right]) >= 0.95
     ]
-    pd.DataFrame(high_pairs).to_csv(output / "training_high_correlation_pairs.csv", index=False)
+    pd.DataFrame(high_pairs).to_csv(
+        output / "training_high_correlation_pairs.csv", index=False
+    )
     strength = []
     labels = features.label.to_numpy(dtype=int)
     for name in MODEL_FEATURE_COLUMNS:
         values = features[name].to_numpy(dtype=float)
         best = None
         for direction, scores in ((">=", values), ("<=", -values)):
-            precision, recall, thresholds = precision_recall_curve(labels, scores, sample_weight=weights)
-            f1 = 2 * precision[:-1] * recall[:-1] / np.maximum(precision[:-1] + recall[:-1], 1e-12)
+            precision, recall, thresholds = precision_recall_curve(
+                labels, scores, sample_weight=weights
+            )
+            f1 = (
+                2
+                * precision[:-1]
+                * recall[:-1]
+                / np.maximum(precision[:-1] + recall[:-1], 1e-12)
+            )
             idx = int(np.argmax(f1))
             row = {
                 "feature": name,
                 "direction": direction,
-                "threshold": float(thresholds[idx] if direction == ">=" else -thresholds[idx]),
+                "threshold": float(
+                    thresholds[idx] if direction == ">=" else -thresholds[idx]
+                ),
                 "device_weighted_f1": float(f1[idx]),
-                "device_weighted_pr_auc": float(average_precision_score(labels, scores, sample_weight=weights)),
+                "device_weighted_pr_auc": float(
+                    average_precision_score(labels, scores, sample_weight=weights)
+                ),
             }
             if best is None or row["device_weighted_f1"] > best["device_weighted_f1"]:
                 best = row
         strength.append(best)
-    pd.DataFrame(strength).sort_values("device_weighted_f1", ascending=False).to_csv(output / "training_univariate_strength.csv", index=False)
+    pd.DataFrame(strength).sort_values("device_weighted_f1", ascending=False).to_csv(
+        output / "training_univariate_strength.csv", index=False
+    )
     stability_rows = []
     for fold in sorted(features.fold.unique()):
         group = features.loc[features.fold.eq(fold)]
         for name in MODEL_FEATURE_COLUMNS:
-            stability_rows.append({"fold": int(fold), "feature": name, "mean": float(group[name].mean()), "std": float(group[name].std())})
-    pd.DataFrame(stability_rows).to_csv(output / "training_fold_feature_stability.csv", index=False)
+            stability_rows.append(
+                {
+                    "fold": int(fold),
+                    "feature": name,
+                    "mean": float(group[name].mean()),
+                    "std": float(group[name].std()),
+                }
+            )
+    pd.DataFrame(stability_rows).to_csv(
+        output / "training_fold_feature_stability.csv", index=False
+    )
     return summary
-

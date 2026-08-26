@@ -1,0 +1,16 @@
+{
+  "candidates_evaluated": 20,
+  "completed_utc": "2026-08-25T23:50:06.304129+00:00",
+  "effective_replacement_freeze_sha256": "f0b473ac81f356b1f6d114491148ac25d2edbaac4a96b2309d6ab5c034a2177b",
+  "execution_amendment_sha256": "a026fce117025926d00272f4c4cb90581b4cebdaac4d0aab8ecf03992ac6d44f",
+  "feasible_candidate_count": 15,
+  "frozen_operational_policy_sha256": "9afeba2df176c87287e86ff0402ef96b58e9386608d003b5702986be02b6ae95",
+  "ledger_amendment_sha256": "7870cc39f1baa4430c7b77125becc838c526a6c1d24914b2c5d528726c75cfe9",
+  "original_access_ledger_sha256": "40dc6cf9013f6de3818f936b83918aa5c20b6ccbfbcf08d3731438f16b26c3ae",
+  "requests_scored_per_candidate": 5356,
+  "resume_of_existing_attempt": true,
+  "scoring_attempt": 1,
+  "second_independent_evaluation": false,
+  "status": "completed_feasible",
+  "version": "v2-phase2c-access-ledger-completion-001"
+}

@@ -1,0 +1,195 @@
+{
+  "access_state_transitions": [
+    "pre_generation",
+    "post_generation_pre_scoring",
+    "post_scoring"
+  ],
+  "blind_seed": 20260828,
+  "config": {
+    "currency": "USD",
+    "device_counts": {
+      "attack_burst": 120,
+      "attack_evasive": 90,
+      "attack_patient": 90,
+      "flash_hard_retry": 100,
+      "flash_standard": 300,
+      "normal_bad_luck": 100,
+      "normal_standard": 1200
+    },
+    "effectiveness_targets": {
+      "burst_review_or_higher": 0.9,
+      "evasive_review_or_higher": 0.5,
+      "overall_block": 0.5,
+      "overall_review_or_higher": 0.7,
+      "patient_review_or_higher": 0.4
+    },
+    "evaluated_policies": 1,
+    "expected_counts": {
+      "attacker_devices": 300,
+      "devices": 2000,
+      "legitimate_devices": 1700
+    },
+    "identifier_namespace": "blind_20260828",
+    "parity_tolerance": 1e-12,
+    "policy_id": "phase2c_002",
+    "policy_sha256": "9afeba2df176c87287e86ff0402ef96b58e9386608d003b5702986be02b6ae95",
+    "safety_allowances": {
+      "flash_hard_retry": {
+        "block": 5,
+        "review_or_higher": 10
+      },
+      "flash_standard": {
+        "block": 9,
+        "review_or_higher": 15
+      },
+      "normal_bad_luck": {
+        "block": 2,
+        "review_or_higher": 5
+      },
+      "normal_standard": {
+        "block": 6,
+        "review_or_higher": 24
+      },
+      "overall_legitimate": {
+        "block": 17,
+        "review_or_higher": 51
+      }
+    },
+    "safety_rates": {
+      "flash_hard_retry": {
+        "block_rate": 0.05,
+        "review_or_higher_rate": 0.1
+      },
+      "flash_standard": {
+        "block_rate": 0.03,
+        "review_or_higher_rate": 0.05
+      },
+      "normal_bad_luck": {
+        "block_rate": 0.02,
+        "review_or_higher_rate": 0.05
+      },
+      "normal_standard": {
+        "block_rate": 0.005,
+        "review_or_higher_rate": 0.02
+      },
+      "overall_legitimate": {
+        "block_rate": 0.01,
+        "review_or_higher_rate": 0.03
+      }
+    },
+    "seed": 20260828,
+    "start_timestamp": "2026-07-01 00:00:00+00:00",
+    "validation_fraction": 0.0,
+    "version": "v2-phase3-final-blind-1"
+  },
+  "created_utc": "2026-08-26T00:19:49.858951+00:00",
+  "decision_semantics": {
+    "blocked_request": "request-side observation only; outcome suppressed",
+    "later_requests": "independently feature-computed and scored",
+    "ordering": "timestamp then event_sequence",
+    "policy_action": "allow, review, or block for current request",
+    "scoring_moment": "pre-authorization before current outcome"
+  },
+  "effectiveness_targets": {
+    "burst_review_or_higher": 0.9,
+    "evasive_review_or_higher": 0.5,
+    "overall_block": 0.5,
+    "overall_review_or_higher": 0.7,
+    "patient_review_or_higher": 0.4
+  },
+  "expected_counts": {
+    "attacker_devices": 300,
+    "devices": 2000,
+    "legitimate_devices": 1700
+  },
+  "expected_policies_evaluated": 1,
+  "expected_policy_id": "phase2c_002",
+  "expected_policy_sha256": "9afeba2df176c87287e86ff0402ef96b58e9386608d003b5702986be02b6ae95",
+  "final_status_names": [
+    "blind_completed_passed",
+    "blind_completed_failed",
+    "blocked_pre_access",
+    "blocked_post_generation_pre_scoring",
+    "blind_execution_failed"
+  ],
+  "output_paths": {
+    "artifacts": "artifacts/v2/phase3/blind",
+    "data": "data/v2/phase3/blind",
+    "report": "reports/v2/phase3/blind/phase_closeout.md"
+  },
+  "protected_hashes": {
+    "artifacts/v2/phase2b/training/freeze/training_freeze.json": "4f6011774b7c4b43c08c401e94107aec8e8b3378b1a5ffd0b1a85cca2dea0ee8",
+    "artifacts/v2/phase2b/training/models/model_feature_contract.json": "40ba9345c649a91cad9805b2d48b9607e9c179b042e70a682e71958e2d9bb634",
+    "artifacts/v2/phase2b/training/models/selected_model.joblib": "6c638fc05ca321e98c8b5417c477a58e2649bdd7e056bcd56e0d119d3eb80f88",
+    "artifacts/v2/phase2b/validation/final_hash_manifest.json": "37c9fe0520aa4998d04f9ac142b48a68af01ecc80b807f75a66fdb432b36e534",
+    "artifacts/v2/phase2c/amendments/execution_amendment_001.json": "a026fce117025926d00272f4c4cb90581b4cebdaac4d0aab8ecf03992ac6d44f",
+    "artifacts/v2/phase2c/confirmation/access_ledger_completion_001.json": "441d3913218189a8894f7af996d22faedfe95147664256b1e9cf959984511f2a",
+    "artifacts/v2/phase2c/confirmation/final_hash_manifest.json": "611b022a674478a869a4599921984717a32c4d7cb0de36969946889b50f0b6b1",
+    "artifacts/v2/phase2c/confirmation/frozen_operational_policy.json": "9afeba2df176c87287e86ff0402ef96b58e9386608d003b5702986be02b6ae95",
+    "artifacts/v2/phase2c/freeze/development_freeze_replacement_001.json": "f0b473ac81f356b1f6d114491148ac25d2edbaac4a96b2309d6ab5c034a2177b",
+    "configs/v2/features.yaml": "64b31ae7ce33fb25f6da2fae489bdca8c461e411571be67d1b60cbab80180492",
+    "configs/v2/phase2b/requirements-lock.txt": "e03f5ec81e88f3954ffd3d556a6a19f2516c836a94fe3526dc9704aebbc85209",
+    "configs/v2/phase3/blind.yaml": "2b03fa68063362d5f0d82f08a3a6580097df35baacce68a894867358bb54eb37",
+    "data/v2/phase2c/confirmation_validation/manifest.json": "55aeef4ed02e4d22b15a420567db69459fb247ba23e59b099b85243017d7ab3f",
+    "docs/v1/release_manifest.sha256": "63e53a8d84ba457190690945be2484d1c75e9dca29afa3c5d59447b59f4edb1f",
+    "docs/v2/data_contract.md": "84362588f8efc262f3088e585304ab548208c218e7ebac9f371a1ee3c7a955fa",
+    "docs/v2/evaluation_protocol.md": "eadf1b3964a12ddf8b27fe18910dc814cc8d179700b5f0da6405b95ecf9ae0d5",
+    "docs/v2/live_serving_contract.md": "a588d8e2deda94a2464b5f4cc3d0a9d8096ce8dedfd7b677c9cc86c879fe88a2",
+    "scripts/v2/phase3/evaluate_blind.py": "ddced5f1ada7d1fcf3bb0dadc7d3c258f4fd58d30f63f05ca41bee5ecbf70e76",
+    "scripts/v2/phase3/freeze_methodology.py": "4f5fc774f38602930fa5b5cfa97bdaf3c224fd3284f1b3b85796baaec71615c4",
+    "scripts/v2/phase3/generate_blind.py": "197654d53a96662a934c036c7bdadc3735dba4f98475886f094d5a61a9c1b54d",
+    "scripts/v2/phase3/verify_blind.py": "43cb866ce2f2e67087223646121df1348b90b0ba92ca60a0413801faab380253",
+    "src/card_testing_sentinel/v2/data/generator.py": "d7ae5f4cf2ef86d83a1d2fbfad927733c20f8b0edb9d4599901dfa98e43e9972",
+    "src/card_testing_sentinel/v2/evaluation/metrics.py": "bb58ab95f4741c47379e2dfd492d9166d7f1b9c7f94546296ab7dedd24d8d615",
+    "src/card_testing_sentinel/v2/features/engine.py": "036a275bc350784fd3b86c2c7aa07e5dc737075f37a618f44074ca95e588bf7e",
+    "src/card_testing_sentinel/v2/phase2b/engine.py": "8451f1bebca71c47b3ec2d3444766a6c363c4a0767f0e4b34c9f31b5af468ff9",
+    "src/card_testing_sentinel/v2/phase2b/features.py": "eb7f19489079bc2c725732c5ee16f8f6affe40a08515b10d76218c5139c72274",
+    "src/card_testing_sentinel/v2/phase2b/validation_policy.py": "80646a9ef080ecd8ada7fcdccbade0aaeec833bb97e17bc6b2606d97c06c57fc",
+    "src/card_testing_sentinel/v2/phase2c/policy.py": "7452642b49e98fe149aad69eadb1d721b3fa47f53867d6840c3e4eec0d5864f8",
+    "src/card_testing_sentinel/v2/phase2c/replay.py": "c2e9434757db1467a2f6249d123705ca31a766901344cc01190569efd1325ef6",
+    "src/card_testing_sentinel/v2/phase3/__init__.py": "6489f76d515bac119d377f202f4078ea3db86dbfe15dccb45c579c3b120af314",
+    "src/card_testing_sentinel/v2/phase3/contracts.py": "3fecb6da2ccc28247aaaef883db61f8cbf9193c433c33759aa416533f873eaa2",
+    "src/card_testing_sentinel/v2/phase3/evaluation.py": "705f1b5cba49606302081af1bdf66bd16d79593ffd1f1b71399f9ba495e48104",
+    "src/card_testing_sentinel/v2/phase3/lifecycle.py": "29da39f10837126dbb276490627c88d62de3ba8fc17d8e5905fb82adcd0a0771",
+    "tests/v2/phase3/test_evaluation.py": "3c612267db6be3a5bf29f6f2dad9d7293f667afad254d4679810f4e496c0ad8b",
+    "tests/v2/phase3/test_lifecycle.py": "5d5986d6e277c28287fad13897c922dbf5d2ba9ba79033b12b3fe72044e4f620"
+  },
+  "real_blind_paths_absent_at_freeze": true,
+  "runtime": {
+    "executable": "/Users/nirajmac/envs/card-testing-sentinel-v2b/bin/python",
+    "platform": "macOS-26.5.2-arm64-arm-64bit",
+    "python": "3.11.15"
+  },
+  "safety_allowances": {
+    "flash_hard_retry": {
+      "block": 5,
+      "review_or_higher": 10
+    },
+    "flash_standard": {
+      "block": 9,
+      "review_or_higher": 15
+    },
+    "normal_bad_luck": {
+      "block": 2,
+      "review_or_higher": 5
+    },
+    "normal_standard": {
+      "block": 6,
+      "review_or_higher": 24
+    },
+    "overall_legitimate": {
+      "block": 17,
+      "review_or_higher": 51
+    }
+  },
+  "scenario_counts": {
+    "attack_burst": 120,
+    "attack_evasive": 90,
+    "attack_patient": 90,
+    "flash_hard_retry": 100,
+    "flash_standard": 300,
+    "normal_bad_luck": 100,
+    "normal_standard": 1200
+  },
+  "version": "v2-phase3-pre-access-freeze-1"
+}

@@ -174,7 +174,7 @@
       "detail": {
         "baseline_average_precision": 0.9099110669331556,
         "baseline_f1": 0.87831312733582,
-        "baseline_roc_auc": 0.9506126834737355,
+        "baseline_roc_auc": 0.9506126834737354,
         "evaluation": "five-fold device-grouped out-of-fold on training devices only",
         "folds": [
           {
@@ -240,16 +240,16 @@
         "scope": "training-only data-quality diagnostic; not V2 model performance",
         "shuffled_fold_device_overlap": 0,
         "shuffled_label_level": "device",
-        "shuffled_label_roc_auc": 0.4816242145769459,
+        "shuffled_label_roc_auc": 0.4816242145769458,
         "single_feature_search": "all unique thresholds, both >= and <= directions, device weighted, training only",
         "strongest_one_feature": {
-          "average_precision": 0.7398587252186465,
+          "average_precision": 0.7398587252186474,
           "direction": ">=",
           "feature": "prior_attempts_7d",
           "threshold": 3.0,
-          "weighted_f1": 0.7240636847635309
+          "weighted_f1": 0.724063684763532
         },
-        "training_only_threshold": 0.45320665443073893
+        "training_only_threshold": 0.45320665442995983
       },
       "passed": true
     },
@@ -281,7 +281,7 @@
   "sanity": {
     "baseline_average_precision": 0.9099110669331556,
     "baseline_f1": 0.87831312733582,
-    "baseline_roc_auc": 0.9506126834737355,
+    "baseline_roc_auc": 0.9506126834737354,
     "evaluation": "five-fold device-grouped out-of-fold on training devices only",
     "folds": [
       {
@@ -347,16 +347,16 @@
     "scope": "training-only data-quality diagnostic; not V2 model performance",
     "shuffled_fold_device_overlap": 0,
     "shuffled_label_level": "device",
-    "shuffled_label_roc_auc": 0.4816242145769459,
+    "shuffled_label_roc_auc": 0.4816242145769458,
     "single_feature_search": "all unique thresholds, both >= and <= directions, device weighted, training only",
     "strongest_one_feature": {
-      "average_precision": 0.7398587252186465,
+      "average_precision": 0.7398587252186474,
       "direction": ">=",
       "feature": "prior_attempts_7d",
       "threshold": 3.0,
-      "weighted_f1": 0.7240636847635309
+      "weighted_f1": 0.724063684763532
     },
-    "training_only_threshold": 0.45320665443073893
+    "training_only_threshold": 0.45320665442995983
   },
   "status": "passed",
   "training_scenario_overlap": [

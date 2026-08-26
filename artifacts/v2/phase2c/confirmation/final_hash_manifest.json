@@ -1,0 +1,23 @@
+{
+  "blind_evaluated": false,
+  "created_utc": "2026-08-25T23:50:06.305023+00:00",
+  "protected_hashes": {
+    "artifacts/v2/phase2c/confirmation/access_ledger.json": "40dc6cf9013f6de3818f936b83918aa5c20b6ccbfbcf08d3731438f16b26c3ae",
+    "artifacts/v2/phase2c/confirmation/access_ledger_amendment_001.json": "7870cc39f1baa4430c7b77125becc838c526a6c1d24914b2c5d528726c75cfe9",
+    "artifacts/v2/phase2c/confirmation/access_ledger_completion_001.json": "441d3913218189a8894f7af996d22faedfe95147664256b1e9cf959984511f2a",
+    "artifacts/v2/phase2c/confirmation/access_ledger_completion_001.sha256": "9579552c830522f1fd129b6d3eb3cd925195ed22d773703417a670688a6dad45",
+    "artifacts/v2/phase2c/confirmation/allow_all_parity.json": "1439bb302a98cda0b1937da628c961cddfaaa25cf32c1295bea63c3d6a6e01d2",
+    "artifacts/v2/phase2c/confirmation/candidate_metrics.json": "2304aff59a42f53c730b82bb1a9e9c9ce04da553bb2c6ee811b4055eb66247aa",
+    "artifacts/v2/phase2c/confirmation/candidate_results.csv": "5df8a0bcd40ef01ac6ee3088941a8b949ed623768f47b085a63219ee6682cbfb",
+    "artifacts/v2/phase2c/confirmation/champion_decisions.csv": "0daa678851bff39eeaace7c46208479806f25e6235a9db0def2ebd316024dd7c",
+    "artifacts/v2/phase2c/confirmation/champion_device_summary.csv": "0be2ba8517037b0e3905ed5ae18b03115b776ea1bc5f06b22cb8c0f0b89bf75b",
+    "artifacts/v2/phase2c/confirmation/feasibility.json": "f6fcb81e8dd5e798107b4a99e9ad1420b310e82f8bd327ac72be92cde5c05ad2",
+    "artifacts/v2/phase2c/confirmation/frozen_operational_policy.json": "9afeba2df176c87287e86ff0402ef96b58e9386608d003b5702986be02b6ae95",
+    "artifacts/v2/phase2c/confirmation/frozen_operational_policy.sha256": "f32420aeb95570167aaca54c85b7f239082709b11271834bff56969208df059d",
+    "artifacts/v2/phase2c/confirmation/phase2b_vs_phase2c.json": "35272cc05eb595fe595782e06c0a5be99d647ce4e25f004273a307f12ae73ea4",
+    "artifacts/v2/phase2c/confirmation/runtime.json": "c632a1d8e638f9b4ae9302ddd79a97e30ec31b0bf652fabeb7a7380d7aab75f6",
+    "artifacts/v2/phase2c/freeze/development_freeze_replacement_001.json": "f0b473ac81f356b1f6d114491148ac25d2edbaac4a96b2309d6ab5c034a2177b",
+    "data/v2/phase2c/confirmation_validation/manifest.json": "55aeef4ed02e4d22b15a420567db69459fb247ba23e59b099b85243017d7ab3f"
+  },
+  "version": "v2-phase2c-confirmation-final-manifest-1"
+}

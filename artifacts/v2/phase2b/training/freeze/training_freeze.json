@@ -1,0 +1,113 @@
+{
+  "categories": {
+    "blind": {},
+    "config": {
+      "configs/v2/phase2b/features.yaml": "8bb0282b58cb429a6b820cd39b7883577b2878ce51e66ba9b40a6c5e934132d9",
+      "configs/v2/phase2b/policy_grid_proposal.yaml": "7a0bc2cc59c56e11f2eab717d7fbebf63e49ff5b7ecc8868d6ce8b504f64216f",
+      "configs/v2/phase2b/requirements-lock.txt": "e03f5ec81e88f3954ffd3d556a6a19f2516c836a94fe3526dc9704aebbc85209",
+      "configs/v2/phase2b/training.yaml": "2d032ad0792955737bba348487fd8286a8637f06827000ff38823060f07e1c9e",
+      "configs/v2/policy.yaml": "6fefa91074513f975d315a34b1bdc463fee8e175fe50fb001e7fd2104afa864c"
+    },
+    "development_data_manifest": {
+      "data/v2/development/device_splits.csv": "c14524c2c601237e969edeb1b36edb3f67e9aabea1f875e5e1daf361181feefe",
+      "data/v2/development/manifest.json": "a5ec79c35de862bf50e4c69e56692e2d7feda8bcea7c01d5b3f47e68dd443693"
+    },
+    "fresh_validation": {},
+    "historical_phase2": {
+      "artifacts/v2/metrics/validation_blocked_metrics.json": "10c1f7e59749728c2bdc3ae4e0bcb5f23f20d479366d58d055508d77fdb5243b",
+      "artifacts/v2/metrics/validation_policy_candidates.csv": "b0a938ded85c4c766dea6da6c9f6608504be2c51f3bc318dabd7a4889b627635",
+      "artifacts/v2/phase2_closeout_manifest.sha256": "9e629079f80e75468e7d62162ecb85b05e4286d38102f644b8cfc7950befa1ec",
+      "artifacts/v2/training/training_freeze.json": "b3eee5234af43bb87cb8fe957089961f25b0b90da22227ced41431e36d0aae13",
+      "artifacts/v2/training/training_freeze.sha256": "e2baa460c9b7afd5ffca5d2be546780429c81c119b6ad04d05548c52f54fab58",
+      "artifacts/v2/validation_execution_amendment_001.json": "34ab19fa791c81661f0813863ffaefc6c09d792b90f578290b4860718fe07710",
+      "reports/v2/modeling/phase2_final_closeout.md": "424853ed8153fe6d7731648cd54b4b0ba2df9d3647923052c16623e3e432c048"
+    },
+    "operational_policy": {},
+    "phase2b_development": {
+      "artifacts/v2/phase2b/training/data/training_features.csv": "8054bb17093d41ca234dc38f99eb8dedb6d5d7573218414ddee9de67e94186f2",
+      "artifacts/v2/phase2b/training/eda/eda_summary.json": "e74990639fe098d92682b85d8f890fe31ff66889a85c7bf3e29b4070ba7e6eca",
+      "artifacts/v2/phase2b/training/eda/feature_correlations.csv": "99671f99ad3b383a020b440e94cc49875df2be2d1caa77191b3d077b9cacf8fe",
+      "artifacts/v2/phase2b/training/eda/feature_summary.csv": "a1b37c574bf908bda9db9336e4bdc8c94a840d7d3911d8d31d8227315910841b",
+      "artifacts/v2/phase2b/training/eda/scenario_feature_distributions.csv": "c7df544665d56479cc3f85887b6598199746e824bf20cba37b673eeec740ef80",
+      "artifacts/v2/phase2b/training/metrics/calibration_comparison.csv": "1213d55e58b7dac47def3748c406892f6791a06807bcbccca9fd871a3e9a4c2b",
+      "artifacts/v2/phase2b/training/metrics/calibration_reliability.csv": "c9ca6bffb162a5ac144a86e863ba865c9114bd55772ad89e6eda43bb5dcc48c9",
+      "artifacts/v2/phase2b/training/metrics/candidate_fold_metrics.csv": "a73ff79b8be1f286d0b1cd81a63b41127d82e1d8ebc5342aa5aa8426a36e2490",
+      "artifacts/v2/phase2b/training/metrics/candidate_oof_metrics.csv": "60bfb4bc13b99cf61e064e3c2ddeb6d5a42f81ae48dd8202a959834db28bd302",
+      "artifacts/v2/phase2b/training/metrics/candidate_runtime_diagnostics.csv": "94499852de2426bf771ac6a9348d9e5a9ea59f20b3bb88e8138355b4844be756",
+      "artifacts/v2/phase2b/training/metrics/mlflow_training_run.json": "937e13b2fefe1bbf0a3c0e447c16cf370a7a3c37948d3fbb3e79232936c843a3",
+      "artifacts/v2/phase2b/training/metrics/online_batch_parity.json": "0d9f7f32d643ce5bca2acff19529bfe80338096678739adc0f4d7138569d8543",
+      "artifacts/v2/phase2b/training/metrics/reproduction.json": "af8c1f933a31a3221ac56e4affd662b8d64eb5cec8ea4523595edf0d7d19800d",
+      "artifacts/v2/phase2b/training/metrics/sanity_checks.json": "517024993cc86ff97c018b8e46d2b2f6de9290cc5144ff44cf97f0cc89e4932f",
+      "artifacts/v2/phase2b/training/metrics/training_selection.json": "9b49cb771df6ad82912cb8e77da3e60a3a704408b8f17c7123d42ce1d8b0ed26",
+      "artifacts/v2/phase2b/training/models/model_feature_contract.json": "40ba9345c649a91cad9805b2d48b9607e9c179b042e70a682e71958e2d9bb634",
+      "artifacts/v2/phase2b/training/models/model_metadata.json": "98160e5f03c58fc9a5c442ecbf9b847dc56e70501543e9b1a279bb738bde98a2",
+      "artifacts/v2/phase2b/training/models/selected_model.joblib": "6c638fc05ca321e98c8b5417c477a58e2649bdd7e056bcd56e0d119d3eb80f88",
+      "artifacts/v2/phase2b/training/models/serialization_fixture.csv": "ac5ee293797b7eb00a3e692840e9df9797a2ccb66a1c067019c9d85ddf80e124",
+      "artifacts/v2/phase2b/training/models/serialization_subprocess_predictions.json": "a3eeb1089f6430c247146dd21c85980ac86f09e57709b85530eff10d95574974",
+      "artifacts/v2/phase2b/training/policy/policy_search_space.json": "dbfba536b63d2036b3a2879c959d6fbbd9e0b16f40c7f9f2627f11dc1a47c3df",
+      "artifacts/v2/phase2b/training/predictions/training_oof_predictions.csv": "a66c51a0601f6ac29587b477c2d317bb76de261787fa9187a5848db292f1dadc",
+      "artifacts/v2/phase2b/training/training/device_folds.csv": "af877ab6f0a7ab51acb6d19564a25d933df5ba8e97316603ab86237ec7b55799",
+      "reports/v2/phase2b/eda/README.md": "076d07777b7c0dea631b31ccd9a3bec34b1f5caba8cd72ef74bbb29f32d15557"
+    },
+    "phase3": {},
+    "source_code": {
+      "scripts/v2/phase2b/train_development.py": "4d97021945e1dfff199e30802648d469d072d12ceab3afe5d679b7b10912a6db",
+      "src/card_testing_sentinel/v2/phase2b/artifacts.py": "21294a4c49a95a8a69517ec0a5ab818fbc78a74c4240ceff341b84c68c11b826",
+      "src/card_testing_sentinel/v2/phase2b/batch.py": "f2789c55f478094620c9856054497c122f1f5eb66c63f40915faa3858d854b2c",
+      "src/card_testing_sentinel/v2/phase2b/engine.py": "8451f1bebca71c47b3ec2d3444766a6c363c4a0767f0e4b34c9f31b5af468ff9",
+      "src/card_testing_sentinel/v2/phase2b/features.py": "eb7f19489079bc2c725732c5ee16f8f6affe40a08515b10d76218c5139c72274",
+      "src/card_testing_sentinel/v2/phase2b/freeze_manifest.py": "3a5e8f1b31b032686e2e5fd4d22e8ea64f4334cc354dc0a1317fed4b46b1514c",
+      "src/card_testing_sentinel/v2/phase2b/training.py": "0a25e06c3bf175ae39b5489036303d889ee90c41f313a4be70e0416aeeb1e569"
+    },
+    "v2_api": {},
+    "v2_dashboard": {}
+  },
+  "created_utc": "2026-08-25T21:16:15.421920+00:00",
+  "forbidden_artifacts": [
+    "data/v2/phase2b/fresh_validation",
+    "data/v2/phase2b/blind",
+    "artifacts/v2/phase2b/fresh_validation",
+    "artifacts/v2/phase2b/blind",
+    "artifacts/v2/phase2b/policy/frozen_policy.json",
+    "artifacts/v2/phase2b/phase3",
+    "src/card_testing_sentinel/v2/phase2b/api.py",
+    "src/card_testing_sentinel/v2/phase2b/dashboard.py"
+  ],
+  "git_commit": "b9061e7fc34e22a2017c7139b709473ebc78eb51",
+  "policy_search": {
+    "candidate_count": 78,
+    "enumeration_sha256": "fa74e5a62db2c6aeab432594c838078a5a582c8f55042a52f134a71f316ef3af",
+    "evaluated": false,
+    "family_counts": {
+      "combined": 45,
+      "ml_only": 25,
+      "rules_only": 8
+    }
+  },
+  "reproduction": {
+    "calibration_identical": true,
+    "deterministic_file_equality": {
+      "eda/eda_summary.json": true,
+      "metrics/calibration_comparison.csv": true,
+      "metrics/candidate_oof_metrics.csv": true,
+      "metrics/training_selection.json": true,
+      "models/model_feature_contract.json": true,
+      "policy/policy_search_space.json": true,
+      "training/device_folds.csv": true
+    },
+    "joblib_byte_identity_required": false,
+    "oof_maximum_absolute_difference": 0.0,
+    "probability_tolerance": 1e-12,
+    "selection_identical": true
+  },
+  "runtime": {
+    "joblib": "1.4.2",
+    "numpy": "1.26.4",
+    "pandas": "2.2.3",
+    "platform": "macOS-26.5.2-arm64-arm-64bit",
+    "python": "3.11.15 (main, Jun 11 2026, 15:14:57) [Clang 20.1.8 ]",
+    "scikit_learn": "1.6.1",
+    "scipy": "1.14.1"
+  },
+  "version": "v2b-training-freeze-1"
+}

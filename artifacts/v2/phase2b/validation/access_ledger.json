@@ -1,0 +1,12 @@
+{
+  "completed_utc": "2026-08-25T21:55:14.931985+00:00",
+  "dataset_manifest_sha256": "69775136c8c066ec849ed3b75a555ea0651fb0b321ce1b3fb7338c6238e1ea81",
+  "execution_freeze_amendment_sha256": "f79e3a3449d7d2b0c57d170d8555eb542ee4ab8f93cedfff1347522ca7d9ff19",
+  "execution_freeze_sha256": "a9cb60239ae599916aff0a47082e803fb6b62614fed4473749a09a2d112e0de5",
+  "scoring_attempt": 1,
+  "seed": 20260826,
+  "started_utc": "2026-08-25T21:45:21.762923+00:00",
+  "status": "completed_feasible",
+  "training_freeze_sha256": "4f6011774b7c4b43c08c401e94107aec8e8b3378b1a5ffd0b1a85cca2dea0ee8",
+  "version": "v2-phase2b-fresh-validation-access-1"
+}

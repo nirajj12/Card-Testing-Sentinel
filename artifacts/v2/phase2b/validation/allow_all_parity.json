@@ -1,0 +1,17 @@
+{
+  "feature_count": 44,
+  "fresh_state": true,
+  "maximum_absolute_difference": 0.0,
+  "mismatched_rows": 0,
+  "passed": true,
+  "probability_parity": {
+    "calibrated_maximum_absolute_difference": 5.717301632124361e-14,
+    "maximum_absolute_difference": 5.717301632124361e-14,
+    "passed": true,
+    "raw_maximum_absolute_difference": 2.220446049250313e-16,
+    "rows": 5156,
+    "tolerance": 1e-12
+  },
+  "requests_scored": 5156,
+  "tolerance": 1e-12
+}

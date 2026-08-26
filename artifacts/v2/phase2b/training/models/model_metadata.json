@@ -1,0 +1,123 @@
+{
+  "calibration_isolation": [
+    {
+      "all_pairwise_device_overlaps": 0,
+      "base_fit_devices": 4800,
+      "calibrator_fit_devices": 1600,
+      "evaluation_devices": 1600,
+      "outer_fold": 0
+    },
+    {
+      "all_pairwise_device_overlaps": 0,
+      "base_fit_devices": 4800,
+      "calibrator_fit_devices": 1600,
+      "evaluation_devices": 1600,
+      "outer_fold": 1
+    },
+    {
+      "all_pairwise_device_overlaps": 0,
+      "base_fit_devices": 4800,
+      "calibrator_fit_devices": 1600,
+      "evaluation_devices": 1600,
+      "outer_fold": 2
+    },
+    {
+      "all_pairwise_device_overlaps": 0,
+      "base_fit_devices": 4800,
+      "calibrator_fit_devices": 1600,
+      "evaluation_devices": 1600,
+      "outer_fold": 3
+    },
+    {
+      "all_pairwise_device_overlaps": 0,
+      "base_fit_devices": 4800,
+      "calibrator_fit_devices": 1600,
+      "evaluation_devices": 1600,
+      "outer_fold": 4
+    }
+  ],
+  "calibration_objective": [
+    "lowest_device_weighted_brier",
+    "lowest_expected_calibration_error",
+    "lowest_log_loss",
+    "no_material_pr_auc_degradation",
+    "simpler_method"
+  ],
+  "candidate_count": 6,
+  "evaluation_weight_audit": {
+    "by_class": {
+      "0": 6800.0,
+      "1": 1200.0
+    },
+    "by_scenario": {
+      "attack_burst": 480.0,
+      "attack_evasive": 360.0,
+      "attack_patient": 360.0,
+      "flash_hard_retry": 400.0,
+      "flash_standard": 1200.0,
+      "normal_bad_luck": 400.0,
+      "normal_standard": 4800.0
+    },
+    "total": 8000.0
+  },
+  "feature_contract_sha256": "5de17dbf8abc06c835ba948e8cbc68706079973721cd25b081bb55e808bf57c6",
+  "fold_device_overlap": 0,
+  "model_artifact_sha256": "6c638fc05ca321e98c8b5417c477a58e2649bdd7e056bcd56e0d119d3eb80f88",
+  "model_feature_count": 44,
+  "oof_complete": true,
+  "oof_rows": 21338,
+  "ranking_objective": [
+    "passes_integrity_gates",
+    "worst_subtype_review_or_higher_coverage_at_primary_budget",
+    "macro_subtype_review_or_higher_coverage_at_primary_budget",
+    "device_weighted_pr_auc",
+    "negative_brier_score",
+    "lower_inference_cost_then_simpler_family"
+  ],
+  "runtime": {
+    "joblib": "1.4.2",
+    "numpy": "1.26.4",
+    "pandas": "2.2.3",
+    "platform": "macOS-26.5.2-arm64-arm-64bit",
+    "python": "3.11.15 (main, Jun 11 2026, 15:14:57) [Clang 20.1.8 ]",
+    "scikit_learn": "1.6.1",
+    "scipy": "1.14.1"
+  },
+  "selected_calibration": "isotonic",
+  "selected_candidate": "logistic_regression__02",
+  "selected_family": "logistic_regression",
+  "selected_parameters": {
+    "C": 10.0,
+    "max_iter": 500
+  },
+  "serialization_parity": {
+    "maximum_absolute_difference": 0.0,
+    "rows": 128,
+    "tolerance": 1e-12
+  },
+  "training_weight_audit": {
+    "by_class": {
+      "0": 0.49999999999999994,
+      "1": 0.5
+    },
+    "by_scenario": {
+      "attack_burst": 0.2,
+      "attack_evasive": 0.15000000000000002,
+      "attack_patient": 0.15000000000000002,
+      "flash_hard_retry": 0.029411764705882353,
+      "flash_standard": 0.08823529411764705,
+      "normal_bad_luck": 0.029411764705882353,
+      "normal_standard": 0.3529411764705882
+    },
+    "total": 1.0
+  },
+  "why_selected": [
+    1.0,
+    1.0,
+    0.8723286037605,
+    -0.07266242086498763,
+    0,
+    1,
+    "logistic_regression__02"
+  ]
+}

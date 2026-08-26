@@ -1,0 +1,324 @@
+{
+  "campaign_context": {
+    "False": {
+      "devices": 1109,
+      "high_maximum_score_rate": 0.07484220018034266,
+      "median_maximum_score": 0.028783095907959022
+    },
+    "True": {
+      "devices": 591,
+      "high_maximum_score_rate": 0.13367174280879865,
+      "median_maximum_score": 0.01939339042970994
+    }
+  },
+  "causal_corroboration_counts": {
+    "persistent_plus_card_diversity": 254,
+    "persistent_plus_card_switch": 241,
+    "persistent_plus_ip_rotation": 261,
+    "persistent_plus_multiple_sessions": 126
+  },
+  "closest_infeasible": {
+    "combined": {
+      "candidate_id": "policy_071",
+      "failed_constraints": [
+        "flash_hard_retry:review_excess=11_devices",
+        "normal_bad_luck:review_excess=51_devices",
+        "overall_legitimate:review_excess=28_devices"
+      ],
+      "total_excess_devices": 90
+    },
+    "ml_only": {
+      "candidate_id": "policy_032",
+      "failed_constraints": [
+        "normal_bad_luck:review_excess=47_devices",
+        "normal_bad_luck:block_excess=2_devices",
+        "overall_legitimate:review_excess=9_devices"
+      ],
+      "total_excess_devices": 58
+    }
+  },
+  "conclusions": [
+    "ML-only failure is concentrated in normal_bad_luck review counts; single-row score thresholds cannot distinguish transient retry risk.",
+    "Persistence, session/card/IP corroboration, checkout history, and campaign context are valid causal policy hypotheses, but all numeric choices must be selected on training-only grouped OOF replay."
+  ],
+  "false_positive_evidence": {
+    "card_switching": 67,
+    "consecutive_high_scores": 31,
+    "definition": "hard-negative device with allow-all maximum calibrated score at or above the already-frozen Phase 2B minimum ML review threshold 0.35",
+    "devices": 142,
+    "ip_rotation": 13,
+    "multiple_sessions": 25,
+    "no_successful_checkout_history": 124,
+    "one_isolated_high_score": 105
+  },
+  "frozen_reference_threshold": 0.35,
+  "risk_persistence": {
+    "high_score_count_device_roc_auc": 0.9991401960784313,
+    "maximum_consecutive_high_device_roc_auc": 0.9992882352941176,
+    "maximum_score_device_roc_auc": 0.9995117647058823,
+    "mean_score_device_roc_auc": 0.9997156862745098
+  },
+  "scope": "read-only Phase 2B diagnosis; not policy threshold selection",
+  "score_ranges": {
+    "attack_subtype": {
+      "burst": {
+        "device_maximum_scores": {
+          "count": 120,
+          "maximum": 1.0,
+          "median": 1.0,
+          "minimum": 0.9786659352447353,
+          "p10": 1.0,
+          "p25": 1.0,
+          "p75": 1.0,
+          "p90": 1.0
+        },
+        "row_scores": {
+          "count": 1198,
+          "maximum": 1.0,
+          "median": 0.9870772219275629,
+          "minimum": 0.005480012583569642,
+          "p10": 0.09301022712514266,
+          "p25": 0.5847937449447291,
+          "p75": 1.0,
+          "p90": 1.0
+        }
+      },
+      "evasive": {
+        "device_maximum_scores": {
+          "count": 90,
+          "maximum": 1.0,
+          "median": 1.0,
+          "minimum": 0.8551515343154251,
+          "p10": 0.9686676640347897,
+          "p25": 0.9870772219275629,
+          "p75": 1.0,
+          "p90": 1.0
+        },
+        "row_scores": {
+          "count": 697,
+          "maximum": 1.0,
+          "median": 0.9206383943690268,
+          "minimum": 0.0,
+          "p10": 0.052924209585334316,
+          "p25": 0.47479181067307097,
+          "p75": 1.0,
+          "p90": 1.0
+        }
+      },
+      "none": {
+        "device_maximum_scores": {
+          "count": 1700,
+          "maximum": 0.9786659352447353,
+          "median": 0.028783095907959022,
+          "minimum": 0.0,
+          "p10": 0.0082051287394128,
+          "p25": 0.02502866332181498,
+          "p75": 0.028783095907959022,
+          "p90": 0.284737559008595
+        },
+        "row_scores": {
+          "count": 2599,
+          "maximum": 0.9786659352447353,
+          "median": 0.028783095907959022,
+          "minimum": 0.0,
+          "p10": 0.005480012583569642,
+          "p25": 0.01939339042970994,
+          "p75": 0.09301022712514266,
+          "p90": 0.284737559008595
+        }
+      },
+      "patient": {
+        "device_maximum_scores": {
+          "count": 90,
+          "maximum": 1.0,
+          "median": 1.0,
+          "minimum": 0.6900819065959228,
+          "p10": 0.9686676640347897,
+          "p25": 0.9870772219275629,
+          "p75": 1.0,
+          "p90": 1.0
+        },
+        "row_scores": {
+          "count": 662,
+          "maximum": 1.0,
+          "median": 0.9206383943690268,
+          "minimum": 0.005480012583569642,
+          "p10": 0.028783095907959022,
+          "p25": 0.47479181067307097,
+          "p75": 0.9786659352447353,
+          "p90": 1.0
+        }
+      }
+    },
+    "scenario_tag": {
+      "attack_burst": {
+        "device_maximum_scores": {
+          "count": 120,
+          "maximum": 1.0,
+          "median": 1.0,
+          "minimum": 0.9786659352447353,
+          "p10": 1.0,
+          "p25": 1.0,
+          "p75": 1.0,
+          "p90": 1.0
+        },
+        "row_scores": {
+          "count": 1198,
+          "maximum": 1.0,
+          "median": 0.9870772219275629,
+          "minimum": 0.005480012583569642,
+          "p10": 0.09301022712514266,
+          "p25": 0.5847937449447291,
+          "p75": 1.0,
+          "p90": 1.0
+        }
+      },
+      "attack_evasive": {
+        "device_maximum_scores": {
+          "count": 90,
+          "maximum": 1.0,
+          "median": 1.0,
+          "minimum": 0.8551515343154251,
+          "p10": 0.9686676640347897,
+          "p25": 0.9870772219275629,
+          "p75": 1.0,
+          "p90": 1.0
+        },
+        "row_scores": {
+          "count": 697,
+          "maximum": 1.0,
+          "median": 0.9206383943690268,
+          "minimum": 0.0,
+          "p10": 0.052924209585334316,
+          "p25": 0.47479181067307097,
+          "p75": 1.0,
+          "p90": 1.0
+        }
+      },
+      "attack_patient": {
+        "device_maximum_scores": {
+          "count": 90,
+          "maximum": 1.0,
+          "median": 1.0,
+          "minimum": 0.6900819065959228,
+          "p10": 0.9686676640347897,
+          "p25": 0.9870772219275629,
+          "p75": 1.0,
+          "p90": 1.0
+        },
+        "row_scores": {
+          "count": 662,
+          "maximum": 1.0,
+          "median": 0.9206383943690268,
+          "minimum": 0.005480012583569642,
+          "p10": 0.028783095907959022,
+          "p25": 0.47479181067307097,
+          "p75": 0.9786659352447353,
+          "p90": 1.0
+        }
+      },
+      "flash_hard_retry": {
+        "device_maximum_scores": {
+          "count": 100,
+          "maximum": 0.9206383943690268,
+          "median": 0.284737559008595,
+          "minimum": 0.09301022712514266,
+          "p10": 0.09301022712514266,
+          "p25": 0.09301022712514266,
+          "p75": 0.47479181067307097,
+          "p90": 0.47479181067307097
+        },
+        "row_scores": {
+          "count": 389,
+          "maximum": 0.9206383943690268,
+          "median": 0.09301022712514266,
+          "minimum": 0.0,
+          "p10": 0.0082051287394128,
+          "p25": 0.01939339042970994,
+          "p75": 0.09301022712514266,
+          "p90": 0.47479181067307097
+        }
+      },
+      "flash_standard": {
+        "device_maximum_scores": {
+          "count": 300,
+          "maximum": 0.47479181067307097,
+          "median": 0.011635773237721553,
+          "minimum": 0.005480012583569642,
+          "p10": 0.005480012583569642,
+          "p25": 0.005480012583569642,
+          "p75": 0.01939339042970994,
+          "p90": 0.09301022712514266
+        },
+        "row_scores": {
+          "count": 389,
+          "maximum": 0.47479181067307097,
+          "median": 0.0082051287394128,
+          "minimum": 0.0,
+          "p10": 0.005480012583569642,
+          "p25": 0.005480012583569642,
+          "p75": 0.01939339042970994,
+          "p90": 0.02502866332181498
+        }
+      },
+      "normal_bad_luck": {
+        "device_maximum_scores": {
+          "count": 100,
+          "maximum": 0.9786659352447353,
+          "median": 0.5596673041853845,
+          "minimum": 0.47479181067307097,
+          "p10": 0.47479181067307097,
+          "p25": 0.47479181067307097,
+          "p75": 0.834086215288283,
+          "p90": 0.9206383943690268
+        },
+        "row_scores": {
+          "count": 352,
+          "maximum": 0.9786659352447353,
+          "median": 0.284737559008595,
+          "minimum": 0.005480012583569642,
+          "p10": 0.025972080276374824,
+          "p25": 0.028783095907959022,
+          "p75": 0.47479181067307097,
+          "p90": 0.7559385866584322
+        }
+      },
+      "normal_standard": {
+        "device_maximum_scores": {
+          "count": 1200,
+          "maximum": 0.6900819065959228,
+          "median": 0.028783095907959022,
+          "minimum": 0.0,
+          "p10": 0.01939339042970994,
+          "p25": 0.02502866332181498,
+          "p75": 0.028783095907959022,
+          "p90": 0.0690182853702506
+        },
+        "row_scores": {
+          "count": 1469,
+          "maximum": 0.6900819065959228,
+          "median": 0.025972080276374824,
+          "minimum": 0.0,
+          "p10": 0.005480012583569642,
+          "p25": 0.02502866332181498,
+          "p75": 0.028783095907959022,
+          "p90": 0.0690182853702506
+        }
+      }
+    }
+  },
+  "successful_checkout_history": {
+    "absent": {
+      "devices": 1501,
+      "high_maximum_score_devices": 139,
+      "high_maximum_score_rate": 0.09260493004663557,
+      "median_maximum_score": 0.028783095907959022
+    },
+    "available": {
+      "devices": 199,
+      "high_maximum_score_devices": 23,
+      "high_maximum_score_rate": 0.11557788944723618,
+      "median_maximum_score": 0.028783095907959022
+    }
+  }
+}

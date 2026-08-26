@@ -1,0 +1,16 @@
+{
+  "calibration_identical": true,
+  "deterministic_file_equality": {
+    "eda/eda_summary.json": true,
+    "metrics/calibration_comparison.csv": true,
+    "metrics/candidate_oof_metrics.csv": true,
+    "metrics/training_selection.json": true,
+    "models/model_feature_contract.json": true,
+    "policy/policy_search_space.json": true,
+    "training/device_folds.csv": true
+  },
+  "joblib_byte_identity_required": false,
+  "oof_maximum_absolute_difference": 0.0,
+  "probability_tolerance": 1e-12,
+  "selection_identical": true
+}

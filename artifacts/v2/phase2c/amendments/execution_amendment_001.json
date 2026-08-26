@@ -1,0 +1,34 @@
+{
+  "canonical_reproduction_sha256": "ec4cf9e05c996a055a18b1256970b0b7049b2f9a0c3151b23c9bf716c3a2da99",
+  "confirmation_hashes": {
+    "device_contract": "834624d0b9b97357547022eefcf1d6014339f52d618bfca1625bcaedbdd6b5d8",
+    "manifest": "55aeef4ed02e4d22b15a420567db69459fb247ba23e59b099b85243017d7ab3f",
+    "raw_events": "98a9d99fcd35f828b0eedafe727d0ead8ad71ce7b1b6b0fd3dcbb2940eb17d26"
+  },
+  "confirmation_regeneration_authorized": false,
+  "correct_runtime": {
+    "executable": "/Users/nirajmac/envs/card-testing-sentinel-v2b/bin/python",
+    "joblib": "1.4.2",
+    "numpy": "1.26.4",
+    "pandas": "2.2.3",
+    "python": "3.11.15",
+    "scikit_learn": "1.6.1",
+    "scipy": "1.14.1"
+  },
+  "created_utc": "2026-08-25T23:49:11.215353+00:00",
+  "effective_replacement_freeze_sha256": "f0b473ac81f356b1f6d114491148ac25d2edbaac4a96b2309d6ab5c034a2177b",
+  "failure": {
+    "candidates_scored": 0,
+    "exception": "AttributeError: Can't get attribute '_RemainderColsList'",
+    "metrics_created": false,
+    "requests_scored": 0,
+    "stage": "frozen model load before scoring"
+  },
+  "incorrect_runtime": {
+    "scikit_learn": "1.9.0"
+  },
+  "original_freeze_sha256": "e3220ae35015ed5bf9737e4a6293cb11fc2351ab2aae6fee352ac8db1506bc54",
+  "policy_budget_threshold_target_candidate_changes": false,
+  "resume_same_logical_attempt_authorized": true,
+  "version": "v2-phase2c-execution-amendment-001"
+}

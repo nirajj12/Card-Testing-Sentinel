@@ -1,0 +1,17 @@
+{
+  "attempt_1_failure": {
+    "candidates_scored": 0,
+    "failed_before_scoring": true,
+    "metrics_created": false,
+    "reason": "incompatible scikit-learn runtime",
+    "requests_scored": 0
+  },
+  "created_utc": "2026-08-25T23:49:11.215353+00:00",
+  "effective_replacement_freeze_sha256": "f0b473ac81f356b1f6d114491148ac25d2edbaac4a96b2309d6ab5c034a2177b",
+  "execution_amendment_sha256": "a026fce117025926d00272f4c4cb90581b4cebdaac4d0aab8ecf03992ac6d44f",
+  "original_access_ledger_sha256": "40dc6cf9013f6de3818f936b83918aa5c20b6ccbfbcf08d3731438f16b26c3ae",
+  "resume_same_logical_attempt_authorized": true,
+  "scoring_attempt": 1,
+  "second_independent_evaluation_authorized": false,
+  "version": "v2-phase2c-access-ledger-amendment-001"
+}

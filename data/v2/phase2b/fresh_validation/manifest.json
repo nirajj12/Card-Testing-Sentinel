@@ -1,0 +1,67 @@
+{
+  "accepted": true,
+  "config_sha256": "6cba2d51507dafa172de729054b50e9fd5b3656c662406301c004feaed111491",
+  "created_utc": "2026-08-25T21:39:27.759402+00:00",
+  "execution_freeze_sha256": "a9cb60239ae599916aff0a47082e803fb6b62614fed4473749a09a2d112e0de5",
+  "files": {
+    "device_contract.csv": "3ce721135b5c950a102ab0c3bea8c38e525cbc2911e3a333a1c150f1ac573063",
+    "raw_events.csv": "767b630a90632ad799f8822309e055c1b864ce8a18427b998b382454e63bec56"
+  },
+  "generator_sha256": "9990554e2a049516d7703fe6858b62ad5b1dff7a46c749e716e1ced04025115f",
+  "seed": 20260826,
+  "structural_validation": {
+    "devices": 2000,
+    "events": 11995,
+    "expected_scenario_counts": {
+      "attack_burst": 120,
+      "attack_evasive": 90,
+      "attack_patient": 90,
+      "flash_hard_retry": 100,
+      "flash_standard": 300,
+      "normal_bad_luck": 100,
+      "normal_standard": 1200
+    },
+    "generation_columns_in_model_allowlist": [],
+    "global_ordering": "passed",
+    "identifier_overlap_counts": {
+      "card_fingerprint": 0,
+      "device_id": 0,
+      "event_id": 0,
+      "ip_fingerprint": 0,
+      "request_id": 0,
+      "session_id": 0
+    },
+    "identifier_overlap_train": {
+      "card_fingerprint": 0,
+      "device_id": 0,
+      "event_id": 0,
+      "ip_fingerprint": 0,
+      "request_id": 0,
+      "session_id": 0
+    },
+    "identifier_overlap_validation": {
+      "card_fingerprint": 0,
+      "device_id": 0,
+      "event_id": 0,
+      "ip_fingerprint": 0,
+      "request_id": 0,
+      "session_id": 0
+    },
+    "request_outcome_linkage": "passed",
+    "requests": 5156,
+    "scenario_counts": {
+      "attack_burst": 120,
+      "attack_evasive": 90,
+      "attack_patient": 90,
+      "flash_hard_retry": 100,
+      "flash_standard": 300,
+      "normal_bad_luck": 100,
+      "normal_standard": 1200
+    },
+    "seed": 20260826,
+    "sessions": 2505,
+    "status": "passed"
+  },
+  "training_freeze_sha256": "4f6011774b7c4b43c08c401e94107aec8e8b3378b1a5ffd0b1a85cca2dea0ee8",
+  "version": "v2-phase2b-fresh-validation-1"
+}

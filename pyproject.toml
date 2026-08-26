@@ -42,5 +42,55 @@ testpaths = ["tests"]
 line-length = 88
 target-version = "py311"
 
+[tool.ruff.format]
+# Formatting (unlike the per-file lint ignores below) has no per-rule
+# granularity: a file is either reformatted or left alone. These are exactly
+# the same frozen-evidence files documented under [tool.ruff.lint.per-file-ignores]
+# below -- 2 V1-frozen files (byte-identity required by
+# docs/v1/release_manifest.sha256) and 7 Phase-2-frozen source files hashed in
+# artifacts/v2/training/training_freeze.json. They are excluded from
+# `ruff format` only; `ruff check` still lints them (see per-file-ignores).
+exclude = [
+    "src/card_testing_sentinel/api/app.py",
+    "src/card_testing_sentinel/data/validation.py",
+    "src/card_testing_sentinel/v2/evaluation/calibration.py",
+    "src/card_testing_sentinel/v2/evaluation/metrics.py",
+    "src/card_testing_sentinel/v2/evaluation/sequential.py",
+    "src/card_testing_sentinel/v2/modeling/artifacts.py",
+    "src/card_testing_sentinel/v2/modeling/candidates.py",
+    "src/card_testing_sentinel/v2/modeling/features.py",
+    "src/card_testing_sentinel/v2/modeling/folds.py",
+    "src/card_testing_sentinel/v2/modeling/training.py",
+    "src/card_testing_sentinel/v2/modeling/weights.py",
+    "src/card_testing_sentinel/v2/policy/engine.py",
+    "src/card_testing_sentinel/v2/policy/rules.py",
+    "src/card_testing_sentinel/v2/policy/selection.py",
+]
+
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]
+
+[tool.ruff.lint.per-file-ignores]
+# V1 is frozen and must remain byte-identical (see docs/v1/release_manifest.sha256).
+# These two files predate the Phase 2B lint pass and carry one modernizable
+# isinstance() form each (UP038); they are left untouched rather than
+# reformatted, to preserve V1 byte identity. No other rule is silenced here.
+"src/card_testing_sentinel/api/app.py" = ["UP038"]
+"src/card_testing_sentinel/data/validation.py" = ["UP038"]
+
+# Phase 2 is an honest blocked experiment. The files below are hashed inside
+# artifacts/v2/training/training_freeze.json ("phase2_frozen_artifact_hashes")
+# as part of the immutable evidence proving exactly which source code produced
+# the frozen (blocked) model and policy grid. Reformatting them would change
+# their bytes, break that hash chain, and make the historical blocked snapshot
+# look different than it actually was -- so they are left untouched rather
+# than reformatted, exactly as V1 is above. Only the specific pre-existing
+# violations they contain are silenced; no other rule is affected, and no
+# other Phase 2B file in this project uses these ignores.
+"src/card_testing_sentinel/v2/evaluation/calibration.py" = ["E501"]
+"src/card_testing_sentinel/v2/evaluation/metrics.py" = ["E501"]
+"src/card_testing_sentinel/v2/evaluation/sequential.py" = ["E501", "F401"]
+"src/card_testing_sentinel/v2/modeling/candidates.py" = ["E501"]
+"src/card_testing_sentinel/v2/modeling/training.py" = ["E501", "UP017"]
+"src/card_testing_sentinel/v2/policy/rules.py" = ["E501"]
+"src/card_testing_sentinel/v2/policy/selection.py" = ["E501"]

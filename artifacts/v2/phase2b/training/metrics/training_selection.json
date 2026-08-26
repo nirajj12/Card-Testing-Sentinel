@@ -1,0 +1,36 @@
+{
+  "calibration_objective": [
+    "lowest_device_weighted_brier",
+    "lowest_expected_calibration_error",
+    "lowest_log_loss",
+    "no_material_pr_auc_degradation",
+    "simpler_method"
+  ],
+  "candidate_count": 6,
+  "feature_contract_sha256": "5de17dbf8abc06c835ba948e8cbc68706079973721cd25b081bb55e808bf57c6",
+  "model_feature_count": 44,
+  "ranking_objective": [
+    "passes_integrity_gates",
+    "worst_subtype_review_or_higher_coverage_at_primary_budget",
+    "macro_subtype_review_or_higher_coverage_at_primary_budget",
+    "device_weighted_pr_auc",
+    "negative_brier_score",
+    "lower_inference_cost_then_simpler_family"
+  ],
+  "selected_calibration": "isotonic",
+  "selected_candidate": "logistic_regression__02",
+  "selected_family": "logistic_regression",
+  "selected_parameters": {
+    "C": 10.0,
+    "max_iter": 500
+  },
+  "why_selected": [
+    1.0,
+    1.0,
+    0.8723286037605,
+    -0.07266242086498763,
+    0,
+    1,
+    "logistic_regression__02"
+  ]
+}

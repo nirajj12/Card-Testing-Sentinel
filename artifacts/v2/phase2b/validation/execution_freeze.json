@@ -1,0 +1,119 @@
+{
+  "access_time_policy": "one atomic ledger at first scoring access; no rerun",
+  "budgets": {
+    "flash_hard_retry": {
+      "block_allowance": 5,
+      "block_rate": 0.05,
+      "denominator": 100,
+      "review_or_higher_allowance": 10,
+      "review_or_higher_rate": 0.1
+    },
+    "flash_standard": {
+      "block_allowance": 9,
+      "block_rate": 0.03,
+      "denominator": 300,
+      "review_or_higher_allowance": 15,
+      "review_or_higher_rate": 0.05
+    },
+    "normal_bad_luck": {
+      "block_allowance": 2,
+      "block_rate": 0.02,
+      "denominator": 100,
+      "review_or_higher_allowance": 5,
+      "review_or_higher_rate": 0.05
+    },
+    "normal_standard": {
+      "block_allowance": 6,
+      "block_rate": 0.005,
+      "denominator": 1200,
+      "review_or_higher_allowance": 24,
+      "review_or_higher_rate": 0.02
+    },
+    "overall_legitimate": {
+      "block_allowance": 17,
+      "block_rate": 0.01,
+      "denominator": 1700,
+      "review_or_higher_allowance": 51,
+      "review_or_higher_rate": 0.03
+    }
+  },
+  "candidate_count": 78,
+  "candidate_family_counts": {
+    "combined": 45,
+    "ml_only": 25,
+    "rules_only": 8
+  },
+  "causal_replay_semantics": "score immediately before outcome; allow/review commit outcomes; block suppresses current outcome and tied completion plus later device state",
+  "created_utc": "2026-08-25T21:39:15.645588+00:00",
+  "expected_scenario_denominators": {
+    "attack_burst": 120,
+    "attack_evasive": 90,
+    "attack_patient": 90,
+    "flash_hard_retry": 100,
+    "flash_standard": 300,
+    "normal_bad_luck": 100,
+    "normal_standard": 1200
+  },
+  "feature_order_sha256": "5de17dbf8abc06c835ba948e8cbc68706079973721cd25b081bb55e808bf57c6",
+  "fresh_validation_seed": 20260826,
+  "frozen_model_and_calibrator_sha256": "6c638fc05ca321e98c8b5417c477a58e2649bdd7e056bcd56e0d119d3eb80f88",
+  "mlflow_packaging_mismatch": "runtime uses mlflow-skinny==3.15.1 while project metadata names mlflow; imports and temporary local FileStore passed; no package was changed",
+  "output_paths": {
+    "artifacts": "artifacts/v2/phase2b/validation",
+    "data": "data/v2/phase2b/fresh_validation",
+    "reports": "reports/v2/phase2b/validation"
+  },
+  "pre_access_benchmark_sha256": "20ac40f488285288dc82076dc59ec1f0347063994f832ca88fd6640a3e2b393e",
+  "protected_hashes": {
+    "artifacts/v2/phase2b/training/freeze/training_freeze.json": "4f6011774b7c4b43c08c401e94107aec8e8b3378b1a5ffd0b1a85cca2dea0ee8",
+    "artifacts/v2/phase2b/training/models/model_feature_contract.json": "40ba9345c649a91cad9805b2d48b9607e9c179b042e70a682e71958e2d9bb634",
+    "artifacts/v2/phase2b/training/models/model_metadata.json": "98160e5f03c58fc9a5c442ecbf9b847dc56e70501543e9b1a279bb738bde98a2",
+    "artifacts/v2/phase2b/training/models/selected_model.joblib": "6c638fc05ca321e98c8b5417c477a58e2649bdd7e056bcd56e0d119d3eb80f88",
+    "artifacts/v2/phase2b/training/policy/policy_search_space.json": "dbfba536b63d2036b3a2879c959d6fbbd9e0b16f40c7f9f2627f11dc1a47c3df",
+    "configs/v2/phase2b/features.yaml": "8bb0282b58cb429a6b820cd39b7883577b2878ce51e66ba9b40a6c5e934132d9",
+    "configs/v2/phase2b/fresh_validation.yaml": "6cba2d51507dafa172de729054b50e9fd5b3656c662406301c004feaed111491",
+    "configs/v2/phase2b/policy_grid_proposal.yaml": "7a0bc2cc59c56e11f2eab717d7fbebf63e49ff5b7ecc8868d6ce8b504f64216f",
+    "configs/v2/phase2b/requirements-lock.txt": "e03f5ec81e88f3954ffd3d556a6a19f2516c836a94fe3526dc9704aebbc85209",
+    "configs/v2/policy.yaml": "6fefa91074513f975d315a34b1bdc463fee8e175fe50fb001e7fd2104afa864c",
+    "scripts/v2/phase2b/evaluate_fresh_validation.py": "535c320465ee594a167ef2d89a0cac01bea5244635b6f37078bc1f56b5feaaa1",
+    "scripts/v2/phase2b/freeze_validation_methodology.py": "d4873cef98cc3708dba8af48f7817673b77f5b31988a7daac3d3f1ef6254dbec",
+    "scripts/v2/phase2b/generate_fresh_validation.py": "417187f2defc11490c95976bb955492a3f4efbd8c3e5e11ca46bdc82cc5efc14",
+    "src/card_testing_sentinel/v2/data/contracts.py": "72ce049df3dea8b0b8e826ef6715f6c71635034ec9d9c7e07257b35fff49ec25",
+    "src/card_testing_sentinel/v2/data/generator.py": "d7ae5f4cf2ef86d83a1d2fbfad927733c20f8b0edb9d4599901dfa98e43e9972",
+    "src/card_testing_sentinel/v2/evaluation/metrics.py": "bb58ab95f4741c47379e2dfd492d9166d7f1b9c7f94546296ab7dedd24d8d615",
+    "src/card_testing_sentinel/v2/modeling/weights.py": "460312de762da4d497db2411e6fda889d6a2a326311d604fddfdcaa97bd83136",
+    "src/card_testing_sentinel/v2/phase2b/batch.py": "f2789c55f478094620c9856054497c122f1f5eb66c63f40915faa3858d854b2c",
+    "src/card_testing_sentinel/v2/phase2b/engine.py": "8451f1bebca71c47b3ec2d3444766a6c363c4a0767f0e4b34c9f31b5af468ff9",
+    "src/card_testing_sentinel/v2/phase2b/features.py": "eb7f19489079bc2c725732c5ee16f8f6affe40a08515b10d76218c5139c72274",
+    "src/card_testing_sentinel/v2/phase2b/fresh_validation.py": "9990554e2a049516d7703fe6858b62ad5b1dff7a46c749e716e1ced04025115f",
+    "src/card_testing_sentinel/v2/phase2b/validation_policy.py": "80646a9ef080ecd8ada7fcdccbade0aaeec833bb97e17bc6b2606d97c06c57fc",
+    "src/card_testing_sentinel/v2/policy/rules.py": "7a5d821bae888247afbe7d5779cabc50467c9b04549807261ed11d8b8abe3aa9",
+    "src/card_testing_sentinel/v2/policy/selection.py": "d3a006866cf418716a74604fb6ffb8782fdea0bcb18221b61a926c5f82262d10",
+    "tests/v2/phase2b/test_fresh_validation.py": "6ab9ee18d29fc2a2e0205c5e21dfeee17b4c9a1ff70692e51aa5def1ce45e86c",
+    "tests/v2/phase2b/test_validation_policy.py": "22a9acaf568fe759a9a6c64ab1c0248b66b9159c2c817359fe8f82132ab0ab47"
+  },
+  "refusal_conditions": [
+    "wrong seed",
+    "existing output",
+    "training or execution freeze drift",
+    "dataset manifest drift",
+    "second generation or scoring attempt",
+    "identifier overlap",
+    "structural denominator drift",
+    "parity failure",
+    "candidate count other than 78"
+  ],
+  "selection_objective": [
+    "maximum_worst_subtype_review_or_higher_coverage",
+    "maximum_macro_subtype_review_or_higher_coverage",
+    "maximum_worst_subtype_block_coverage",
+    "maximum_macro_subtype_block_coverage",
+    "minimum_median_processed_authorizations_before_first_action",
+    "minimum_legitimate_blocks",
+    "minimum_legitimate_reviews",
+    "simpler_policy_then_more_conservative_thresholds"
+  ],
+  "tie_break": "comparison_tuple: worst subtype review, macro subtype review, worst subtype block, macro subtype block, lower delay, fewer legitimate blocks, fewer legitimate reviews, simpler family, conservative thresholds, canonical candidate JSON",
+  "training_freeze_sha256": "4f6011774b7c4b43c08c401e94107aec8e8b3378b1a5ffd0b1a85cca2dea0ee8",
+  "version": "v2-phase2b-validation-execution-freeze-1"
+}

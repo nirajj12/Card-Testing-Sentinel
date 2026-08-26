@@ -1,0 +1,23 @@
+{
+  "amended_hashes": {
+    "src/card_testing_sentinel/v2/phase2b/fresh_validation.py": "723775b0669915dee71f99b1e68cc5e88b094c3b5c64b297ae557a511468a2ae",
+    "tests/v2/phase2b/test_fresh_validation.py": "a20931af71d276795a1dc6b012f0f2b6fb6b3719a8b91415ac94b3bbe5820d26"
+  },
+  "authorized_states": [
+    "pre_generation",
+    "post_generation_pre_scoring",
+    "post_scoring"
+  ],
+  "created_utc": "2026-08-25T21:45:08.285966+00:00",
+  "dataset_regeneration_authorized": false,
+  "fresh_validation_manifest_sha256": "69775136c8c066ec849ed3b75a555ea0651fb0b321ce1b3fb7338c6238e1ea81",
+  "original_execution_freeze_sha256": "a9cb60239ae599916aff0a47082e803fb6b62614fed4473749a09a2d112e0de5",
+  "previous_hashes": {
+    "src/card_testing_sentinel/v2/phase2b/fresh_validation.py": "9990554e2a049516d7703fe6858b62ad5b1dff7a46c749e716e1ced04025115f",
+    "tests/v2/phase2b/test_fresh_validation.py": "6ab9ee18d29fc2a2e0205c5e21dfeee17b4c9a1ff70692e51aa5def1ce45e86c"
+  },
+  "reason": "Replace the pre-generation-only fresh-validation absence assertion with explicit pre-generation, post-generation/pre-scoring, and post-scoring lifecycle verification. No generator, feature, model, policy, budget, selection, metric, or reporting semantics changed.",
+  "scoring_attempt_limit": 1,
+  "training_freeze_sha256": "4f6011774b7c4b43c08c401e94107aec8e8b3378b1a5ffd0b1a85cca2dea0ee8",
+  "version": "v2-phase2b-validation-execution-freeze-amendment-001"
+}

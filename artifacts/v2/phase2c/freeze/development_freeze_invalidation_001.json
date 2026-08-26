@@ -1,0 +1,11 @@
+{
+  "blind_evaluated": false,
+  "candidates_scored": 0,
+  "confirmation_data_modified": false,
+  "confirmation_manifest_sha256": "55aeef4ed02e4d22b15a420567db69459fb247ba23e59b099b85243017d7ab3f",
+  "created_utc": "2026-08-25T23:49:11.215353+00:00",
+  "invalidated_freeze_sha256": "e3220ae35015ed5bf9737e4a6293cb11fc2351ab2aae6fee352ac8db1506bc54",
+  "performance_results_seen": false,
+  "reason": "Original replay treated a current-request block as a permanent-device block and skipped later scoring. The confirmation dataset was generated but zero candidates were scored.",
+  "version": "v2-phase2c-development-freeze-invalidation-001"
+}

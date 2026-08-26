@@ -1,0 +1,17 @@
+{
+  "candidate_count": 20,
+  "candidate_requests": 426760,
+  "candidate_requests_per_second": 2565.1033919233682,
+  "causal_replay_seconds": 166.37146141700214,
+  "deterministic_result_ordering": true,
+  "duplicate_predictions": false,
+  "fold_models_loaded_once": true,
+  "model_fit_seconds": 1.3750385000021197,
+  "per_request_dataframes": false,
+  "state_transition_benchmark": {
+    "passed": true,
+    "seconds": 4.0101904579787515,
+    "transitions": 100000,
+    "transitions_per_second": 24936.471483801495
+  }
+}

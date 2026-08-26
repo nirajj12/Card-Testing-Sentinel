@@ -1,0 +1,759 @@
+{
+  "blind_evaluated": false,
+  "candidate_count": 20,
+  "candidate_enumeration_sha256": "be733aed24d16435118aa2140eec8d3a42fdfd9ea014366bb7570e6e18d49e0b",
+  "candidates": [
+    {
+      "block_rule_score": 5,
+      "campaign_extra_evidence": 0,
+      "campaign_threshold_increment": 0.0,
+      "candidate_id": "phase2c_001",
+      "checkout_risk_multiplier": 0.55,
+      "family": "rules_only",
+      "half_life_hours": 168,
+      "high_window_hours": 336,
+      "recent_request_limit": 16,
+      "review_rule_score": 4,
+      "stable_retry_risk_multiplier": 0.8,
+      "strong_threshold": 0.8
+    },
+    {
+      "block_evidence": 0,
+      "block_high_count": 4,
+      "block_rule_score": 6,
+      "block_threshold": 0.6,
+      "campaign_extra_evidence": 0,
+      "campaign_threshold_increment": 0.0,
+      "candidate_id": "phase2c_002",
+      "checkout_risk_multiplier": 0.55,
+      "family": "persistent_ml",
+      "half_life_hours": 168,
+      "high_window_hours": 336,
+      "recent_request_limit": 16,
+      "review_high_count": 3,
+      "review_rule_score": 5,
+      "review_threshold": 0.5,
+      "stable_retry_risk_multiplier": 0.8,
+      "strong_threshold": 0.8
+    },
+    {
+      "block_evidence": 0,
+      "block_high_count": 4,
+      "block_rule_score": 6,
+      "block_threshold": 0.7,
+      "campaign_extra_evidence": 0,
+      "campaign_threshold_increment": 0.0,
+      "candidate_id": "phase2c_003",
+      "checkout_risk_multiplier": 0.55,
+      "family": "persistent_ml",
+      "half_life_hours": 168,
+      "high_window_hours": 336,
+      "recent_request_limit": 16,
+      "review_high_count": 3,
+      "review_rule_score": 5,
+      "review_threshold": 0.55,
+      "stable_retry_risk_multiplier": 0.8,
+      "strong_threshold": 0.8
+    },
+    {
+      "block_evidence": 0,
+      "block_high_count": 4,
+      "block_rule_score": 6,
+      "block_threshold": 0.8,
+      "campaign_extra_evidence": 0,
+      "campaign_threshold_increment": 0.0,
+      "candidate_id": "phase2c_004",
+      "checkout_risk_multiplier": 0.55,
+      "family": "persistent_ml",
+      "half_life_hours": 168,
+      "high_window_hours": 336,
+      "recent_request_limit": 16,
+      "review_high_count": 3,
+      "review_rule_score": 5,
+      "review_threshold": 0.6,
+      "stable_retry_risk_multiplier": 0.8,
+      "strong_threshold": 0.8
+    },
+    {
+      "block_evidence": 0,
+      "block_high_count": 5,
+      "block_rule_score": 6,
+      "block_threshold": 0.6,
+      "campaign_extra_evidence": 0,
+      "campaign_threshold_increment": 0.0,
+      "candidate_id": "phase2c_005",
+      "checkout_risk_multiplier": 0.55,
+      "family": "persistent_ml",
+      "half_life_hours": 168,
+      "high_window_hours": 336,
+      "recent_request_limit": 16,
+      "review_high_count": 4,
+      "review_rule_score": 5,
+      "review_threshold": 0.5,
+      "stable_retry_risk_multiplier": 0.8,
+      "strong_threshold": 0.8
+    },
+    {
+      "block_consecutive": 4,
+      "block_evidence": 0,
+      "block_rule_score": 6,
+      "block_threshold": 0.7,
+      "campaign_extra_evidence": 0,
+      "campaign_threshold_increment": 0.0,
+      "candidate_id": "phase2c_006",
+      "checkout_risk_multiplier": 0.55,
+      "family": "consecutive_high",
+      "half_life_hours": 168,
+      "high_window_hours": 336,
+      "recent_request_limit": 16,
+      "review_consecutive": 3,
+      "review_rule_score": 5,
+      "review_threshold": 0.5,
+      "stable_retry_risk_multiplier": 0.8,
+      "strong_threshold": 0.8
+    },
+    {
+      "block_consecutive": 4,
+      "block_evidence": 0,
+      "block_rule_score": 6,
+      "block_threshold": 0.8,
+      "campaign_extra_evidence": 0,
+      "campaign_threshold_increment": 0.0,
+      "candidate_id": "phase2c_007",
+      "checkout_risk_multiplier": 0.55,
+      "family": "consecutive_high",
+      "half_life_hours": 168,
+      "high_window_hours": 336,
+      "recent_request_limit": 16,
+      "review_consecutive": 3,
+      "review_rule_score": 5,
+      "review_threshold": 0.6,
+      "stable_retry_risk_multiplier": 0.8,
+      "strong_threshold": 0.8
+    },
+    {
+      "block_consecutive": 5,
+      "block_evidence": 0,
+      "block_rule_score": 6,
+      "block_threshold": 0.7,
+      "campaign_extra_evidence": 0,
+      "campaign_threshold_increment": 0.0,
+      "candidate_id": "phase2c_008",
+      "checkout_risk_multiplier": 0.55,
+      "family": "consecutive_high",
+      "half_life_hours": 168,
+      "high_window_hours": 336,
+      "recent_request_limit": 16,
+      "review_consecutive": 4,
+      "review_rule_score": 5,
+      "review_threshold": 0.5,
+      "stable_retry_risk_multiplier": 0.8,
+      "strong_threshold": 0.8
+    },
+    {
+      "block_accumulated": 3.2,
+      "block_evidence": 1,
+      "block_rule_score": 6,
+      "campaign_extra_evidence": 0,
+      "campaign_threshold_increment": 0.0,
+      "candidate_id": "phase2c_009",
+      "checkout_risk_multiplier": 0.55,
+      "family": "accumulated_decay",
+      "half_life_hours": 168,
+      "high_window_hours": 336,
+      "recent_request_limit": 16,
+      "review_accumulated": 1.8,
+      "review_rule_score": 5,
+      "stable_retry_risk_multiplier": 0.8,
+      "strong_threshold": 0.8
+    },
+    {
+      "block_accumulated": 3.6,
+      "block_evidence": 1,
+      "block_rule_score": 6,
+      "campaign_extra_evidence": 0,
+      "campaign_threshold_increment": 0.0,
+      "candidate_id": "phase2c_010",
+      "checkout_risk_multiplier": 0.55,
+      "family": "accumulated_decay",
+      "half_life_hours": 168,
+      "high_window_hours": 336,
+      "recent_request_limit": 16,
+      "review_accumulated": 2.1,
+      "review_rule_score": 5,
+      "stable_retry_risk_multiplier": 0.8,
+      "strong_threshold": 0.8
+    },
+    {
+      "block_accumulated": 4.0,
+      "block_evidence": 1,
+      "block_rule_score": 6,
+      "campaign_extra_evidence": 0,
+      "campaign_threshold_increment": 0.0,
+      "candidate_id": "phase2c_011",
+      "checkout_risk_multiplier": 0.55,
+      "family": "accumulated_decay",
+      "half_life_hours": 336,
+      "high_window_hours": 336,
+      "recent_request_limit": 16,
+      "review_accumulated": 2.4,
+      "review_rule_score": 5,
+      "stable_retry_risk_multiplier": 0.8,
+      "strong_threshold": 0.8
+    },
+    {
+      "block_evidence": 1,
+      "block_high_count": 4,
+      "block_rule_score": 6,
+      "block_threshold": 0.7,
+      "campaign_extra_evidence": 0,
+      "campaign_threshold_increment": 0.0,
+      "candidate_id": "phase2c_012",
+      "checkout_risk_multiplier": 0.55,
+      "family": "long_term_corroborated",
+      "half_life_hours": 168,
+      "high_window_hours": 336,
+      "recent_request_limit": 16,
+      "review_evidence": 1,
+      "review_high_count": 3,
+      "review_rule_score": 5,
+      "review_threshold": 0.5,
+      "stable_retry_risk_multiplier": 0.8,
+      "strong_threshold": 0.8
+    },
+    {
+      "block_evidence": 1,
+      "block_high_count": 4,
+      "block_rule_score": 6,
+      "block_threshold": 0.8,
+      "campaign_extra_evidence": 0,
+      "campaign_threshold_increment": 0.0,
+      "candidate_id": "phase2c_013",
+      "checkout_risk_multiplier": 0.55,
+      "family": "long_term_corroborated",
+      "half_life_hours": 168,
+      "high_window_hours": 336,
+      "recent_request_limit": 16,
+      "review_evidence": 1,
+      "review_high_count": 3,
+      "review_rule_score": 5,
+      "review_threshold": 0.6,
+      "stable_retry_risk_multiplier": 0.8,
+      "strong_threshold": 0.8
+    },
+    {
+      "block_evidence": 2,
+      "block_high_count": 3,
+      "block_rule_score": 6,
+      "block_threshold": 0.7,
+      "campaign_extra_evidence": 0,
+      "campaign_threshold_increment": 0.0,
+      "candidate_id": "phase2c_014",
+      "checkout_risk_multiplier": 0.55,
+      "family": "long_term_corroborated",
+      "half_life_hours": 168,
+      "high_window_hours": 336,
+      "recent_request_limit": 16,
+      "review_evidence": 2,
+      "review_high_count": 2,
+      "review_rule_score": 5,
+      "review_threshold": 0.5,
+      "stable_retry_risk_multiplier": 0.8,
+      "strong_threshold": 0.8
+    },
+    {
+      "block_evidence": 0,
+      "block_high_count": 4,
+      "block_rule_score": 6,
+      "block_threshold": 0.7,
+      "campaign_extra_evidence": 1,
+      "campaign_threshold_increment": 0.1,
+      "candidate_id": "phase2c_015",
+      "checkout_risk_multiplier": 0.55,
+      "family": "campaign_aware",
+      "half_life_hours": 168,
+      "high_window_hours": 336,
+      "recent_request_limit": 16,
+      "review_high_count": 3,
+      "review_rule_score": 5,
+      "review_threshold": 0.5,
+      "stable_retry_risk_multiplier": 0.8,
+      "strong_threshold": 0.8
+    },
+    {
+      "block_evidence": 0,
+      "block_high_count": 4,
+      "block_rule_score": 6,
+      "block_threshold": 0.75,
+      "campaign_extra_evidence": 1,
+      "campaign_threshold_increment": 0.1,
+      "candidate_id": "phase2c_016",
+      "checkout_risk_multiplier": 0.55,
+      "family": "campaign_aware",
+      "half_life_hours": 168,
+      "high_window_hours": 336,
+      "recent_request_limit": 16,
+      "review_high_count": 3,
+      "review_rule_score": 5,
+      "review_threshold": 0.55,
+      "stable_retry_risk_multiplier": 0.8,
+      "strong_threshold": 0.8
+    },
+    {
+      "block_evidence": 0,
+      "block_high_count": 4,
+      "block_rule_score": 6,
+      "block_threshold": 0.8,
+      "campaign_extra_evidence": 1,
+      "campaign_threshold_increment": 0.05,
+      "candidate_id": "phase2c_017",
+      "checkout_risk_multiplier": 0.55,
+      "family": "campaign_aware",
+      "half_life_hours": 168,
+      "high_window_hours": 336,
+      "recent_request_limit": 16,
+      "review_high_count": 3,
+      "review_rule_score": 5,
+      "review_threshold": 0.6,
+      "stable_retry_risk_multiplier": 0.8,
+      "strong_threshold": 0.8
+    },
+    {
+      "block_evidence": 0,
+      "block_high_count": 4,
+      "block_rule_score": 6,
+      "block_threshold": 0.7,
+      "campaign_extra_evidence": 0,
+      "campaign_threshold_increment": 0.0,
+      "candidate_id": "phase2c_018",
+      "checkout_risk_multiplier": 0.45,
+      "family": "checkout_protected",
+      "half_life_hours": 168,
+      "high_window_hours": 336,
+      "recent_request_limit": 16,
+      "review_high_count": 3,
+      "review_rule_score": 5,
+      "review_threshold": 0.5,
+      "stable_retry_risk_multiplier": 0.8,
+      "strong_threshold": 0.8
+    },
+    {
+      "block_evidence": 0,
+      "block_high_count": 4,
+      "block_rule_score": 6,
+      "block_threshold": 0.75,
+      "campaign_extra_evidence": 0,
+      "campaign_threshold_increment": 0.0,
+      "candidate_id": "phase2c_019",
+      "checkout_risk_multiplier": 0.55,
+      "family": "checkout_protected",
+      "half_life_hours": 168,
+      "high_window_hours": 336,
+      "recent_request_limit": 16,
+      "review_high_count": 3,
+      "review_rule_score": 5,
+      "review_threshold": 0.55,
+      "stable_retry_risk_multiplier": 0.8,
+      "strong_threshold": 0.8
+    },
+    {
+      "block_evidence": 0,
+      "block_high_count": 4,
+      "block_rule_score": 6,
+      "block_threshold": 0.8,
+      "campaign_extra_evidence": 0,
+      "campaign_threshold_increment": 0.0,
+      "candidate_id": "phase2c_020",
+      "checkout_risk_multiplier": 0.65,
+      "family": "checkout_protected",
+      "half_life_hours": 168,
+      "high_window_hours": 336,
+      "recent_request_limit": 16,
+      "review_high_count": 3,
+      "review_rule_score": 5,
+      "review_threshold": 0.6,
+      "stable_retry_risk_multiplier": 0.8,
+      "strong_threshold": 0.8
+    }
+  ],
+  "canonical_reproduction_sha256": "ec4cf9e05c996a055a18b1256970b0b7049b2f9a0c3151b23c9bf716c3a2da99",
+  "confirmation_candidates_scored_before_replacement": 0,
+  "confirmation_device_contract_sha256": "834624d0b9b97357547022eefcf1d6014339f52d618bfca1625bcaedbdd6b5d8",
+  "confirmation_generated_before_replacement": true,
+  "confirmation_manifest_sha256": "55aeef4ed02e4d22b15a420567db69459fb247ba23e59b099b85243017d7ab3f",
+  "confirmation_raw_sha256": "98a9d99fcd35f828b0eedafe727d0ead8ad71ce7b1b6b0fd3dcbb2940eb17d26",
+  "confirmation_seed": 20260827,
+  "created_utc": "2026-08-25T23:49:11.215353+00:00",
+  "effectiveness_targets": {
+    "burst_review_or_higher": 0.9,
+    "evasive_review_or_higher": 0.5,
+    "overall_block": 0.5,
+    "overall_review_or_higher": 0.7,
+    "patient_review_or_higher": 0.4
+  },
+  "invalidation_sha256": "a8c457ae622aed4480ffd0a16d600610e6e6071afb856ecedbca6c8d7e71aa88",
+  "policy_or_threshold_changes": false,
+  "protected_hashes": {
+    "artifacts/v2/phase2c/development_causal_replay_001/candidate_grid.json": "2a0730b771d141ed0f271b5e2c44de270dde1cfa81ee21eb4c7e501d5649e265",
+    "artifacts/v2/phase2c/development_causal_replay_001/candidate_metrics.json": "ebb8856c02b65342a443fc5c6dd592614daf8f7e1a9aee8c7bcf52dc23eb84e8",
+    "artifacts/v2/phase2c/development_causal_replay_001/candidate_results.csv": "84666ea9c557084a89a1f573e9f2284ce4aeea785f7fe8f433d0651fb1013be9",
+    "artifacts/v2/phase2c/development_causal_replay_001/fold_isolation.json": "9a45143bb39ce806750e93af1e15718aa241c9d85b1e37640f9bc3cbf0ca84e0",
+    "artifacts/v2/phase2c/development_causal_replay_001/fold_metrics.csv": "2e289865fcf99d608df3cbb6048c8225b70524206ada1a49f6e23061b545acd9",
+    "artifacts/v2/phase2c/development_causal_replay_001/runtime.json": "3aded54bc73985e580d8904717573c03709cdf04bac4bbcd66973d094f05d512",
+    "artifacts/v2/phase2c/development_causal_replay_001/selected_oof_decisions.csv": "dedc11c95924e64e7ecb69af322a73bfbf8c6f3174f567162e6e7c4b54ee0ba6",
+    "artifacts/v2/phase2c/development_causal_replay_001/selected_oof_device_summary.csv": "7b42854c3d0b0bcc8e2c6b4bcd26e02a10aecce0a6e293da08c2930a632a42e9",
+    "artifacts/v2/phase2c/development_causal_replay_001/selection.json": "2a73799345ad0c07b52387dd6ff1e79696487e25c854958cfa58b448e2784fc3",
+    "configs/v2/phase2c/confirmation.yaml": "3bbb6ad98c46e5ba41c30808bd95cda7e0071316dddf10d6ef0eba5630542b95",
+    "configs/v2/phase2c/policy.yaml": "457138fc169dfe0860e2cf0da5dc0bb726ef794ad08e1051076a4e421ad7e600",
+    "configs/v2/phase2c/requirements-lock.txt": "a4ce76b17ce8ac6a7a5da86428d2fb15e854ec9444d45b44a69233154045da38",
+    "reports/v2/phase2c/training_oof_development_causal_replay_001.md": "5e9856932f74a9248a12c049666c9b508fd3d01b9d9cffaab54bb2d8eda84315",
+    "scripts/v2/phase2c/create_replay_correction.py": "a5b8a077de9111e89e69f5208d9feed5f7fef3d423159c1e5133828dc2a2ad81",
+    "scripts/v2/phase2c/resume_confirmation.py": "5fe1c151b0539c4b33329d8fcceb4fd39b928c361cb40a3db5800d19b44419d4",
+    "scripts/v2/phase2c/run_training_oof.py": "8fa66b1e1346fa5b2b8751875a6ac1df8a2cbd43edf10e4351805d4c0b900a7e",
+    "src/card_testing_sentinel/v2/phase2c/amendment.py": "7f698bbefdb66540520af65d41352760eb01d9d0a173958c6e099a81ba03bfdf",
+    "src/card_testing_sentinel/v2/phase2c/confirmation.py": "35b8460050bba9deb44270be79c398d0051adb512bb432da81614af8b34ea531",
+    "src/card_testing_sentinel/v2/phase2c/development.py": "d655c00f8972113b9a26d7d8dcfdefb8a0efbab4fe83a4648c1f7a953e84e90e",
+    "src/card_testing_sentinel/v2/phase2c/evaluation.py": "973a65f7093d0a3c6483efa9360e851c8792eb6e071597d02847ad3f305aa820",
+    "src/card_testing_sentinel/v2/phase2c/policy.py": "7452642b49e98fe149aad69eadb1d721b3fa47f53867d6840c3e4eec0d5864f8",
+    "src/card_testing_sentinel/v2/phase2c/replay.py": "c2e9434757db1467a2f6249d123705ca31a766901344cc01190569efd1325ef6",
+    "src/card_testing_sentinel/v2/phase2c/resumed_evaluation.py": "6eddfb3fad097c7915d9cede46f01164ce4822015dda050893b264cdf807810f",
+    "tests/v2/phase2c/test_confirmation.py": "f5b9fc983d63d4fde78dac5ceda8ff4ebb6ed4bd013c4b76862e1f45521d2c36",
+    "tests/v2/phase2c/test_policy.py": "4ffb96b9fc6783e4c935e7f62eb87e25b5e2af122b937969a1a5544ac4a5104e",
+    "tests/v2/phase2c/test_replay.py": "4b45cc906cd02486b32f6da675cc216e1bc85fd4fdd58df3cc4d76595f166118",
+    "tests/v2/phase2c/test_resume.py": "c9c4932e2f28a6f89a1c38c54e7ba4597a5e2c3eee733caec8d7139fae170eec"
+  },
+  "protected_phase2b_hashes": {
+    "artifacts/v2/phase2b/training/freeze/training_freeze.json": "4f6011774b7c4b43c08c401e94107aec8e8b3378b1a5ffd0b1a85cca2dea0ee8",
+    "artifacts/v2/phase2b/validation/execution_freeze.json": "a9cb60239ae599916aff0a47082e803fb6b62614fed4473749a09a2d112e0de5",
+    "artifacts/v2/phase2b/validation/execution_freeze_amendment_001.json": "f79e3a3449d7d2b0c57d170d8555eb542ee4ab8f93cedfff1347522ca7d9ff19",
+    "artifacts/v2/phase2b/validation/final_hash_manifest.json": "37c9fe0520aa4998d04f9ac142b48a68af01ecc80b807f75a66fdb432b36e534",
+    "artifacts/v2/phase2b/validation/frozen_operational_policy.json": "d57c60d5eb0f08e2d2452944e1b7db623e62de36d261506516056c42378095a3"
+  },
+  "replaces_freeze_sha256": "e3220ae35015ed5bf9737e4a6293cb11fc2351ab2aae6fee352ac8db1506bc54",
+  "replay_semantic_change_only": true,
+  "safety_rates": {
+    "flash_hard_retry": {
+      "block_rate": 0.05,
+      "review_or_higher_rate": 0.1
+    },
+    "flash_standard": {
+      "block_rate": 0.03,
+      "review_or_higher_rate": 0.05
+    },
+    "normal_bad_luck": {
+      "block_rate": 0.02,
+      "review_or_higher_rate": 0.05
+    },
+    "normal_standard": {
+      "block_rate": 0.005,
+      "review_or_higher_rate": 0.02
+    },
+    "overall_legitimate": {
+      "block_rate": 0.01,
+      "review_or_higher_rate": 0.03
+    }
+  },
+  "selection_order": [
+    "highest_worst_subtype_review_coverage",
+    "highest_overall_attacker_block_coverage",
+    "earliest_median_detection",
+    "lowest_legitimate_block_count",
+    "lowest_legitimate_review_count",
+    "lower_policy_complexity",
+    "stable_candidate_id"
+  ],
+  "training_oof_selected_candidate": {
+    "block_evidence": 0,
+    "block_high_count": 4,
+    "block_rule_score": 6,
+    "block_threshold": 0.7,
+    "campaign_extra_evidence": 0,
+    "campaign_threshold_increment": 0.0,
+    "candidate_id": "phase2c_003",
+    "checkout_risk_multiplier": 0.55,
+    "family": "persistent_ml",
+    "half_life_hours": 168,
+    "high_window_hours": 336,
+    "recent_request_limit": 16,
+    "review_high_count": 3,
+    "review_rule_score": 5,
+    "review_threshold": 0.55,
+    "stable_retry_risk_multiplier": 0.8,
+    "strong_threshold": 0.8
+  },
+  "training_oof_selected_metrics": {
+    "attacker_block": {
+      "denominator": 1200,
+      "numerator": 930,
+      "rate": 0.775
+    },
+    "attacker_review_or_higher": {
+      "denominator": 1200,
+      "numerator": 1111,
+      "rate": 0.9258333333333333
+    },
+    "budget_results": {
+      "flash_hard_retry": {
+        "block_allowance_devices": 20,
+        "block_devices": 0,
+        "block_excess_devices": 0,
+        "denominator_devices": 400,
+        "passed": true,
+        "review_allowance_devices": 40,
+        "review_excess_devices": 0,
+        "review_only_devices": 2,
+        "review_or_higher_devices": 2
+      },
+      "flash_standard": {
+        "block_allowance_devices": 36,
+        "block_devices": 0,
+        "block_excess_devices": 0,
+        "denominator_devices": 1200,
+        "passed": true,
+        "review_allowance_devices": 60,
+        "review_excess_devices": 0,
+        "review_only_devices": 0,
+        "review_or_higher_devices": 0
+      },
+      "normal_bad_luck": {
+        "block_allowance_devices": 8,
+        "block_devices": 3,
+        "block_excess_devices": 0,
+        "denominator_devices": 400,
+        "passed": true,
+        "review_allowance_devices": 20,
+        "review_excess_devices": 0,
+        "review_only_devices": 17,
+        "review_or_higher_devices": 20
+      },
+      "normal_standard": {
+        "block_allowance_devices": 24,
+        "block_devices": 0,
+        "block_excess_devices": 0,
+        "denominator_devices": 4800,
+        "passed": true,
+        "review_allowance_devices": 96,
+        "review_excess_devices": 0,
+        "review_only_devices": 0,
+        "review_or_higher_devices": 0
+      },
+      "overall_legitimate": {
+        "block_allowance_devices": 68,
+        "block_devices": 3,
+        "block_excess_devices": 0,
+        "denominator_devices": 6800,
+        "passed": true,
+        "review_allowance_devices": 204,
+        "review_excess_devices": 0,
+        "review_only_devices": 19,
+        "review_or_higher_devices": 22
+      }
+    },
+    "effectiveness_failures": [],
+    "effectiveness_passed": true,
+    "effectiveness_results": {
+      "burst_review_or_higher": {
+        "actual": 0.9958333333333333,
+        "minimum": 0.9,
+        "passed": true
+      },
+      "evasive_review_or_higher": {
+        "actual": 0.9444444444444444,
+        "minimum": 0.5,
+        "passed": true
+      },
+      "overall_block": {
+        "actual": 0.775,
+        "minimum": 0.5,
+        "passed": true
+      },
+      "overall_review_or_higher": {
+        "actual": 0.9258333333333333,
+        "minimum": 0.7,
+        "passed": true
+      },
+      "patient_review_or_higher": {
+        "actual": 0.8138888888888889,
+        "minimum": 0.4,
+        "passed": true
+      }
+    },
+    "failed_constraints": [],
+    "feasible": true,
+    "intervention_distributions": {
+      "authorizations_processed_before_first_action": {
+        "count": 1111,
+        "mean": 4.200720072007201,
+        "median": 4.0,
+        "p90": 5.0
+      },
+      "distinct_cards_processed_before_first_action": {
+        "count": 1111,
+        "mean": 2.17011701170117,
+        "median": 2.0,
+        "p90": 3.0
+      },
+      "distinct_cards_requested_through_first_action": {
+        "count": 1111,
+        "mean": 2.6183618361836185,
+        "median": 3.0,
+        "p90": 4.0
+      },
+      "requests_scored_through_first_action": {
+        "count": 1111,
+        "mean": 5.297029702970297,
+        "median": 5.0,
+        "p90": 6.0
+      },
+      "seconds_to_first_review": {
+        "count": 1111,
+        "mean": 64371.934293429345,
+        "median": 336.0,
+        "p90": 260033.0
+      }
+    },
+    "legitimate_blocks": 3,
+    "legitimate_review_or_higher": 22,
+    "never_detected_attackers": 89,
+    "potentially_preventable_later_attempts_offline_upper_bound": 3347,
+    "safety_failures": [],
+    "safety_passed": true,
+    "subtype": {
+      "burst": {
+        "block": {
+          "denominator": 480,
+          "numerator": 453,
+          "rate": 0.94375
+        },
+        "never_detected": 2,
+        "review_or_higher": {
+          "denominator": 480,
+          "numerator": 478,
+          "rate": 0.9958333333333333
+        },
+        "within_attempt": {
+          "1": {
+            "block": 0,
+            "denominator": 480,
+            "review_or_higher": 0
+          },
+          "10": {
+            "block": 453,
+            "denominator": 480,
+            "review_or_higher": 478
+          },
+          "3": {
+            "block": 0,
+            "denominator": 480,
+            "review_or_higher": 0
+          },
+          "5": {
+            "block": 3,
+            "denominator": 480,
+            "review_or_higher": 344
+          }
+        }
+      },
+      "evasive": {
+        "block": {
+          "denominator": 360,
+          "numerator": 239,
+          "rate": 0.6638888888888889
+        },
+        "never_detected": 20,
+        "review_or_higher": {
+          "denominator": 360,
+          "numerator": 340,
+          "rate": 0.9444444444444444
+        },
+        "within_attempt": {
+          "1": {
+            "block": 0,
+            "denominator": 360,
+            "review_or_higher": 0
+          },
+          "10": {
+            "block": 239,
+            "denominator": 360,
+            "review_or_higher": 340
+          },
+          "3": {
+            "block": 0,
+            "denominator": 360,
+            "review_or_higher": 0
+          },
+          "5": {
+            "block": 0,
+            "denominator": 360,
+            "review_or_higher": 249
+          }
+        }
+      },
+      "patient": {
+        "block": {
+          "denominator": 360,
+          "numerator": 238,
+          "rate": 0.6611111111111111
+        },
+        "never_detected": 67,
+        "review_or_higher": {
+          "denominator": 360,
+          "numerator": 293,
+          "rate": 0.8138888888888889
+        },
+        "within_attempt": {
+          "1": {
+            "block": 0,
+            "denominator": 360,
+            "review_or_higher": 0
+          },
+          "10": {
+            "block": 238,
+            "denominator": 360,
+            "review_or_higher": 293
+          },
+          "3": {
+            "block": 0,
+            "denominator": 360,
+            "review_or_higher": 0
+          },
+          "5": {
+            "block": 4,
+            "denominator": 360,
+            "review_or_higher": 134
+          }
+        }
+      }
+    },
+    "within_attempt": {
+      "1": {
+        "block": 0,
+        "denominator": 1200,
+        "review_or_higher": 0
+      },
+      "10": {
+        "block": 930,
+        "denominator": 1200,
+        "review_or_higher": 1111
+      },
+      "3": {
+        "block": 0,
+        "denominator": 1200,
+        "review_or_higher": 0
+      },
+      "5": {
+        "block": 7,
+        "denominator": 1200,
+        "review_or_higher": 727
+      }
+    },
+    "worst_subtype_review_coverage": 0.8138888888888889
+  },
+  "training_oof_selected_stability": {
+    "failures": [],
+    "folds": 5,
+    "overall_review_range": 0.06666666666666676,
+    "passed": true
+  },
+  "version": "v2-phase2c-development-freeze-replacement-001"
+}
