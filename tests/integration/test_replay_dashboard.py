@@ -163,42 +163,96 @@ def test_product_page_has_no_framework_cdn_or_inline_javascript(client):
     )
     # The old research-dashboard hierarchy is gone from the product page.
     for removed in (
-        "Frozen Evaluation",
         "Blind Replay",
-        "System Integrity",
         "Advanced API Proof",
+        "algorithm selector",
     ):
         assert removed.lower() not in html
+    # The three approved views and the redesigned Overview narrative.
     for required in (
-        "Live Merchant Protection",
+        "Overview",
+        "Detect card-testing",
+        "Watch Live Traffic",
+        "Why this approach works",
+        "How it works",
+        "Why not just count attempts?",
+        "Known limitation",
+        "Live Traffic",
+        "Replay Lab",
         "Customer view",
         "Fraud Operations",
-        "Authoritative Transaction Timeline",
-        "How a request is decided",
+        "Decision history",
+        "PreAuth Sentinel",
     ):
         assert required.lower() in html
-    assert 'id="verified-results-grid"' in html
-    assert 'id="customer-status"' in html
-    assert 'id="ops-body"' in html
+    # Containers the Overview renderer fills from the frozen blind-evaluation
+    # artifact (/api/metrics/blind). Nothing on Overview is hardcoded except
+    # the labelled latency benchmark the API does not serve.
+    for element_id in (
+        "m-recall",
+        "m-reviewed",
+        "m-blocked",
+        "compare-table",
+        "compare-note",
+        "limitation-detail",
+        "customer-status",
+        "ops-body",
+        "traffic-feed",
+        "risk-detail",
+    ):
+        assert f'id="{element_id}"' in html
+    # The synthetic / not-production disclaimer stays on the page
+    # unconditionally; everything deeper lives in the README.
+    assert "frozen synthetic held-out evaluation · not production performance" in html
+    # Overview must stay a landing page, not a second README: runtime
+    # internals, the reproducibility command block and the full evaluation
+    # sweep belong in the repository.
+    for internal in (
+        "journal mode",
+        "artifact loads",
+        "concurrency",
+        "verify it yourself",
+        "sha-256 every runtime artifact",
+    ):
+        assert internal not in html
 
 
 def test_mandatory_limitations_are_served_from_the_frozen_artifact(client):
-    """The disclosure list must come from the artifact, not hardcoded markup."""
+    """The disclosure list must come from the artifact, not hardcoded markup.
+
+    Detection latency, the never-detected count and the per-subtype gaps moved
+    to `detection_latency` and `failure_modes`, which render in their own
+    section. They are asserted there rather than here so the page states each
+    fact once -- the guarantee is unchanged, the field that owns it is not.
+    """
     payload = client.get("/api/metrics/blind").json()
     limitations = payload["limitations"]
-    assert len(limitations) == 10
+    assert 5 <= len(limitations) <= 8, "the list must stay readable"
+    # The structural caveat leads, so the bare zero-block count is never read
+    # without the reason it is close to guaranteed on this dataset.
+    assert "few attempts" in limitations[0]
+    assert "borderline" in limitations[0]
     joined = " ".join(limitations).lower()
-    assert "risk score is not a guaranteed fraud probability" in joined
-    assert "no attacker was detected within the first three attempts" in joined
-    assert "29 of 300 blind attackers were never detected" in joined
+    assert "not a guaranteed fraud probability" in joined
     assert "offline replay upper bound" in joined
     assert "synthetic data" in joined
+    assert all(line.strip() for line in limitations)
+    # Nothing in the list may restate what the metrics sections already show.
+    for duplicated in ("median first", "first three attempts", "never detected"):
+        assert duplicated not in joined, duplicated
+
     # Detection-latency numbers are derived, never typed by hand.
     latency = payload["detection_latency"]
     assert latency["median_first_review_attempt"] == 5
     assert latency["median_first_block_attempt"] == 7
-    assert f"attempt {latency['median_first_review_attempt']}." in joined
-    assert f"attempt {latency['median_first_block_attempt']}." in joined
+
+    # The failure facts are still served, from the field that owns them.
+    failures = payload["failure_modes"]
+    assert failures["never_detected"] == 29
+    assert failures["attacker_devices"] == 300
+    assert failures["detected_within_three_attempts"] == 0
+    assert sum(row["never_detected"] for row in failures["by_subtype"]) == 29
+
     # Denominators are served so the dashboard never hardcodes 1,700 / 300.
     assert payload["denominators"]["legitimate_devices"] == 1700
     assert payload["denominators"]["attacker_devices"] == 300
@@ -214,7 +268,7 @@ def test_frontend_modules_use_safe_dom_and_responsive_css():
     assert "textContent" in scripts
     # Attempt numbering still falls back to positional order for live rows.
     assert "row.request_index || index + 1" in scripts
-    assert "Loading verified evidence and runtime state" in scripts
+    assert "Loading runtime state and frozen evaluation evidence" in scripts
     css = (static / "dashboard.css").read_text()
     assert "@media (max-width: 560px)" in css
     assert "overflow-x: hidden" in css
@@ -257,3 +311,20 @@ def test_console_uses_the_real_production_endpoints():
     assert "api.precheck" in console
     assert "sendIdempotentRetry" in console
     assert "409" in console
+
+
+def test_how_it_works_flow_carries_the_causal_story_on_overview(client):
+    """The request -> features -> score -> policy -> decision flow answers
+    "what does it actually do", which is the fourth question a judge asks and
+    the last one answerable from the console alone. It sits in the Overview
+    narrative, and the outcome-arrives-later note is the whole architectural
+    claim -- so it must be stated there, not in the Replay Lab."""
+    html = client.get("/").text
+    overview = html[html.index('id="view-overview"') : html.index('id="view-traffic"')]
+    replay = html[html.index('id="view-replay"') :]
+    assert "how-flow" in overview
+    assert "how-flow" not in replay
+    assert "44 causal features" in overview
+    assert "The bank outcome arrives later" in overview
+    assert "never used for the current decision" in overview
+    assert "next request" in overview

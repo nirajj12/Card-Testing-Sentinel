@@ -70,8 +70,15 @@ export const api = {
   decisions: (limit = 25) => get(query("/api/runtime/decisions", { limit })),
   deviceTimeline: (id) => get(`/api/runtime/devices/${encodeURIComponent(id)}/timeline`),
 
+  /* Mixed merchant traffic. `trafficStart` takes no body on purpose: the
+     operator starts traffic, they do not choose who is in it. */
+  trafficStart: () => post("/api/demo/traffic/start", {}),
+  trafficStep: (trafficRunId) => post("/api/demo/traffic/step", { traffic_run_id: trafficRunId }),
+  /* Ground truth is a separate, explicitly-requested call so it never
+     travels alongside a decision response. */
+  trafficTruth: (trafficRunId) => post("/api/demo/traffic/truth", { traffic_run_id: trafficRunId }),
+
   demoScenarios: () => get("/api/demo/scenarios"),
   demoStart: (scenario) => post("/api/demo/start", { scenario }),
   demoStep: (demoId) => post("/api/demo/step", { demo_id: demoId }),
-  demoReset: () => post("/api/demo/reset", {}),
 };

@@ -226,31 +226,31 @@ SCENARIO_PLANS: dict[str, tuple[PlannedAttempt, ...]] = {
 #: scoring hint, and nothing that could leak into a precheck body.
 SCENARIO_CATALOG: dict[str, dict] = {
     "normal_customer": {
-        "label": "Normal customer",
+        "label": "Everyday Checkout",
         "attempts": len(SCENARIO_PLANS["normal_customer"]),
     },
     "normal_bad_luck": {
-        "label": "Normal bad luck",
+        "label": "Bad-Luck Retry",
         "attempts": len(SCENARIO_PLANS["normal_bad_luck"]),
     },
     "flash_standard": {
-        "label": "Flash sale",
+        "label": "Flash Sale",
         "attempts": len(SCENARIO_PLANS["flash_standard"]),
     },
     "flash_hard_retry": {
-        "label": "Flash hard retry",
+        "label": "Flash-Sale Hard Retry",
         "attempts": len(SCENARIO_PLANS["flash_hard_retry"]),
     },
     "burst_attacker": {
-        "label": "Burst attacker",
+        "label": "Burst Card Testing",
         "attempts": len(SCENARIO_PLANS["burst_attacker"]),
     },
     "evasive_attacker": {
-        "label": "Evasive attacker",
+        "label": "Evasive Card Testing",
         "attempts": len(SCENARIO_PLANS["evasive_attacker"]),
     },
     "patient_attacker": {
-        "label": "Patient attacker",
+        "label": "Patient Card Testing",
         "attempts": len(SCENARIO_PLANS["patient_attacker"]),
     },
 }

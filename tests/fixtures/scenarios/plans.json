@@ -2,31 +2,31 @@
   "catalog": {
     "burst_attacker": {
       "attempts": 8,
-      "label": "Burst attacker"
+      "label": "Burst Card Testing"
     },
     "evasive_attacker": {
       "attempts": 9,
-      "label": "Evasive attacker"
+      "label": "Evasive Card Testing"
     },
     "flash_hard_retry": {
       "attempts": 5,
-      "label": "Flash hard retry"
+      "label": "Flash-Sale Hard Retry"
     },
     "flash_standard": {
       "attempts": 3,
-      "label": "Flash sale"
+      "label": "Flash Sale"
     },
     "normal_bad_luck": {
       "attempts": 4,
-      "label": "Normal bad luck"
+      "label": "Bad-Luck Retry"
     },
     "normal_customer": {
       "attempts": 2,
-      "label": "Normal customer"
+      "label": "Everyday Checkout"
     },
     "patient_attacker": {
       "attempts": 9,
-      "label": "Patient attacker"
+      "label": "Patient Card Testing"
     }
   },
   "note": "Deterministic scenario input fixtures (Stage 3). These are the exact raw-event shapes (identity suffixes, timing gaps, amounts, campaign flag, honest processor-outcome guess) SCENARIO_PLANS produces -- no randomness, no scenario label leaking into any field a fraud decision ever sees, and no expected decision recorded here. What each real run actually decides is left for the real FraudDetectionService to determine.",

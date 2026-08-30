@@ -131,3 +131,33 @@ class DemoStartRequest(StrictRequest):
 
 class DemoStepRequest(StrictRequest):
     demo_id: Identifier
+
+
+class TrafficStartRequest(StrictRequest):
+    """Begin a mixed-traffic run.
+
+    `seed` is optional. Omitted, the server draws one so consecutive runs
+    differ; supplied, the run is reproduced exactly. It selects which devices
+    arrive and when — never what any of them does, and never anything the
+    scoring path can see.
+    """
+
+    seed: int | None = Field(default=None, ge=0, lt=2**31)
+
+
+class TrafficStepRequest(StrictRequest):
+    """Advance a mixed-traffic run by one payment.
+
+    Deliberately carries no scenario, device or expected-outcome field: the
+    schedule lives entirely on the server, and the operator cannot steer
+    which device arrives next. Like every other request model here this
+    forbids extra fields, so no ground-truth hint can be smuggled in.
+    """
+
+    traffic_run_id: Identifier
+
+
+class TrafficTruthRequest(StrictRequest):
+    """Ask the simulator to attribute already-made decisions to scenarios."""
+
+    traffic_run_id: Identifier

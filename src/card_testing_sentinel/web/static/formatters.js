@@ -7,7 +7,16 @@ export function percent(value, digits = 1) {
 
 export function riskScore(value) {
   const number = Number(value);
-  return Number.isFinite(number) ? number.toFixed(3) : "—";
+  if (!Number.isFinite(number)) return "—";
+  /* A calibrated score that rounds to 0.000 or 1.000 is not literally zero or
+     one, and printing it that way makes a probabilistic model look like a
+     step function. Show the bound instead of a false exact value. */
+  /* A tiny non-zero score rounding to 0.000 is a display artifact worth
+     correcting. A score of exactly 1.0 is not: isotonic calibration maps its
+     top bin to 1.0, and printing ">0.999" would invent precision the
+     calibrator does not have. */
+  if (number > 0 && number < 0.0005) return "<0.001";
+  return number.toFixed(3);
 }
 
 export function latency(value) {
@@ -157,4 +166,70 @@ export function explainReason(code) {
     title: "Unrecognized reason code — not in the published contract.",
     text: "No explanation is available for this uncontracted code.",
   };
+}
+
+
+/* Operator-facing description for each Replay Lab scenario.
+
+   Deliberately kept on the frontend: SCENARIO_CATALOG is pinned by
+   test_scenario_catalog_contains_no_expected_decision_or_score_hint to
+   exactly {label, attempts}, and these strings describe *behaviour a
+   shopper or attacker exhibits*, never an expected decision. Nothing here
+   is sent to the backend. */
+export const SCENARIO_LIBRARY = {
+  normal_customer: "One temporary processor hiccup, then success. Same card, same session throughout.",
+  normal_bad_luck: "A genuine shopper hitting real declines, who switches to a second card once.",
+  flash_standard: "Campaign checkout retrying through gateway load on one card.",
+  flash_hard_retry: "Aggressive legitimate retries during a sale, falling back to a backup card at the end.",
+  burst_attacker: "Seconds-scale attempts, a new card almost every time, one session.",
+  evasive_attacker: "Card, session and IP rotated in small groups, with irregular pauses in between.",
+  patient_attacker: "A new session per attempt, spread across hours and days rather than seconds.",
+};
+
+export function scenarioDescription(id) {
+  return SCENARIO_LIBRARY[id] || "Synthetic behaviour plan.";
+}
+
+/* Virtual-clock helpers. The simulator runs on a compressed virtual clock,
+   so these format an *offset from the run start*, never wall-clock now.
+   Rendering Date.now() while claiming a multi-hour span would be a lie
+   about what the data represents. */
+export function virtualElapsed(seconds) {
+  const total = Number(seconds);
+  if (!Number.isFinite(total) || total < 0) return "—";
+  const days = Math.floor(total / 86400);
+  const hours = Math.floor((total % 86400) / 3600);
+  const minutes = Math.floor((total % 3600) / 60);
+  const remainder = Math.floor(total % 60);
+  if (days) return `D${days + 1} ${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
+  if (hours) return `${hours}h ${String(minutes).padStart(2, "0")}m`;
+  return `${String(minutes).padStart(2, "0")}:${String(remainder).padStart(2, "0")}`;
+}
+
+/* Which virtual day an offset falls on, used to group the long-horizon
+   Patient Card Testing replay honestly instead of flattening days into a
+   single list of timestamps. */
+export function virtualDay(seconds) {
+  const total = Number(seconds);
+  if (!Number.isFinite(total)) return 1;
+  return Math.floor(total / 86400) + 1;
+}
+
+/* The lifecycle of one attempt as the operations projection currently
+   knows it. A traffic row starts with no processor outcome -- that event
+   genuinely has not happened yet on the virtual clock -- and is patched
+   later. Saying "awaiting" is accurate; inventing a result is not. */
+export function lifecycleSummary(operations) {
+  if (!operations) return "—";
+  if (operations.decision === "block") return "Suppressed before authorization";
+  if (operations.checkout_status === "completed") return "Approved · checkout completed";
+  if (operations.outcome_status === "approved") return "Approved by bank";
+  if (operations.outcome_status === "declined") return "Declined by bank";
+  return "Sent · awaiting processor outcome";
+}
+
+
+/* True when the calibrator has saturated rather than expressed certainty. */
+export function isSaturated(value) {
+  return Number(value) >= 1;
 }

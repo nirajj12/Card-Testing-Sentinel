@@ -26,6 +26,6 @@ def project_root() -> Path:
         ):
             return candidate
     raise FileNotFoundError(
-        "Card-Testing Sentinel project root was not found; run from the project "
+        "PreAuth Sentinel project root was not found; run from the project "
         "directory or set CTS_PROJECT_ROOT"
     )

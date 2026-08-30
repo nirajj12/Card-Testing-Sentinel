@@ -159,7 +159,10 @@ def test_valid_next_step_returns_200_and_updates_checkout_ops_and_timeline(
     }
     assert body["attempt"]["attempt"] == 1
     assert body["attempt"]["currency"] == "INR"
-    assert body["attempt"]["card_alias"].startswith("Synthetic Card")
+    # The backend holds an HMAC card fingerprint, never a PAN, so there is no
+    # real last-four to display. The alias states what is actually known --
+    # which distinct card this device is on -- instead of fabricating digits.
+    assert body["attempt"]["card_alias"] == "Card #01"
     assert body["attempt"]["timestamp"]
     assert body["attempt"]["elapsed_seconds"] == 0
     op = body["operations"]

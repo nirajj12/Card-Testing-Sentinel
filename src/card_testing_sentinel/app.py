@@ -78,7 +78,7 @@ def create_app(
         runtime.ready = False
 
     application = FastAPI(
-        title="Card-Testing Sentinel",
+        title="PreAuth Sentinel",
         version=str(config["version"]),
         lifespan=lifespan,
         docs_url=None,

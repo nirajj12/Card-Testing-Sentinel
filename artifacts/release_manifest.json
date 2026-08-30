@@ -4,7 +4,7 @@
   "artifacts": {
     "application_config": {
       "path": "configs/app.yaml",
-      "sha256": "cf609c68bf235f20017c4643ae723a67a37f3779076db4605c009fa42420d6b6"
+      "sha256": "31eba5deea9c6beeb6b34a14b3432b62ac1b36f897ac873f7dd0e805eeb5ec3b"
     },
     "model": {
       "path": "artifacts/model/risk_model.joblib",
@@ -37,6 +37,10 @@
     "blind_event_decisions": {
       "path": "artifacts/evaluation/blind_event_decisions.csv",
       "sha256": "e6e6b2481c09edb44c1782165b97c5c59864890fd03ddbfdb991b1ec41605817"
+    },
+    "baseline_comparison": {
+      "path": "artifacts/evaluation/baseline_comparison.json",
+      "sha256": "e17210c37498c1486de65cd1324128d17636d5fef2e72a8772798069b5639283"
     }
   }
 }

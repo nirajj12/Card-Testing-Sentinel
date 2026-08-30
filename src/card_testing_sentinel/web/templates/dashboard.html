@@ -3,25 +3,31 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="A synthetic demonstration of causal, pre-authorization card-testing protection.">
-  <title>{{ app_name }} · Live merchant protection</title>
+  <meta name="description" content="A synthetic merchant traffic simulation feeding a real causal pre-authorization risk pipeline.">
+  <title>{{ app_name }} · Merchant risk console</title>
   <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="/static/dashboard.css?v=4">
+  <link rel="stylesheet" href="/static/dashboard.css?v=6">
 </head>
 <body>
   <a class="skip-link" href="#main-content">Skip to content</a>
   <header class="site-header">
     <nav class="nav-shell" aria-label="Primary navigation">
-      <a class="brand" href="#top" aria-label="Card-Testing Sentinel home">
-        <span class="brand-mark" aria-hidden="true"><span></span></span>
-        <span>Card-Testing Sentinel</span>
-      </a>
-      <div class="nav-links">
-        <a href="#live-protection">Live Protection</a>
-        <a href="#how-it-works">How It Works</a>
-        <a href="https://github.com/nirajj12/Card-Testing-Sentinel#readme" target="_blank" rel="noreferrer">Documentation</a>
-        <a class="github-link" href="https://github.com/nirajj12/Card-Testing-Sentinel" target="_blank" rel="noreferrer">GitHub <span aria-hidden="true">↗</span></a>
+      <span class="brand">
+        <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+          <rect x="4"  y="20" width="4" height="7"  rx="1.5" class="mark-step"/>
+          <rect x="11" y="15" width="4" height="12" rx="1.5" class="mark-step"/>
+          <rect x="18" y="10" width="4" height="17" rx="1.5" class="mark-step"/>
+          <rect x="25" y="5"  width="4" height="22" rx="1.5" class="mark-stop"/>
+          <rect x="22.5" y="14" width="9" height="3" rx="1.5" class="mark-cut"/>
+        </svg>
+        <span class="brand-text"><strong>PreAuth Sentinel</strong><small>Card-testing defense</small></span>
+      </span>
+      <div class="view-tabs" role="tablist" aria-label="Console views">
+        <button class="view-tab is-active" role="tab" aria-selected="true" data-view="overview" type="button">Overview</button>
+        <button class="view-tab" role="tab" aria-selected="false" data-view="traffic" type="button">Live Traffic</button>
+        <button class="view-tab" role="tab" aria-selected="false" data-view="replay" type="button">Replay Lab</button>
       </div>
+      <a class="nav-github" href="https://github.com/nirajj12/Card-Testing-Sentinel" target="_blank" rel="noreferrer">GitHub <span aria-hidden="true">↗</span></a>
       <span class="runtime-status" id="header-status" role="status">
         <span class="status-dot" aria-hidden="true"></span>
         <span data-status-text>Connecting</span>
@@ -29,62 +35,237 @@
     </nav>
   </header>
 
+  <div id="global-message" class="message is-hidden" role="status" aria-live="polite"></div>
+
   <main id="main-content">
-    <section class="hero" id="top" aria-labelledby="hero-title">
-      <div class="hero-copy">
-        <p class="section-kicker">Pre-authorization fraud protection</p>
-        <h1 id="hero-title">Stop card-testing attacks before authorization.</h1>
-        <p class="hero-text">Card-Testing Sentinel analyzes behavioral signals from previously committed payment attempts, then returns an allow, review or block decision for the current request—before the bank is contacted.</p>
-        <div class="hero-actions">
-          <a class="button button-primary" href="#live-protection">Launch demo</a>
-          <a class="button button-secondary" href="https://github.com/nirajj12/Card-Testing-Sentinel#architecture" target="_blank" rel="noreferrer">View technical evidence</a>
+
+    <!-- ───────────────────────── Overview ───────────────────────── -->
+    <section class="view is-active" id="view-overview" role="tabpanel" aria-labelledby="overview-title">
+
+      <section class="ov-hero">
+        <div class="ov-hero-copy">
+          <h1 id="overview-title">Detect card-testing<br><span class="ov-accent">before authorization</span>.</h1>
+          <p class="ov-hero-text">PreAuth Sentinel detects sequential card-testing behaviour before the current authorization outcome is known. It reads a device's behavioural history to catch suspicious payment sequences while leaving genuine retries alone.</p>
+          <div class="hero-actions">
+            <button class="button button-primary" type="button" data-goto="traffic"><svg class="btn-glyph" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg> Watch Live Traffic</button>
+            <button class="button button-secondary" type="button" data-goto="replay">Replay an attack</button>
+          </div>
+          <p class="ov-hero-sub">Defense-only prototype · <a class="ov-link" href="https://github.com/nirajj12/Card-Testing-Sentinel" target="_blank" rel="noreferrer">source on GitHub ↗</a></p>
         </div>
-        <p class="synthetic-note"><span aria-hidden="true">◆</span> Synthetic demonstration. No real cardholder or merchant data is used.</p>
-      </div>
-      <div class="hero-visual" aria-label="Pre-authorization decision flow">
-        <div class="request-card">
-          <div class="request-card-top">
-            <span class="mini-icon" aria-hidden="true">₹</span>
-            <div><strong>Payment request</strong><small>Before bank authorization</small></div>
-            <span class="request-amount">₹2.00</span>
-          </div>
-          <div class="request-divider"></div>
-          <div class="decision-route">
-            <span class="route-node">Behavior</span><span class="route-line"></span><span class="route-node">Risk</span><span class="route-line"></span><span class="route-node route-result">Decision</span>
-          </div>
-          <div class="decision-options" aria-hidden="true">
-            <span class="allow">Allow</span><span class="review">Review</span><span class="block">Block</span>
+
+        <div class="ov-hero-visual" aria-hidden="true">
+          <div class="hv-card">
+            <div class="hv-head">
+              <span>Device risk</span>
+              <span class="hv-pill">Pre-auth</span>
+            </div>
+            <div class="hv-score">
+              <div class="hv-score-value">
+                <small>Risk score</small>
+                <strong>0.92</strong>
+                <span class="hv-illus">Illustrative</span>
+              </div>
+              <span class="hv-badge">Block</span>
+            </div>
+            <div class="hv-spark"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+            <div class="hv-axis"><span>attempt 1</span><span>attempt 7</span></div>
+            <div class="hv-decisions"><span>Allow</span><span>Review</span><span class="is-on">Block</span></div>
           </div>
         </div>
-      </div>
+      </section>
+
+      <section aria-label="Headline evaluation results">
+        <div class="metric-cards">
+          <article class="metric-card">
+            <strong id="m-recall">—</strong>
+            <span class="metric-label">Attacker devices detected</span>
+            <span class="metric-sub">Review or higher</span>
+          </article>
+          <article class="metric-card">
+            <strong id="m-reviewed">—</strong>
+            <span class="metric-label">Legitimate devices reviewed</span>
+            <span class="metric-sub" id="m-reviewed-sub">—</span>
+          </article>
+          <article class="metric-card">
+            <strong id="m-blocked">—</strong>
+            <span class="metric-label">Legitimate devices blocked</span>
+            <span class="metric-sub" id="m-blocked-sub">—</span>
+          </article>
+          <article class="metric-card">
+            <strong>~2.6 ms</strong>
+            <span class="metric-label">Median decision latency</span>
+            <span class="metric-sub">p50 end-to-end, local benchmark</span>
+          </article>
+        </div>
+        <p class="metrics-disclaimer">Frozen synthetic held-out evaluation · not production performance</p>
+      </section>
+
+      <section aria-labelledby="why-title">
+        <h2 id="why-title" class="section-title">Why this approach works</h2>
+        <div class="why-grid">
+          <article class="why-card">
+            <svg class="why-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="18" r="2.4"/><circle cx="12" cy="11" r="2.4"/><circle cx="19" cy="5" r="2.4"/><path d="M6.9 16.4 10.2 13M13.8 9.3 17.2 6.6"/></svg>
+            <h3>Sees sequences</h3>
+            <p>Card testing becomes suspicious across repeated behaviour over time, rarely from one transaction on its own.</p>
+          </article>
+          <article class="why-card">
+            <svg class="why-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5 19 6.3v5.4c0 4-2.8 7.4-7 8.8-4.2-1.4-7-4.8-7-8.8V6.3L12 3.5Z"/><path d="M9 12l2.2 2.2L15.4 10"/></svg>
+            <h3>Protects genuine retries</h3>
+            <p>A plain attempt counter also flags real customers retrying a declined card. Behavioural context separates them.</p>
+          </article>
+          <article class="why-card">
+            <svg class="why-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.2"/><path d="M12 7.4V12l3.1 1.9"/></svg>
+            <h3>Decides before outcome leakage</h3>
+            <p>The bank's answer for this request does not exist yet when the decision is made, so it cannot leak into it.</p>
+          </article>
+        </div>
+      </section>
+
+      <section aria-labelledby="how-title">
+        <h2 id="how-title" class="section-title">How it works</h2>
+        <ol class="how-flow">
+          <li><span class="how-step">1</span><strong>Payment request</strong><span>Arrives before the bank is contacted.</span></li>
+          <li><span class="how-step">2</span><strong>Behavioural history</strong><span>Prior events for this device, card and IP.</span></li>
+          <li><span class="how-step">3</span><strong>44 causal features</strong><span>Built only from events that already happened.</span></li>
+          <li><span class="how-step">4</span><strong>ML risk score</strong><span>Calibrated score for this request.</span></li>
+          <li><span class="how-step">5</span><strong>Deterministic policy</strong><span>Fixed rules turn the score into an action.</span></li>
+          <li><span class="how-step">6</span><strong>Allow · Review · Block</strong><span>Returned before authorization is sent.</span></li>
+        </ol>
+        <p class="how-note"><span class="how-note-mark" aria-hidden="true">⤶</span> <span>The bank outcome arrives later and is <em>never used for the current decision</em> — it can only change what happens on the next request.</span></p>
+      </section>
+
+      <section aria-labelledby="compare-title">
+        <h2 id="compare-title" class="section-title">Counter vs Sentinel <span class="section-sub">Why not just count attempts?</span></h2>
+        <div class="compare-table" id="compare-table"></div>
+        <p class="compare-reading">A lower counter threshold catches more attackers but disrupts far more legitimate customers. Waiting longer protects them and misses most of the attack.</p>
+        <p class="compare-note" id="compare-note"></p>
+        <p class="compare-reading"><a class="ov-link" href="https://github.com/nirajj12/Card-Testing-Sentinel#readme" target="_blank" rel="noreferrer">Full evaluation → GitHub ↗</a></p>
+      </section>
+
+      <section aria-labelledby="limitation-title">
+        <div class="limitation-box">
+          <span class="limitation-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 4.5 21 19.5H3L12 4.5Z"/><path d="M12 10v3.6M12 16.8h.01"/></svg></span>
+          <div>
+            <h2 id="limitation-title">Known limitation</h2>
+            <p class="limitation-lead">Patient card-testing remains the hardest attack pattern.</p>
+            <p class="limitation-detail" id="limitation-detail">Loading…</p>
+            <a class="ov-link" href="https://github.com/nirajj12/Card-Testing-Sentinel#readme" target="_blank" rel="noreferrer">Read full methodology → GitHub ↗</a>
+          </div>
+        </div>
+      </section>
+
+      <section aria-labelledby="explore-title">
+        <h2 id="explore-title" class="section-title">Explore the demo</h2>
+        <div class="explore-grid">
+          <article class="explore-card">
+            <p class="explore-eyebrow">Live Traffic</p>
+            <h3>Watch it decide</h3>
+            <p>Legitimate payments and card-testing attacks arrive together on one feed while Sentinel decides each request. Every run draws a different mix of devices.</p>
+            <button class="button button-primary" type="button" data-goto="traffic">Open Live Traffic →</button>
+          </article>
+          <article class="explore-card">
+            <p class="explore-eyebrow">Replay Lab</p>
+            <h3>Step through one attack</h3>
+            <p>Replay a card-testing scenario attempt by attempt and watch the risk score, the policy reasons and the customer's view change together.</p>
+            <button class="button button-secondary" type="button" data-goto="replay">Open Replay Lab →</button>
+          </article>
+        </div>
+      </section>
     </section>
 
-    <section class="live-section" id="live-protection" aria-labelledby="live-title">
-      <div class="section-heading">
-        <div>
-          <p class="section-kicker">Interactive product demonstration</p>
-          <h2 id="live-title">Live Merchant Protection</h2>
-          <p>Advance one payment attempt at a time. Every result comes from the real causal feature engine, frozen model and operational policy.</p>
-        </div>
-        <span class="verified-chip"><span aria-hidden="true">✓</span> Real API decisions</span>
+    <!-- ───────────────────────── Live Traffic ───────────────────────── -->
+    <section class="view" id="view-traffic" role="tabpanel" aria-labelledby="traffic-title" hidden>
+      <div class="view-intro compact">
+        <p class="section-kicker">Merchant risk console</p>
+        <h2 id="traffic-title">Live Traffic</h2>
+        <p class="view-lede">Mixed traffic from many independent devices arrives on one virtual clock. The console does not know which device is which — it sees only what the risk engine returns.</p>
       </div>
 
-      <div id="global-message" class="message is-hidden" role="status" aria-live="polite"></div>
-
-      <div class="scenario-bar" aria-label="Scenario controls">
-        <div class="scenario-field">
-          <label for="scenario-select">Operator scenario</label>
-          <select id="scenario-select" aria-describedby="scenario-help"></select>
-          <small id="scenario-help">Scenario metadata stays in these controls and never enters model input.</small>
+      <div class="traffic-bar">
+        <div class="traffic-actions">
+          <button id="traffic-start" class="button button-primary" type="button">Start Synthetic Merchant Traffic</button>
+          <button id="traffic-pause" class="button button-secondary" type="button" disabled>Pause</button>
+          <button id="traffic-stepone" class="button button-secondary" type="button" disabled>Step</button>
         </div>
+        <div class="run-scope">
+          <p class="panel-eyebrow">Current traffic run</p>
+          <div class="run-totals" id="run-totals" aria-live="polite">
+            <div class="run-total"><span>Payments</span><strong>0</strong></div>
+            <div class="run-total"><span>Allowed</span><strong>0</strong></div>
+            <div class="run-total"><span>Reviewed</span><strong>0</strong></div>
+            <div class="run-total"><span>Blocked</span><strong>0</strong></div>
+          </div>
+        </div>
+      </div>
+      <p class="clock-note" id="traffic-clock-note">Times are compressed simulation time measured from the start of the run, not wall-clock time. <span id="traffic-seed-note"></span></p>
+
+      <div class="traffic-grid">
+        <article class="panel feed-panel" aria-labelledby="feed-title">
+          <div class="panel-header">
+            <div><p class="panel-eyebrow">Payment feed</p><h3 id="feed-title">Decisions as they are made</h3></div>
+            <div class="feed-tools">
+              <div class="feed-filter" role="group" aria-label="Filter payments">
+                <button type="button" class="is-active" data-feed-filter="all" aria-pressed="true">All</button>
+                <button type="button" data-feed-filter="flagged" aria-pressed="false">Flagged</button>
+              </div>
+              <span id="feed-progress" class="feed-progress">Not started</span>
+            </div>
+          </div>
+          <div class="feed-head" aria-hidden="true">
+            <span>Time</span><span>Amount</span><span>Device</span><span>Card</span><span>Risk</span><span>Action</span>
+          </div>
+          <div id="traffic-feed" class="feed-body" role="log" aria-live="polite" aria-label="Payment decision feed">
+            <p class="feed-empty">Start synthetic merchant traffic to see decisions arrive.</p>
+          </div>
+        </article>
+
+        <div class="detail-column">
+          <article class="panel" aria-labelledby="detail-title">
+            <div class="panel-header">
+              <div><p class="panel-eyebrow">Payment risk assessment</p><h3 id="detail-title">Detail</h3></div>
+            </div>
+            <div id="risk-detail" aria-live="polite"></div>
+          </article>
+          <article class="panel" aria-labelledby="trajectory-title">
+            <div class="panel-header">
+              <div><p class="panel-eyebrow">Sequential view</p><h3 id="trajectory-title">Device risk trajectory</h3></div>
+            </div>
+            <div id="risk-trajectory" aria-live="polite"></div>
+          </article>
+        </div>
+      </div>
+
+      <article class="panel truth-panel" aria-labelledby="truth-title">
+        <div class="panel-header">
+          <div>
+            <p class="panel-eyebrow">Post-run attribution</p>
+            <h3 id="truth-title">Ground truth</h3>
+          </div>
+          <button id="truth-reveal" class="button button-secondary" type="button" disabled>Reveal ground truth</button>
+        </div>
+        <p class="detail-note" id="truth-intro">The simulator knows which behaviour plan each device was running. The detector never does — a scenario is not a field of the request schema and never reaches features, the model or the policy. Reveal this only after a run to check the decisions above against what was actually generated.</p>
+        <div id="truth-body"></div>
+      </article>
+    </section>
+
+    <!-- ───────────────────────── Replay Lab ───────────────────────── -->
+    <section class="view" id="view-replay" role="tabpanel" aria-labelledby="replay-title" hidden>
+      <div class="view-intro compact">
+        <p class="section-kicker">Controlled demonstration</p>
+        <h2 id="replay-title">Replay Lab</h2>
+        <p class="view-lede">Step one device through a single behaviour plan, one attempt at a time, and watch what the customer sees next to what the risk team sees. Unlike Live Traffic, here you choose the behaviour — this is the teaching mode, not the product.</p>
+      </div>
+
+      <div id="scenario-cards" class="scenario-cards" role="radiogroup" aria-label="Behaviour plan"></div>
+
+      <div class="scenario-bar">
         <div class="control-actions">
-          <button id="start-demo" class="button button-primary" type="button">Start</button>
+          <button id="start-demo" class="button button-primary" type="button">Start replay</button>
           <span class="control-separator" aria-hidden="true"></span>
           <button id="previous-step" class="icon-button" type="button" aria-label="Previous recorded attempt" disabled>←</button>
           <button id="play-demo" class="button button-secondary" type="button" disabled>Play</button>
           <button id="next-step" class="button button-secondary" type="button" disabled>Next</button>
-          <button id="reset-demo" class="button button-quiet" type="button" disabled>Reset</button>
-        </div>
+                  </div>
         <div class="attempt-count" aria-live="polite">
           <span>Attempt</span>
           <strong><span id="attempt-counter">0</span> / <span id="attempt-total">—</span></strong>
@@ -116,7 +297,7 @@
           </button>
           <div id="customer-status" class="customer-status neutral" role="status" aria-live="polite">
             <span class="customer-status-icon" aria-hidden="true">•</span>
-            <span data-customer-status>Start a scenario to prepare a synthetic payment.</span>
+            <span data-customer-status>Choose a behaviour plan and start a replay.</span>
           </div>
         </article>
 
@@ -126,49 +307,31 @@
             <span id="ops-replay-badge" class="replay-badge is-hidden">Stored replay</span>
           </div>
           <div id="ops-body" aria-live="polite">
-            <div class="operations-empty"><span class="empty-shield" aria-hidden="true">◇</span><strong>Waiting for a payment request</strong><p>Start a scenario, then submit an attempt to see the authoritative risk decision.</p></div>
+            <div class="operations-empty"><span class="empty-shield" aria-hidden="true">◇</span><strong>Waiting for a payment request</strong><p>Start a replay, then submit an attempt to see the authoritative risk decision.</p></div>
           </div>
         </article>
       </div>
 
       <article class="timeline-panel" aria-labelledby="timeline-title">
         <div class="timeline-header">
-          <div><p class="panel-eyebrow">Persisted audit trail</p><h3 id="timeline-title">Authoritative Transaction Timeline</h3></div>
+          <div><p class="panel-eyebrow">Persisted audit trail</p><h3 id="timeline-title">Decision history</h3></div>
           <span id="demo-timeline-position">No attempts recorded</span>
         </div>
         <div id="demo-timeline" class="transaction-timeline" aria-live="polite">
-          <p class="timeline-empty">Start a scenario to create the first causally scored attempt.</p>
+          <p class="timeline-empty">Start a replay to create the first causally scored attempt.</p>
         </div>
       </article>
     </section>
 
-    <section class="process-section" id="how-it-works" aria-labelledby="process-title">
-      <div class="section-heading compact-heading">
-        <div><p class="section-kicker">Causal by construction</p><h2 id="process-title">How a request is decided</h2><p>The current processor outcome is never available to the current decision.</p></div>
-      </div>
-      <ol class="process-flow">
-        <li><span class="step-number">01</span><strong>Receive request</strong><p>Accept a strict raw pre-authorization event.</p></li>
-        <li><span class="step-number">02</span><strong>Build signals</strong><p>Use only previously committed lifecycle events.</p></li>
-        <li><span class="step-number">03</span><strong>Score and apply policy</strong><p>Run the frozen model and deterministic rules.</p></li>
-        <li><span class="step-number">04</span><strong>Return action</strong><p>Allow, review or block this request.</p></li>
-        <li><span class="step-number">05</span><strong>Update state</strong><p>Record later outcomes for future decisions.</p></li>
-      </ol>
-    </section>
-
-    <section class="results-section" id="verified-results" aria-labelledby="results-title">
-      <div class="results-heading">
-        <div><p class="section-kicker">Frozen evidence</p><h2 id="results-title">Synthetic blind-evaluation results</h2></div>
-        <a href="https://github.com/nirajj12/Card-Testing-Sentinel#blind-evaluation" target="_blank" rel="noreferrer">Read methodology <span aria-hidden="true">→</span></a>
-      </div>
-      <div id="verified-results-grid" class="results-grid" aria-live="polite"><p class="results-loading">Loading verified results…</p></div>
-      <p class="results-disclosure">These synthetic results do not establish performance on real Razorpay or merchant traffic. The risk score is not certainty of fraud.</p>
-    </section>
   </main>
 
   <footer class="site-footer">
-    <div><strong>Card-Testing Sentinel</strong><span>Built for the Razorpay AI Buildathon</span></div>
-    <p>The LLM does not make fraud decisions. Model, policy and blind evidence are frozen and hash-verified at startup.</p>
+    <div><strong>PreAuth Sentinel</strong><span>Sequential card-testing defense</span></div>
+    <div class="site-footer-links">
+      <a class="footer-link" href="https://github.com/nirajj12/Card-Testing-Sentinel" target="_blank" rel="noreferrer">GitHub ↗</a>
+      <span>Built for the Razorpay AI Buildathon · Track 02</span>
+    </div>
   </footer>
-  <script type="module" src="/static/dashboard.js?v=4"></script>
+  <script type="module" src="/static/dashboard.js?v=6"></script>
 </body>
 </html>
