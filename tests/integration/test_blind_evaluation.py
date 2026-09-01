@@ -27,6 +27,8 @@ from card_testing_sentinel.ml.blind_evaluation import (
 )
 from card_testing_sentinel.ml.blind_generator import BlindBenchmarkError
 
+pytestmark = pytest.mark.slow
+
 ROOT = Path(__file__).resolve().parents[2]
 EVALUATION = ROOT / "artifacts/evaluation"
 METRICS = EVALUATION / "blind_metrics_v1_1.json"

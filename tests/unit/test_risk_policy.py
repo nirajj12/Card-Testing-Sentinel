@@ -14,6 +14,8 @@ from card_testing_sentinel.policy.engine import DeviceRiskHistory, RiskPolicy
 from card_testing_sentinel.policy.evidence import evidence_codes, evidence_count
 from card_testing_sentinel.policy.reasons import REASON_CODES
 
+pytestmark = pytest.mark.slow
+
 ROOT = Path(__file__).resolve().parents[2]
 START = datetime(2034, 1, 1, tzinfo=UTC)
 

@@ -139,8 +139,8 @@ def test_checkout_result_only_affects_a_future_request(registry):
     assert asyncio.run(service.checkout(checkout)).idempotent_replay is True
 
     asyncio.run(service.precheck(_precheck(4, START + timedelta(seconds=30))))
-    assert model.snapshots[0]["successful_checkouts"] == 0
-    assert model.snapshots[1]["successful_checkouts"] == 1
+    assert model.snapshots[0]["successful_checkouts_30d"] == 0
+    assert model.snapshots[1]["successful_checkouts_30d"] == 1
 
 
 def test_blocked_request_cannot_receive_an_outcome_but_later_requests_still_score(

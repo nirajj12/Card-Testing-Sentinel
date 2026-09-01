@@ -1,7 +1,4 @@
-"""Product-page and runtime-safety checks that still hold in the
-rules_only phase. The frozen-evaluation / blind-replay assertions were
-removed with those artifacts; they return once Dataset V2 exists.
-"""
+"""Product-page, frozen-evidence, and runtime-safety checks."""
 
 import re
 from pathlib import Path
@@ -14,12 +11,16 @@ ROOT = Path(__file__).resolve().parents[2]
 def test_evaluation_uses_the_frozen_artifact_and_replay_reports_its_state(client):
     metrics = client.get("/api/metrics/blind").json()
     assert metrics["status"] == "available"
-    assert metrics["source"] == "artifacts/evaluation/blind_metrics_v1_1.json"
+    assert metrics["source"] == "artifacts/evaluation/blind_v2_metrics.json"
+    assert metrics["blind_version"] == "blind-v2"
+    assert metrics["verdict"] == "WEAK"
+    assert metrics["active_device_counts"] == {"attack": 800, "legitimate": 3200}
     assert "Synthetic" in metrics["disclosure"]
 
     replay = client.get("/api/replay/devices").json()
-    assert replay["status"] == "unavailable"
-    assert "Dataset V2" in replay["reason"]
+    assert replay["status"] == "not_packaged"
+    assert replay["regeneration_allowed"] is False
+    assert replay["rescoring_allowed"] is False
 
 
 def test_system_response_is_safe_and_reports_the_model_stage(client):

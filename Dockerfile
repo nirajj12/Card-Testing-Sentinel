@@ -1,4 +1,13 @@
-FROM python:3.11.15-slim
+FROM node:22.13.1-alpine AS frontend-build
+
+WORKDIR /build
+COPY package.json package-lock.json ./
+RUN npm ci
+COPY index.html vite.config.ts tsconfig.json tsconfig.app.json ./
+COPY frontend ./frontend
+RUN npm run build
+
+FROM python:3.11.15-slim AS runtime
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
@@ -13,6 +22,7 @@ RUN python -m pip install --upgrade pip==26.2.1 setuptools==84.0.0 \
 COPY src ./src
 COPY configs ./configs
 COPY artifacts ./artifacts
+COPY --from=frontend-build /build/frontend/dist ./frontend/dist
 COPY scripts/run_app.py ./scripts/run_app.py
 RUN python -m pip install --no-deps --no-build-isolation . \
     && addgroup --system sentinel \

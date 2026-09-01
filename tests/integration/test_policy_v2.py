@@ -30,6 +30,8 @@ from card_testing_sentinel.policy.evidence_v2 import (
 from card_testing_sentinel.policy.reasons_v2 import REASON_CODES_V2
 from pipelines.select_policy_v2 import write_resolved_policy_config
 
+pytestmark = pytest.mark.slow
+
 ROOT = Path(__file__).resolve().parents[2]
 POLICY_DIR = ROOT / "artifacts/policy_v2"
 EVAL = ROOT / "artifacts/evaluation"

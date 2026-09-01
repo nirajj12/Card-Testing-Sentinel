@@ -37,6 +37,8 @@ from card_testing_sentinel.ml.validation_v3 import (
     check_split_identity_separation,
 )
 
+pytestmark = pytest.mark.slow
+
 ROOT = Path(__file__).resolve().parents[2]
 CONFIG = ROOT / "configs/dataset_v3.yaml"
 V3 = ROOT / "data/generated/development_v3"

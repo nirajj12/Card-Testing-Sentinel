@@ -16,7 +16,6 @@ import pytest
 from card_testing_sentinel.api.contracts import OutcomeRequest, PrecheckRequest
 from card_testing_sentinel.features.specification import (
     MODEL_FEATURES,
-    MODEL_FEATURES_SHA256,
 )
 from card_testing_sentinel.modeling.model import (
     DEGRADED,
@@ -110,14 +109,17 @@ def test_a_mismatched_feature_contract_is_refused_not_silently_served(tmp_path):
         RiskModel.load(tmp_path)
 
 
-def test_registry_reports_the_development_stage_not_a_final_model():
+def test_registry_reports_the_final_frozen_v2_runtime():
     registry = ArtifactRegistry.load(ROOT)
     summary = registry.system_summary()
     assert summary["model_status"] == READY
     assert summary["policy_mode"] == "model_and_rules"
-    assert summary["model_stage"] == "development_frozen_candidate"
-    assert summary["evaluation_status"] == "development_validation_only"
-    assert summary["feature_contract_sha256"] == MODEL_FEATURES_SHA256
+    assert summary["model_stage"] == "frozen_blind_evaluated_v2"
+    assert summary["model_version"] == "model-v2"
+    assert summary["feature_count"] == 39
+    assert summary["calibration"] == "sigmoid"
+    assert summary["evaluation_consumed"] is True
+    assert summary["evaluation_verdict"] == "WEAK"
 
 
 # --- policy interaction -----------------------------------------------------

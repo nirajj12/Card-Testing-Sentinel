@@ -73,7 +73,9 @@ def create_app(
         runtime = ApplicationRuntime(config=config)
         application.state.runtime = runtime
         try:
-            registry = ArtifactRegistry.load(root)
+            registry = ArtifactRegistry.load(
+                root, manifest_path=root / config["runtime_manifest_path"]
+            )
             protector = IdentifierProtector.from_secret(
                 hmac_secret or os.environ.get("CTS_HMAC_SECRET")
             )

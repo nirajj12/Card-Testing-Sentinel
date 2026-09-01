@@ -28,6 +28,8 @@ from card_testing_sentinel.ml.policy_search import (
 )
 from card_testing_sentinel.policy.engine import RiskPolicy
 
+pytestmark = pytest.mark.slow
+
 ROOT = Path(__file__).resolve().parents[2]
 DATA = ROOT / "data/generated/development"
 

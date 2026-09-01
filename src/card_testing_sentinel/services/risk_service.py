@@ -30,12 +30,12 @@ from card_testing_sentinel.domain.exceptions import (
     InvalidLifecycleTransition,
     RuntimeStateError,
 )
-from card_testing_sentinel.features.engine import FeatureEngine
-from card_testing_sentinel.features.specification import MODEL_FEATURES
+from card_testing_sentinel.features.engine_v2 import FeatureEngineV2
+from card_testing_sentinel.features.specification_v2 import MODEL_FEATURES_V2
 from card_testing_sentinel.modeling.registry import ArtifactRegistry
 from card_testing_sentinel.persistence.models import StoredEvent, StoredRequest
 from card_testing_sentinel.persistence.repository import StateRepository
-from card_testing_sentinel.policy.engine import DeviceRiskHistory, RiskPolicy
+from card_testing_sentinel.policy.engine_v2 import RiskPolicyV2
 from card_testing_sentinel.security.identifiers import (
     IdentifierProtector,
     payload_digest,
@@ -62,8 +62,8 @@ class RiskService:
         self.repository = repository
         self.protector = protector
         self.lock = asyncio.Lock()
-        self.engine = FeatureEngine()
-        self.policy = RiskPolicy(registry.policy)
+        self.engine = FeatureEngineV2()
+        self.policy = RiskPolicyV2(registry.policy)
         self.model_score_calls = 0
         self.repository.initialize()
         self.rebuild_from_persistence()
@@ -168,26 +168,17 @@ class RiskService:
         risk_score = self.registry.model.score(snapshot)
         self.model_score_calls += 1
         moment = _utc(request.timestamp)
-        history = self.risk_history.setdefault(event.device_id, DeviceRiskHistory())
         decision = self.policy.decide(
             snapshot=snapshot,
             risk_score=risk_score,
             timestamp=moment,
             campaign_active=bool(request.campaign_active),
-            history=history,
         )
-        if risk_score is not None:
-            history.record(
-                moment,
-                risk_score,
-                self.policy.persistence_window,
-                self.policy.history_cap,
-            )
 
         committed = self.engine.record_request(
             event, blocked=decision.action == "block"
         )
-        if any(committed[name] != snapshot[name] for name in MODEL_FEATURES):
+        if any(committed[name] != snapshot[name] for name in MODEL_FEATURES_V2):
             raise RuntimeStateError("feature snapshot changed during the decision")
 
         latency_ms = (time.perf_counter_ns() - started) / 1_000_000
@@ -384,9 +375,8 @@ class RiskService:
     # -- rebuild / reads --------------------------------------------
 
     def rebuild_from_persistence(self) -> None:
-        self.engine = FeatureEngine()
-        self.policy = RiskPolicy(self.registry.policy)
-        self.risk_history = {}
+        self.engine = FeatureEngineV2()
+        self.policy = RiskPolicyV2(self.registry.policy)
         rows = [
             (row.timestamp, row.event_sequence, "request", row)
             for row in self.repository.requests_in_order()
@@ -400,9 +390,6 @@ class RiskService:
             event = LifecycleEvent.model_validate(json.loads(row.payload_json))
             if kind == "request":
                 snapshot = self.engine.snapshot(event)
-                history = self.risk_history.setdefault(
-                    event.device_id, DeviceRiskHistory()
-                )
                 decision = self.policy.decide(
                     snapshot=snapshot,
                     risk_score=row.risk_score,
@@ -410,15 +397,7 @@ class RiskService:
                     campaign_active=bool(
                         json.loads(row.payload_json).get("campaign_active", False)
                     ),
-                    history=history,
                 )
-                if row.risk_score is not None:
-                    history.record(
-                        event.timestamp,
-                        row.risk_score,
-                        self.policy.persistence_window,
-                        self.policy.history_cap,
-                    )
                 if decision.action != row.decision:
                     raise RuntimeStateError("a persisted decision does not reproduce")
                 committed = self.engine.record_request(

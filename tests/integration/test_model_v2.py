@@ -36,6 +36,8 @@ from card_testing_sentinel.ml.folds_v2 import (
     make_grouped_folds,
 )
 
+pytestmark = pytest.mark.slow
+
 ROOT = Path(__file__).resolve().parents[2]
 MODEL_DIR = ROOT / "artifacts/model_v2"
 EVAL = ROOT / "artifacts/evaluation"

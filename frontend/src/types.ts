@@ -3,6 +3,10 @@ export type Decision = "allow" | "review" | "block";
 export type SystemStatus = {
   ready: boolean;
   model_status: string;
+  active_runtime_version?: string;
+  model_version?: string;
+  policy_version?: string;
+  feature_count?: number;
   policy_stage?: string | null;
   database?: { type?: string; integrity?: string };
   razorpay?: { configured?: boolean; mode?: string };
@@ -97,6 +101,11 @@ export type BlindMetrics = {
   source: string;
   label: string;
   blind_version: string;
+  active_runtime_version: string;
+  model_version: string;
+  policy_version: string;
+  verdict: string;
+  consumed: boolean;
   active_device_counts: { attack: number; legitimate: number };
   headline: {
     attack_intervention_rate: number;
@@ -104,9 +113,19 @@ export type BlindMetrics = {
     legitimate_intervention_rate: number;
     legitimate_block_rate: number;
   };
+  model_metrics: { pr_auc: number; roc_auc: number; brier: number; ece: number };
+  policy_metrics: {
+    attack_review_or_higher_rate: number;
+    attack_block_rate: number;
+    legitimate_review_or_higher_rate: number;
+    legitimate_block_rate: number;
+  };
+  operating_targets: Record<string, "PASS" | "FAIL">;
   detection_by_attempt: Record<string, number>;
   scenario_metrics: Array<{ scenario: string; population: "attack" | "legitimate"; devices: number; intervention_rate: number; block_rate: number }>;
-  limitations: { hardest_attacks: string[]; highest_friction: string[] };
+  limitations: { hardest_attacks: string[]; highest_friction: string[]; summary: string };
+  historical_evidence: { version: string; source: string; comparable_to_blind_v2: false };
+  replay: { status: "not_packaged"; reason: string; missing_artifact: string };
   disclosure: string;
 };
 

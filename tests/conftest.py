@@ -41,7 +41,7 @@ def registry() -> ArtifactRegistry:
 def client(registry, monkeypatch):
     monkeypatch.setattr(
         "card_testing_sentinel.app.ArtifactRegistry.load",
-        lambda _root: registry,
+        lambda _root, **_kwargs: registry,
     )
     app = create_app(
         repository=InMemoryStateRepository(),

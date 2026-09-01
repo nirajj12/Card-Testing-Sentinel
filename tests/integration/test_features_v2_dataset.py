@@ -24,6 +24,8 @@ from card_testing_sentinel.features.specification_v2 import (
 )
 from card_testing_sentinel.ml.validation_features_v2 import validate_features_v2
 
+pytestmark = pytest.mark.slow
+
 ROOT = Path(__file__).resolve().parents[2]
 DATA = ROOT / "data/generated/development_v3"
 

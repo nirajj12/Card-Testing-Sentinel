@@ -8,6 +8,7 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+import pytest
 
 from card_testing_sentinel.ml.blind_v2_evaluation import (
     FIXED_THRESHOLDS,
@@ -16,6 +17,8 @@ from card_testing_sentinel.ml.blind_v2_evaluation import (
     verify_pre_evaluation,
     wilson_interval,
 )
+
+pytestmark = pytest.mark.slow
 
 ROOT = Path(__file__).resolve().parents[2]
 SOURCE = ROOT / "src/card_testing_sentinel/ml/blind_v2_evaluation.py"

@@ -23,6 +23,8 @@ from card_testing_sentinel.ml.blind_v2_validation import (
 )
 from card_testing_sentinel.ml.validation import OUTCOME_ONLY_FIELDS, ValidationReport
 
+pytestmark = pytest.mark.slow
+
 ROOT = Path(__file__).resolve().parents[2]
 DATA = ROOT / "data/generated/blind_v2"
 REPORT = ROOT / "artifacts/evaluation/blind_v2_validation_report.json"

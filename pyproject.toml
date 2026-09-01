@@ -35,8 +35,11 @@ dev = [
 where = ["src"]
 
 [tool.pytest.ini_options]
-addopts = "--cov=card_testing_sentinel --cov-report=term-missing"
+addopts = "--cov=card_testing_sentinel --cov-report=term-missing -m 'not slow'"
 testpaths = ["tests"]
+markers = [
+    "slow: reproducibility, regeneration, or ignored-data-dependent coverage",
+]
 
 [tool.ruff]
 line-length = 88
@@ -44,3 +47,15 @@ target-version = "py311"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]
+
+[tool.coverage.run]
+omit = [
+    "src/card_testing_sentinel/ml/*",
+    "src/card_testing_sentinel/features/batch.py",
+    "src/card_testing_sentinel/features/batch_v2.py",
+    "src/card_testing_sentinel/features/engine.py",
+    "src/card_testing_sentinel/features/specification.py",
+    "src/card_testing_sentinel/policy/engine.py",
+    "src/card_testing_sentinel/policy/evidence.py",
+    "src/card_testing_sentinel/policy/reasons.py",
+]

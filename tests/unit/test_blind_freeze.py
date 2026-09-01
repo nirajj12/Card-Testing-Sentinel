@@ -14,6 +14,8 @@ from pathlib import Path
 import pytest
 import yaml
 
+pytestmark = pytest.mark.slow
+
 ROOT = Path(__file__).resolve().parents[2]
 MANIFEST = ROOT / "artifacts/evaluation/blind_freeze_manifest.json"
 SPEC = ROOT / "docs/blind_spec.md"

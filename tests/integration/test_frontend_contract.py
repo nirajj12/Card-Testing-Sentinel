@@ -264,13 +264,17 @@ def test_frozen_evaluation_endpoint_never_triggers_model_scoring(client):
     ), "opening the frozen evaluation metrics must never call the scorer"
 
 
-def test_system_reports_the_development_model_stage(client):
+def test_system_reports_the_active_frozen_v2_stack(client):
     body = client.get("/api/system").json()
     assert body["ready"] is True
     assert body["model_status"] == "ready"
     assert body["policy_mode"] == "model_and_rules"
-    assert body["model_stage"] == "development_frozen_candidate"
-    # no blind evaluation has run, and the runtime must say so
-    assert body["evaluation_status"] == "development_validation_only"
-    assert "no blind evaluation" in body["evaluation_reason"].lower()
+    assert body["model_stage"] == "frozen_blind_evaluated_v2"
+    assert body["model_version"] == "model-v2"
+    assert body["policy_version"] == "validation-selected-v2"
+    assert body["feature_count"] == 39
+    assert body["calibration"] == "sigmoid"
+    assert body["blind_evaluated"] is True
+    assert body["evaluation_consumed"] is True
+    assert body["evaluation_verdict"] == "WEAK"
     assert "journal_mode" in body["database"]

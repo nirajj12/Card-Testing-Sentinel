@@ -38,6 +38,8 @@ from card_testing_sentinel.ml.blind_validation import (
 )
 from card_testing_sentinel.ml.validation import OUTCOME_ONLY_FIELDS, ValidationReport
 
+pytestmark = pytest.mark.slow
+
 ROOT = Path(__file__).resolve().parents[2]
 SPEC = ROOT / "docs/blind_spec.md"
 DEV_MANIFEST = ROOT / "data/generated/development/manifest.json"

@@ -39,8 +39,21 @@ class RiskModel:
         self.degraded_reason = degraded_reason
 
     @classmethod
-    def load(cls, root: Path, *, allow_degraded: bool = True) -> RiskModel:
-        path = root / ARTIFACT_PATH
+    def load(
+        cls,
+        root: Path,
+        *,
+        artifact_path: str = ARTIFACT_PATH,
+        expected_feature_names: tuple[str, ...] = MODEL_FEATURES,
+        expected_feature_contract_sha256: str = MODEL_FEATURES_SHA256,
+        allow_degraded: bool = True,
+    ) -> RiskModel:
+        """Load an artifact against an explicitly selected ordered contract.
+
+        The v1 defaults remain available to historical callers. The active
+        registry supplies every selector from the runtime manifest.
+        """
+        path = root / artifact_path
         if not path.is_file():
             return cls._degrade("no trained model artifact is present", allow_degraded)
         try:
@@ -52,14 +65,16 @@ class RiskModel:
                 f"model artifact failed to load: {type(error).__name__}", allow_degraded
             )
         recorded = getattr(artifact, "feature_contract_sha256", None)
-        if recorded != MODEL_FEATURES_SHA256:
+        if recorded != expected_feature_contract_sha256:
             raise ModelContractError(
                 "model artifact was trained against a different feature "
-                f"contract ({recorded} != {MODEL_FEATURES_SHA256})"
+                f"contract ({recorded} != {expected_feature_contract_sha256})"
             )
-        if tuple(getattr(artifact, "feature_names", ())) != MODEL_FEATURES:
+        if tuple(getattr(artifact, "feature_names", ())) != expected_feature_names:
             raise ModelContractError("model artifact feature order does not match")
-        return cls(READY, artifact=artifact)
+        model = cls(READY, artifact=artifact)
+        model.feature_names = expected_feature_names
+        return model
 
     @classmethod
     def _degrade(cls, reason: str, allow_degraded: bool) -> RiskModel:
@@ -86,8 +101,8 @@ class RiskModel:
         if not self.available:
             return None
         values = np.fromiter(
-            (snapshot[name] for name in MODEL_FEATURES),
+            (snapshot[name] for name in self.feature_names),
             dtype=float,
-            count=len(MODEL_FEATURES),
+            count=len(self.feature_names),
         )
         return self._artifact.score_vector(values)

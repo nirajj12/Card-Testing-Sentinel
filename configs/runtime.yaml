@@ -1,0 +1,21 @@
+runtime:
+  version: frozen-v2-runtime
+  feature_contract_version: merchant-visible-causal-2
+  feature_count: 39
+  feature_contract_sha256: 51bfa6604ed0486447ee16a43270f2092f0cac96b3ab0c2f0bad2748e8c28a38
+  feature_spec_path: configs/features_v2.yaml
+  feature_contract_artifact_path: artifacts/model_v2/feature_contract.json
+  model_version: model-v2
+  model_artifact_path: artifacts/model_v2/risk_model_v2.joblib
+  model_metadata_path: artifacts/model_v2/metadata.json
+  policy_version: validation-selected-v2
+  policy_family: evidence_gated_v2
+  policy_config_path: configs/policy_v2.yaml
+  policy_artifact_path: artifacts/policy_v2/operational_policy_v2.json
+  policy_checksum_path: artifacts/policy_v2/operational_policy_v2.sha256
+  evaluation_version: blind-v2
+  evaluation_metrics_path: artifacts/evaluation/blind_v2_metrics.json
+  evaluation_detection_path: artifacts/evaluation/blind_v2_detection_delay.json
+  evaluation_family_metrics_path: artifacts/evaluation/blind_v2_family_metrics.csv
+  evaluation_consumption_path: artifacts/evaluation/blind_v2_consumption.json
+  evaluation_result_hashes_path: artifacts/evaluation/blind_v2_result_hashes.json

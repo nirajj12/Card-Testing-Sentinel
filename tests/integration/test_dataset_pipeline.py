@@ -22,6 +22,8 @@ from card_testing_sentinel.ml.generator import (
 )
 from card_testing_sentinel.ml.validation import DatasetValidator, ValidationReport
 
+pytestmark = pytest.mark.slow
+
 ROOT = Path(__file__).resolve().parents[2]
 
 

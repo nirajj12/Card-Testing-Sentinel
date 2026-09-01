@@ -27,7 +27,7 @@ def system(runtime: RuntimeDependency) -> dict:
         "ready": True,
         **runtime.registry.system_summary(),
         "database": runtime.service.repository.status(),
-        "ordering": "per-device (timestamp, event_sequence)",
+        "ordering": "per-device-and-customer (timestamp, event_sequence)",
         "razorpay": (
             runtime.razorpay.public_status
             if runtime.razorpay is not None
