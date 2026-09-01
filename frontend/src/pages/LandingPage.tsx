@@ -1,35 +1,24 @@
-import { ArrowRight, Braces, CircleCheck, GitBranch, ShieldCheck } from "lucide-react";
-import { motion } from "framer-motion";
+import { ArrowRight, CheckCircle2, Clock3, CreditCard, Eye, Gauge, GitBranch, ShieldCheck, XCircle } from "lucide-react";
 import { Link } from "react-router-dom";
-import { ProductCard } from "../components/ProductCard";
-import { products } from "../data/products";
+
+const steps = [
+  ["Customer clicks pay", "The merchant collects payment intent, not card credentials.", CreditCard],
+  ["Sentinel checks context", "Recent device, session and payment behaviour becomes 39 risk signals.", Gauge],
+  ["A bounded decision", "The service returns ALLOW, REVIEW or TEMPORARY BLOCK.", GitBranch],
+  ["The safe path continues", "Only allowed attempts can reach Razorpay order creation.", ShieldCheck],
+] as const;
 
 export function LandingPage() {
-  return <>
-    <section className="hero page-width">
-      <motion.div className="hero-copy" initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .55 }}>
-        <span className="eyebrow-pill"><i/>Merchant-side payment protection</span>
-        <h1>Intelligent protection<br/><em>before every payment.</em></h1>
-        <p>Merchant-side pre-authorization protection for Razorpay. Sentinel evaluates trusted behavioral history before checkout and makes a bounded ALLOW, REVIEW or BLOCK decision before a Razorpay order is created.</p>
-        <div className="hero-actions"><Link className="primary-cta" to="/checkout">Try Protected Checkout <ArrowRight size={17}/></Link><Link className="secondary-cta" to="/how-it-works">See how Sentinel works</Link></div>
-        <div className="trust-chips"><span><CircleCheck/>Razorpay Test Mode</span><span><GitBranch/>Causal risk scoring</span><span><Braces/>Explainable decisions</span></div>
-      </motion.div>
-      <motion.div className="hero-visual" initial={{ opacity: 0, scale: .96 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: .65, delay: .08 }}>
-        <div className="intent-card"><span>Payment intent</span><strong>₹2,499</strong><small>Northstar Store</small></div>
-        <div className="sentinel-orb"><span className="orbit one"/><span className="orbit two"/><div><ShieldCheck/><strong>Sentinel</strong><small>Precheck</small></div></div>
-        <div className="decision-card"><span>Decision</span><strong>Not evaluated</strong><small>Outcome comes from the backend</small></div>
-        <svg viewBox="0 0 640 420" aria-hidden="true"><path d="M145 205 C225 205 225 205 285 205 M355 205 C425 205 425 205 500 205"/></svg>
-        <span className="visual-caption">A trusted decision between intent and order creation.</span>
-      </motion.div>
+  return <main>
+    <section className="home-hero page-width">
+      <div className="hero-copy"><span className="eyebrow-pill"><i/>Merchant-side payment protection</span><h1>Stop card testing <em>before payment begins.</em></h1><p>Sentinel evaluates behaviour before a Razorpay order is created, helping merchants limit automated card-testing attempts without pretending every unusual retry is fraud.</p><div className="hero-actions"><Link className="primary-cta" to="/checkout">Try the Demo <ArrowRight size={18}/></Link><Link className="secondary-cta" to="/how-it-works">See how it works</Link></div><p className="hero-disclaimer">Prototype in Razorpay Test Mode · Synthetic evaluation · No raw card credentials are accepted or stored by Sentinel.</p></div>
+      <div className="decision-preview" aria-label="Example decision path"><div className="preview-intent"><span>Payment attempt</span><strong>₹2,499</strong><small>Northstar test store</small></div><div className="preview-check"><ShieldCheck/><span>Sentinel precheck</span><strong>39 signals evaluated</strong></div><div className="preview-outcome allow"><CheckCircle2/><span>ALLOW</span><strong>Order path can continue</strong></div></div>
     </section>
-    <section className="store-section page-width" id="store">
-      <header className="section-heading"><div><span>Northstar Store</span><h2>A believable purchase.<br/>A protected payment path.</h2></div><p>Choose a product and continue through the real Sentinel and Razorpay Test Mode flow.</p></header>
-      <div className="product-grid">{products.map((product, index) => <ProductCard key={product.id} product={product} featured={index === 0}/>)}</div>
-    </section>
-    <section className="benefits page-width">
-      <article><span>01</span><ShieldCheck/><h3>Decide before the order</h3><p>Risk is evaluated before the backend creates a Razorpay order.</p></article>
-      <article><span>02</span><GitBranch/><h3>Use trusted history</h3><p>Merchant-visible verified behavior informs the next precheck.</p></article>
-      <article><span>03</span><Braces/><h3>Explain every action</h3><p>Bounded decisions persist with understandable evidence.</p></article>
-    </section>
-  </>;
+    <section className="section-block page-width"><header className="section-heading compact"><div><span>The problem</span><h2>Card testing looks small, fast and ordinary.</h2></div><p>Attackers submit repeated low-value attempts to discover which stolen cards still work. The useful protection point is before processor work starts.</p></header><div className="problem-grid"><article><Clock3/><h3>Velocity hides in retries</h3><p>A single decline says little. A sequence across cards, sessions or network references can say much more.</p></article><article><Eye/><h3>Merchants need context</h3><p>The decision service uses only trusted history available at the moment the customer clicks pay.</p></article><article><ShieldCheck/><h3>Intervene proportionately</h3><p>Not every signal deserves a block. Sentinel keeps allow, review and temporary block distinct.</p></article></div></section>
+    <section className="section-block process-section"><div className="page-width"><header className="section-heading"><div><span>How it works</span><h2>One check before order creation.</h2></div><Link className="text-arrow" to="/how-it-works">Explore every decision path <ArrowRight/></Link></header><ol className="process-grid">{steps.map(([title, copy, Icon], index) => <li key={title}><b>{index + 1}</b><Icon/><h3>{title}</h3><p>{copy}</p></li>)}</ol></div></section>
+    <section className="section-block page-width"><header className="section-heading compact"><div><span>Outcomes</span><h2>Three decisions. Clear operational meaning.</h2></div></header><div className="outcome-grid"><article className="allow"><CheckCircle2/><span>ALLOW</span><h3>Continue to order creation</h3><p>The backend may create the Razorpay Test order and open Standard Checkout.</p></article><article className="review"><Eye/><span>REVIEW</span><h3>Merchant intervention</h3><p>The attempt pauses before order creation. Sentinel does not invent an extra verification flow.</p></article><article className="block"><XCircle/><span>TEMPORARY BLOCK</span><h3>Stop before Razorpay</h3><p>No order is created and Checkout does not open for this attempt.</p></article></div></section>
+    <section className="signal-band"><div className="page-width"><div><span>Current risk model</span><strong>39 signal categories</strong><p>Built from recent attempt velocity, card diversity, decline history, session changes and verified checkout outcomes.</p></div><Link to="/how-it-works">View signal categories <ArrowRight/></Link></div></section>
+    <section className="section-block page-width"><header className="section-heading"><div><span>Try it yourself</span><h2>Two ways to explore the prototype.</h2></div></header><div className="demo-choice-grid"><article><CreditCard/><h3>Protected checkout</h3><p>See the permanent four-stage lifecycle and how an allowed payment reaches Razorpay Test Mode.</p><Link className="primary-cta" to="/checkout">Open checkout <ArrowRight/></Link></article><article><Gauge/><h3>Controlled attack replay</h3><p>Run supported synthetic scenarios through the real backend decision path, attempt by attempt.</p><Link className="secondary-cta" to="/checkout?demo=burst_attacker">Run an attack scenario <ArrowRight/></Link></article></div></section>
+    <section className="prototype-note page-width"><ShieldCheck/><div><span>Honest prototype status</span><h2>Promising detection, but not ready for production.</h2><p>The public Results page reports the current synthetic benchmark, including legitimate-customer friction and patterns the model misses.</p></div><Link to="/results">Read the results <ArrowRight/></Link></section>
+  </main>;
 }

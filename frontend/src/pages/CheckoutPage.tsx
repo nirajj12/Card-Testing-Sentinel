@@ -1,6 +1,6 @@
 import { ArrowLeft, FlaskConical, Mail, Minus, Phone, Plus, ShieldCheck } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { ActivityFeed } from "../components/ActivityFeed";
 import { AttemptDrawer } from "../components/AttemptDrawer";
 import { ReplayDrawer } from "../components/ReplayDrawer";
@@ -37,6 +37,7 @@ async function loadRazorpay() {
 }
 
 export function CheckoutPage() {
+  const [searchParams] = useSearchParams();
   const cart = useCart();
   const Icon = cart.product.icon;
   const amount = cart.product.price * cart.quantity;
@@ -54,7 +55,7 @@ export function CheckoutPage() {
   const [error, setError] = useState("");
   const [activities, setActivities] = useState<ActivityAttempt[]>([]);
   const [selectedAttempt, setSelectedAttempt] = useState<ActivityAttempt | null>(null);
-  const [replayOpen, setReplayOpen] = useState(false);
+  const [replayOpen, setReplayOpen] = useState(Boolean(searchParams.get("demo")));
   const [system, setSystem] = useState<SystemStatus | null>(null);
   const refreshActivities = useCallback(async () => {
     const result = await api.recentActivity<{ items: DurableActivity[] }>();
@@ -142,7 +143,7 @@ export function CheckoutPage() {
   }
 
   return <main className="checkout-route page-width">
-    <div className="checkout-route-head"><Link to="/"><ArrowLeft/>Back to store</Link><div><span>Protected Checkout</span><h1>Complete your Northstar purchase.</h1></div><button type="button" onClick={() => setReplayOpen(true)}><FlaskConical/>Run Sentinel Demo</button></div>
+    <div className="checkout-route-head"><Link to="/"><ArrowLeft/>Back home</Link><div><span>Try the Demo</span><h1>Protected test checkout.</h1><p>Watch every step from payment intent to verified outcome.</p></div><button type="button" onClick={() => setReplayOpen(true)}><FlaskConical/>Run attack replay</button></div>
     <section className="checkout-grid">
       <article className="checkout-form-card">
         <div className="checkout-merchant"><span>N</span><div><strong>Northstar Store</strong><small>Test Mode merchant checkout</small></div><i><ShieldCheck/>Secure</i></div>
@@ -158,6 +159,6 @@ export function CheckoutPage() {
     </section>
     <ActivityFeed attempts={activities} onSelect={setSelectedAttempt}/>
     <AttemptDrawer attempt={selectedAttempt} onClose={() => setSelectedAttempt(null)}/>
-    <ReplayDrawer open={replayOpen} onClose={() => setReplayOpen(false)} onAttempt={addActivity} system={system}/>
+    <ReplayDrawer open={replayOpen} onClose={() => setReplayOpen(false)} onAttempt={addActivity} system={system} initialScenario={searchParams.get("demo") || undefined}/>
   </main>;
 }

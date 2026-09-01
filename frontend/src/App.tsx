@@ -2,6 +2,7 @@ import { AnimatePresence } from "framer-motion";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { CartDrawer } from "./components/CartDrawer";
 import { Navbar } from "./components/Navbar";
+import { SiteFooter } from "./components/SiteFooter";
 import { LandingPage } from "./pages/LandingPage";
 import { CheckoutPage } from "./pages/CheckoutPage";
 import { EvidencePage } from "./pages/EvidencePage";
@@ -14,6 +15,7 @@ export default function App() {
     <Route path="/store" element={<LandingPage/>}/>
     <Route path="/checkout" element={<CheckoutPage/>}/>
     <Route path="/how-it-works" element={<HowItWorksPage/>}/>
+    <Route path="/results" element={<EvidencePage/>}/>
     <Route path="/evidence" element={<EvidencePage/>}/>
-  </Routes></AnimatePresence><CartDrawer/></CartProvider></BrowserRouter>;
+  </Routes></AnimatePresence><SiteFooter/><CartDrawer/></CartProvider></BrowserRouter>;
 }

@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { decisionCopy, safeReason } from "../features/decision";
 import { formatPrice } from "../data/products";
 import type { Operation, VerifiedPayment } from "../types";
+import { LifecycleTracker } from "./LifecycleTracker";
 
 export type PaymentPhase = "idle" | "evaluating" | "decision" | "verifying" | "success" | "failure";
 
@@ -11,6 +12,7 @@ export function SentinelPanel({ phase, progress, operation, orderCreated, checko
   const score = operation?.risk_score === null || operation?.risk_score === undefined ? null : Math.round(operation.risk_score * 100);
   return <article className={`sentinel-panel ${operation?.decision || "idle"}`}>
     <header className="sentinel-panel-head"><div><span>Live decision engine</span><h2>Sentinel Protection</h2></div><span className="monitoring"><i/>{phase === "evaluating" ? "Evaluating" : phase === "verifying" ? "Verifying" : "Monitoring"}</span></header>
+    <LifecycleTracker phase={phase} operation={operation} orderCreated={orderCreated} verified={verified}/>
     <div className="signal-ribbon"><span><i/>Velocity</span><span><i/>Decline history</span><span><i/>Session behavior</span></div>
     <AnimatePresence mode="wait">
       {phase === "idle" && <motion.div key="idle" className="sentinel-idle" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}><div className="sentinel-radar"><i/><i/><i/><b/></div><div><strong>Waiting for payment attempt</strong><p>Risk details appear here after the customer starts payment.</p></div></motion.div>}

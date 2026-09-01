@@ -10,7 +10,7 @@ type DemoStep = { complete: boolean; attempt?: { attempt: number; amount: number
 
 const scenarioLabels: Record<string, string> = { normal_customer: "Normal Purchase", normal_bad_luck: "Genuine Retry", burst_attacker: "Rapid Attack", patient_attacker: "Patient Attack" };
 
-export function ReplayDrawer({ open, onClose, onAttempt, system }: { open: boolean; onClose: () => void; onAttempt: (attempt: ActivityAttempt) => void; system: SystemStatus | null }) {
+export function ReplayDrawer({ open, onClose, onAttempt, system, initialScenario }: { open: boolean; onClose: () => void; onAttempt: (attempt: ActivityAttempt) => void; system: SystemStatus | null; initialScenario?: string }) {
   const [scenarios, setScenarios] = useState<Scenario[]>([]);
   const [selected, setSelected] = useState("normal_customer");
   const [demoId, setDemoId] = useState<string | null>(null);
@@ -22,6 +22,7 @@ export function ReplayDrawer({ open, onClose, onAttempt, system }: { open: boole
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("Select a scenario. Outcomes are not preloaded.");
   const playingRef = useRef(false);
+  useEffect(() => { if (initialScenario && scenarioLabels[initialScenario]) setSelected(initialScenario); }, [initialScenario]);
   useEffect(() => { if (open && !scenarios.length) api.demoScenarios<{ items: Scenario[] }>().then((data) => setScenarios(data.items)).catch((error) => setMessage(friendlyError(error))); }, [open, scenarios.length]);
 
   async function start() {
@@ -62,15 +63,24 @@ export function ReplayDrawer({ open, onClose, onAttempt, system }: { open: boole
     playingRef.current = false; setPlaying(false);
   }
 
+  async function reset() {
+    playingRef.current = false; setPlaying(false); setBusy(true);
+    try { await api.demoReset<{ reset: boolean }>(); setDemoId(null); setTotal(0); setSteps([]); setCursor(-1); setComplete(false); setMessage("Demo reset. Choose a supported scenario to begin again."); }
+    catch (error) { setMessage(friendlyError(error)); }
+    finally { setBusy(false); }
+  }
+
   const active = cursor >= 0 ? steps[cursor] : null;
   return <AnimatePresence>{open && <><motion.button className="drawer-backdrop" onClick={onClose} aria-label="Close Sentinel Demo" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}/><motion.aside className="replay-drawer" initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "100%" }}>
     <div className="drawer-head"><div><span>Controlled simulation</span><h2>Run a Sentinel Demo</h2></div><button type="button" onClick={onClose}><X/></button></div>
     <p className="replay-intro">Synthetic scenarios use the same RiskService and policy path, but never open Razorpay Checkout.</p>
-    <div className="scenario-grid">{Object.entries(scenarioLabels).filter(([id]) => scenarios.some((item) => item.id === id)).map(([id, label]) => <button key={id} className={selected === id ? "active" : ""} type="button" onClick={() => setSelected(id)}><FlaskConical size={16}/><span>{label}</span></button>)}<button type="button" disabled={system?.model_status !== "degraded_rules_only"}><RotateCcw size={16}/><span>Model Unavailable</span></button></div>
+    <div className="scenario-groups"><span>Normal customer behaviour</span><div className="scenario-grid">{Object.entries(scenarioLabels).filter(([id]) => id.startsWith("normal") && scenarios.some((item) => item.id === id)).map(([id, label]) => <button key={id} className={selected === id ? "active" : ""} type="button" onClick={() => setSelected(id)}><FlaskConical size={16}/><span>{label}</span></button>)}</div><span>Suspicious behaviour</span><div className="scenario-grid">{Object.entries(scenarioLabels).filter(([id]) => id.endsWith("attacker") && scenarios.some((item) => item.id === id)).map(([id, label]) => <button key={id} className={selected === id ? "active" : ""} type="button" onClick={() => setSelected(id)}><FlaskConical size={16}/><span>{label}</span></button>)}</div>{system?.model_status === "degraded_rules_only" && <p className="demo-notice">The model is unavailable; this run will use the published fallback rules.</p>}</div>
     <button className="primary-cta full" type="button" onClick={start} disabled={busy}>Start selected scenario <span>→</span></button>
     <div className="replay-progress"><div><span>Attempt</span><strong>{active?.attempt || 0} / {total || "—"}</strong></div><div className="timeline"><i style={{ width: total ? `${((active?.attempt || 0) / total) * 100}%` : "0%" }}/></div></div>
-    <div className="replay-result">{active ? <><span className={`activity-decision ${active.operation.decision}`}>{active.operation.decision.toUpperCase()}</span><strong>Risk {active.operation.risk_score === null ? "—" : Math.round(active.operation.risk_score * 100)}</strong><p>The backend returned this decision. The demo did not create a Razorpay order.</p></> : <p>{message}</p>}</div>
+    <div className="replay-result">{active ? <><span className={`activity-decision ${active.operation.decision}`}>{active.operation.decision.toUpperCase()}</span><strong>Risk {active.operation.risk_score === null ? "—" : Math.round(active.operation.risk_score * 100)}</strong><p>{active.operation.decision === "allow" ? "Allowed by the guard · eligible for an order in a real checkout." : "Prevented by the guard · no order path."} This simulation never opens Razorpay.</p></> : <p>{message}</p>}</div>
+    {steps.length > 0 && <ol className="replay-timeline" aria-label="Scenario attempts">{steps.map((item, index) => <li key={item.id} className={index === cursor ? "active" : ""}><b>{item.attempt}</b><span>{item.operation.decision.toUpperCase()}</span><small>{item.operation.decision === "allow" ? "Order path eligible" : "Order prevented"}</small></li>)}</ol>}
     <div className="replay-controls"><button type="button" disabled={busy || cursor <= 0} onClick={() => setCursor(cursor - 1)}><ChevronLeft/>Previous</button><button type="button" disabled={(!playing && busy) || !demoId || complete} onClick={togglePlay}>{playing ? <Pause/> : <Play/>}{playing ? "Pause" : "Play"}</button><button type="button" disabled={busy || !demoId || (complete && cursor >= steps.length - 1)} onClick={next}>Next<StepForward/></button></div>
     <p className="replay-message">{message}</p>
+    <button className="reset-demo" type="button" onClick={reset} disabled={busy}><RotateCcw/>Reset demo</button>
   </motion.aside></>}</AnimatePresence>;
 }

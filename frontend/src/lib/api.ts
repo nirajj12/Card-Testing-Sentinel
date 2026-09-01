@@ -30,6 +30,7 @@ export const api = {
   demoScenarios: <T>() => request<T>("/api/demo/scenarios"),
   demoStart: <T>(scenario: string) => request<T>("/api/demo/start", { method: "POST", body: JSON.stringify({ scenario }) }),
   demoStep: <T>(demoId: string) => request<T>("/api/demo/step", { method: "POST", body: JSON.stringify({ demo_id: demoId }) }),
+  demoReset: <T>() => request<T>("/api/demo/reset", { method: "POST", body: "{}" }),
   blindMetrics: <T>() => request<T>("/api/metrics/blind"),
 };
 

@@ -25,4 +25,11 @@ describe("SentinelPanel", () => {
     expect(screen.getByText("Razorpay outcome").nextElementSibling).toHaveTextContent("FAILED");
     expect(screen.getByText("Verified history").nextElementSibling).toHaveTextContent("RECORDED DECLINED");
   });
+
+  it("keeps REVIEW before order creation and checkout", () => {
+    render(<SentinelPanel phase="decision" progress={4} operation={{ decision: "review", risk_score: .55, reason_codes: [] }} orderCreated={false} checkoutOpened={false} verified={null} paymentOutcome={null} historyStatus="not_recorded" amount={2499} error=""/>);
+    expect(screen.getByText("Razorpay order created").nextElementSibling).toHaveTextContent("NO");
+    expect(screen.getByText("Checkout opened").nextElementSibling).toHaveTextContent("NO");
+    expect(screen.getByText("Prevented")).toBeInTheDocument();
+  });
 });

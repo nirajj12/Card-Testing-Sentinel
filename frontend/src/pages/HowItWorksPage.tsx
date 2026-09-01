@@ -1,47 +1,34 @@
-import { Check, CreditCard, GitBranch, History, MousePointer2, ScanSearch, Server, ShieldCheck, Store, X } from "lucide-react";
-import { motion } from "framer-motion";
-import { useState } from "react";
-import { FlowNode } from "../components/FlowNode";
+import { CheckCircle2, CreditCard, Eye, Fingerprint, Gauge, GitBranch, History, Server, ShieldCheck, XCircle } from "lucide-react";
+import { useRef, useState } from "react";
 
 type Branch = "allow" | "review" | "block";
-
-const branchCopy = {
-  allow: { title: "A verified order path", copy: "Only ALLOW reaches Razorpay. The backend creates the Test order, Standard Checkout opens, and the callback remains untrusted until the server verifies its signature." },
-  review: { title: "An honest intervention boundary", copy: "REVIEW keeps its current policy meaning: merchant intervention recommended. Sentinel does not invent an OTP, CAPTCHA, 3DS or manual queue." },
-  block: { title: "A path that ends before Razorpay", copy: "TEMPORARY BLOCK suppresses order creation completely. There is no Razorpay order and Checkout never opens." },
-};
+const branches: Branch[] = ["allow", "review", "block"];
+const details = {
+  allow: { icon: CheckCircle2, title: "Continue to Razorpay", copy: "The backend creates a Razorpay Test order, Standard Checkout opens, and payment success is trusted only after server-side signature verification.", steps: ["Order created on the server", "Standard Checkout opens", "Signature verified by the backend", "Verified outcome can inform future checks"] },
+  review: { icon: Eye, title: "Pause for merchant intervention", copy: "The attempt stops before order creation. REVIEW does not claim that Sentinel performs an OTP, CAPTCHA, 3DS challenge or manual queue.", steps: ["Merchant intervention recommended", "No Razorpay order is created", "Checkout does not open automatically", "The attempt remains explainable"] },
+  block: { icon: XCircle, title: "Temporarily stop the payment path", copy: "Order creation is suppressed completely for the attempt. Razorpay is not contacted and the customer can retry later with a new check.", steps: ["Temporary block returned", "Order creation suppressed", "Checkout never opens", "No processor outcome is invented"] },
+} as const;
+const signals = [["Attempt velocity", "Recent attempts over short and daily windows", Gauge], ["Payment diversity", "Changes across protected card references", CreditCard], ["Decline history", "Verified prior outcomes and retry patterns", History], ["Session context", "Session changes and protected network references", Fingerprint]] as const;
 
 export function HowItWorksPage() {
   const [active, setActive] = useState<Branch>("allow");
-  return <main className="architecture-page">
-    <header className="architecture-hero page-width"><div><span className="eyebrow-pill"><i/>Interactive payment architecture</span><h1>The decision before<br/><em>the payment path.</em></h1></div><div><p>Sentinel sits between customer payment intent and Razorpay order creation. Select a branch to follow only the systems that participate.</p><div className="branch-switcher">{(["allow","review","block"] as Branch[]).map((branch) => <button key={branch} className={active === branch ? `active ${branch}` : ""} type="button" onClick={() => setActive(branch)}>{branch.toUpperCase()}</button>)}</div></div></header>
-    <section className="flow-showcase page-width" data-active={active}>
-      <div className="flow-canvas">
-        <div className="flow-grid" aria-hidden="true"/>
-        <svg className="flow-connectors" viewBox="0 0 1500 780" preserveAspectRatio="none" aria-hidden="true">
-          <defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8Z"/></marker></defs>
-          <path className="connector shared" d="M225 390 C275 390 275 390 320 390 M520 390 C565 390 565 390 610 390"/>
-          <path className="connector allow" d="M800 390 C845 390 825 155 885 155 M1045 155 C1095 155 1095 155 1140 155 M1310 155 C1360 155 1370 300 1300 390 M1300 390 C1360 390 1360 620 1290 620"/>
-          <path className="connector review" d="M800 390 C845 390 845 390 885 390 M1045 390 C1095 390 1095 390 1140 390"/>
-          <path className="connector block" d="M800 390 C845 390 825 625 885 625 M1045 625 C1095 625 1095 625 1140 625"/>
-          <path className="connector-energy allow" d="M800 390 C845 390 825 155 885 155 M1045 155 C1095 155 1095 155 1140 155 M1310 155 C1360 155 1370 300 1300 390 M1300 390 C1360 390 1360 620 1290 620"/>
-          <path className="connector-energy review" d="M800 390 C845 390 845 390 885 390 M1045 390 C1095 390 1095 390 1140 390"/>
-          <path className="connector-energy block" d="M800 390 C845 390 825 625 885 625 M1045 625 C1095 625 1095 625 1140 625"/>
-        </svg>
-        <FlowNode className="node-customer" eyebrow="Customer" title="Clicks Pay" description="The merchant checkout captures payment intent." icon={<MousePointer2/>}/>
-        <FlowNode className="node-precheck" eyebrow="POST /api/precheck" title="Sentinel precheck" description="Uses only information available before the current payment outcome exists." icon={<ScanSearch/>}/>
-        <FlowNode className="node-policy" eyebrow="Trusted server history" title="Risk + policy" description="A bounded operational decision is selected from model and policy evidence." icon={<GitBranch/>}/>
-        <FlowNode className="node-allow" eyebrow="ALLOW" title={<>Create <b>Razorpay order</b></>} description="Created server-side only after Sentinel returns ALLOW." icon={<Server/>} branch="allow" onActivate={setActive}/>
-        <FlowNode className="node-review" eyebrow="REVIEW" title="Merchant intervention" description="No automatic verification workflow is invented." icon={<Store/>} branch="review" onActivate={setActive}/>
-        <FlowNode className="node-block" eyebrow="TEMPORARY BLOCK" title="Order suppressed" description="The payment path terminates before Razorpay." icon={<X/>} branch="block" onActivate={setActive}/>
-        <FlowNode className="node-razorpay" eyebrow="Public key + order_id" title={<>Razorpay <b>Standard Checkout</b></>} description="The browser receives the public key and server-created order ID." icon={<CreditCard/>} branch="allow" onActivate={setActive}/>
-        <FlowNode className="node-verify" eyebrow="POST /payments/verify" title="Verify signature" description="The backend verifies the Razorpay signature before trusting success." icon={<ShieldCheck/>} branch="allow" onActivate={setActive}/>
-        <FlowNode className="node-history" eyebrow="Verified outcome" title="Future history" description="Trusted outcomes become features for future Sentinel prechecks." icon={<History/>} branch="allow" onActivate={setActive}/>
-        <FlowNode className="node-review-end" eyebrow="Boundary" title="Order not created" description="Merchant intervention is recommended; Checkout does not open automatically." icon={<GitBranch/>} branch="review" onActivate={setActive}/>
-        <FlowNode className="node-block-end" eyebrow="Hard stop" title="Checkout never opens" description="No Razorpay order exists. Retry is possible when the temporary block expires." icon={<X/>} branch="block" onActivate={setActive}/>
-      </div>
-      <motion.aside key={active} className={`branch-explanation ${active}`} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}><span>{active === "allow" ? <Check/> : active === "review" ? <GitBranch/> : <X/>}{active.toUpperCase()} path</span><h2>{branchCopy[active].title}</h2><p>{branchCopy[active].copy}</p></motion.aside>
-    </section>
-    <section className="flow-principles page-width"><article><span>01</span><strong>Intent is not an order</strong><p>The protection boundary exists before the Razorpay Orders API call.</p></article><article><span>02</span><strong>Browser success is untrusted</strong><p>The callback becomes history only after server-side signature verification.</p></article><article><span>03</span><strong>History stays causal</strong><p>The current outcome never influences the decision that preceded it.</p></article></section>
+  const tabs = useRef<Array<HTMLButtonElement | null>>([]);
+  function moveTab(event: React.KeyboardEvent, index: number) {
+    let next = index;
+    if (event.key === "ArrowRight") next = (index + 1) % branches.length;
+    else if (event.key === "ArrowLeft") next = (index - 1 + branches.length) % branches.length;
+    else if (event.key === "Home") next = 0;
+    else if (event.key === "End") next = branches.length - 1;
+    else return;
+    event.preventDefault(); setActive(branches[next]); tabs.current[next]?.focus();
+  }
+  const branch = details[active]; const BranchIcon = branch.icon;
+  return <main className="how-page">
+    <header className="page-hero page-width"><span className="eyebrow-pill"><i/>How Sentinel works</span><h1>A clear decision point <em>before Razorpay.</em></h1><p>Sentinel sits between customer intent and order creation. It evaluates recent merchant-side behaviour, returns one bounded action, and keeps the gateway path honest.</p></header>
+    <section className="shared-path page-width" aria-labelledby="shared-title"><header><span>Shared decision path</span><h2 id="shared-title">Every attempt starts the same way.</h2></header><ol><li><b>1</b><CreditCard/><strong>Customer clicks pay</strong><p>The merchant sends payment context to its backend.</p></li><li><b>2</b><Server/><strong>Sentinel precheck</strong><p>Trusted recent history becomes a compact signal set.</p></li><li><b>3</b><GitBranch/><strong>Decision policy</strong><p>ALLOW, REVIEW or TEMPORARY BLOCK is returned.</p></li></ol></section>
+    <section className="branch-section page-width"><div className="branch-tabs" role="tablist" aria-label="Decision paths">{branches.map((name, index) => <button key={name} ref={(node) => { tabs.current[index] = node; }} role="tab" id={`tab-${name}`} aria-selected={active === name} aria-controls={`panel-${name}`} tabIndex={active === name ? 0 : -1} className={`${name} ${active === name ? "active" : ""}`} onClick={() => setActive(name)} onKeyDown={(event) => moveTab(event, index)}>{name === "block" ? "TEMPORARY BLOCK" : name.toUpperCase()}</button>)}</div><article className={`branch-panel ${active}`} role="tabpanel" id={`panel-${active}`} aria-labelledby={`tab-${active}`}><div className="branch-lead"><BranchIcon/><span>{active === "block" ? "TEMPORARY BLOCK" : active.toUpperCase()} path</span><h2>{branch.title}</h2><p>{branch.copy}</p></div><ol>{branch.steps.map((step, index) => <li key={step}><b>{index + 1}</b><span>{step}</span></li>)}</ol></article></section>
+    <section className="section-block page-width"><header className="section-heading compact"><div><span>Signal categories</span><h2>39 categories from behaviour available at decision time.</h2></div><p>They describe patterns, not identity. Sentinel uses protected references and verified merchant history; it does not accept raw card credentials.</p></header><div className="signal-grid">{signals.map(([title, copy, Icon]) => <article key={title}><Icon/><h3>{title}</h3><p>{copy}</p></article>)}</div></section>
+    <section className="comparison-section"><div className="page-width"><header><span>Responsibilities</span><h2>Sentinel and Razorpay do different jobs.</h2></header><div className="comparison-grid"><article><ShieldCheck/><h3>Sentinel</h3><ul><li>Checks risk before order creation</li><li>Returns a bounded merchant action</li><li>Stores protected references and trusted outcomes</li><li>Explains the signals behind an intervention</li></ul></article><article><CreditCard/><h3>Razorpay Test Mode</h3><ul><li>Creates the payment order after ALLOW</li><li>Collects payment credentials in Standard Checkout</li><li>Processes the test payment</li><li>Provides a signature for server verification</li></ul></article></div></div></section>
+    <section className="safeguards page-width"><div><ShieldCheck/><h2>Safeguards</h2><p>Pre-authorization boundary, server-side order creation, signature verification, idempotent requests and protected identifiers.</p></div><div><Eye/><h2>Limitations</h2><p>Synthetic data, test gateway only, meaningful false positives, missed patient attacks and no claim of production fraud performance.</p></div></section>
   </main>;
 }
