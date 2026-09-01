@@ -1,319 +1,259 @@
 {
+  "attack_scenario_detection": {
+    "bounded_ip_rotation": {
+      "block_rate": 0.775,
+      "devices": 40,
+      "median_first_review": 3.0,
+      "review_or_higher_rate": 0.85
+    },
+    "device_rotation_campaign": {
+      "block_rate": 0.3676,
+      "devices": 68,
+      "median_first_review": 3.0,
+      "review_or_higher_rate": 0.7059
+    },
+    "fast_burst": {
+      "block_rate": 0.8571,
+      "devices": 21,
+      "median_first_review": 4.0,
+      "review_or_higher_rate": 0.9524
+    },
+    "flash_sale_camouflage": {
+      "block_rate": 0.6765,
+      "devices": 34,
+      "median_first_review": 4.0,
+      "review_or_higher_rate": 0.8824
+    },
+    "low_and_slow": {
+      "block_rate": 0.1818,
+      "devices": 44,
+      "median_first_review": 4.0,
+      "review_or_higher_rate": 0.7955
+    },
+    "merchant_typical_amounts": {
+      "block_rate": 0.641,
+      "devices": 39,
+      "median_first_review": 4.0,
+      "review_or_higher_rate": 0.9231
+    },
+    "patient_tester": {
+      "block_rate": 0.1351,
+      "devices": 37,
+      "median_first_review": 4.0,
+      "review_or_higher_rate": 0.5946
+    },
+    "session_churn": {
+      "block_rate": 0.8824,
+      "devices": 34,
+      "median_first_review": 3.0,
+      "review_or_higher_rate": 0.9706
+    },
+    "slow_drip": {
+      "block_rate": 0.7333,
+      "devices": 45,
+      "median_first_review": 4.0,
+      "review_or_higher_rate": 0.8889
+    },
+    "warm_up_then_test": {
+      "block_rate": 0.5429,
+      "devices": 35,
+      "median_first_review": 6.5,
+      "review_or_higher_rate": 0.8
+    }
+  },
   "blind_evaluated": false,
-  "dataset_manifest_sha256": "55aeef4ed02e4d22b15a420567db69459fb247ba23e59b099b85243017d7ab3f",
-  "effective_replacement_freeze_sha256": "f0b473ac81f356b1f6d114491148ac25d2edbaac4a96b2309d6ab5c034a2177b",
-  "execution_amendment_sha256": "a026fce117025926d00272f4c4cb90581b4cebdaac4d0aab8ecf03992ac6d44f",
-  "metrics": {
-    "attacker_block": {
-      "denominator": 300,
-      "numerator": 230,
-      "rate": 0.7666666666666667
+  "block_elevated_count": 1,
+  "block_evidence": 2,
+  "block_meaning": "temporary. No Razorpay order is created for this attempt; after block_expires_at a later request is scored from current history. Nothing is permanently labelled fraudulent.",
+  "block_threshold": 0.78,
+  "block_ttl_seconds": 3600,
+  "campaign_block_increment": 0.02,
+  "campaign_review_increment": 0.05,
+  "constraints": {
+    "max_legitimate_block_rate": 0.006,
+    "max_legitimate_review_or_higher_rate": 0.06,
+    "max_scenario_block_rate": {
+      "cold_start_customer": 0.01,
+      "failure_then_retry": 0.03,
+      "flash_sale_customer": 0.04,
+      "network_retry_storm": 0.08,
+      "repeated_genuine_failures": 0.1,
+      "returning_customer": 0.005,
+      "shared_network_customer": 0.01,
+      "subscription_retry": 0.05
     },
-    "attacker_review_or_higher": {
-      "denominator": 300,
-      "numerator": 274,
-      "rate": 0.9133333333333333
+    "max_scenario_review_rate": {
+      "cold_start_customer": 0.04,
+      "flash_sale_customer": 0.25,
+      "network_retry_storm": 0.35,
+      "repeated_genuine_failures": 0.6,
+      "returning_customer": 0.015
     },
-    "budget_results": {
-      "flash_hard_retry": {
-        "block_allowance_devices": 5,
-        "block_devices": 0,
-        "block_excess_devices": 0,
-        "denominator_devices": 100,
-        "passed": true,
-        "review_allowance_devices": 10,
-        "review_excess_devices": 0,
-        "review_only_devices": 0,
-        "review_or_higher_devices": 0
-      },
-      "flash_standard": {
-        "block_allowance_devices": 9,
-        "block_devices": 0,
-        "block_excess_devices": 0,
-        "denominator_devices": 300,
-        "passed": true,
-        "review_allowance_devices": 15,
-        "review_excess_devices": 0,
-        "review_only_devices": 0,
-        "review_or_higher_devices": 0
-      },
-      "normal_bad_luck": {
-        "block_allowance_devices": 2,
-        "block_devices": 0,
-        "block_excess_devices": 0,
-        "denominator_devices": 100,
-        "passed": true,
-        "review_allowance_devices": 5,
-        "review_excess_devices": 0,
-        "review_only_devices": 5,
-        "review_or_higher_devices": 5
-      },
-      "normal_standard": {
-        "block_allowance_devices": 6,
-        "block_devices": 0,
-        "block_excess_devices": 0,
-        "denominator_devices": 1200,
-        "passed": true,
-        "review_allowance_devices": 24,
-        "review_excess_devices": 0,
-        "review_only_devices": 0,
-        "review_or_higher_devices": 0
-      },
-      "overall_legitimate": {
-        "block_allowance_devices": 17,
-        "block_devices": 0,
-        "block_excess_devices": 0,
-        "denominator_devices": 1700,
-        "passed": true,
-        "review_allowance_devices": 51,
-        "review_excess_devices": 0,
-        "review_only_devices": 5,
-        "review_or_higher_devices": 5
-      }
-    },
-    "effectiveness_failures": [],
-    "effectiveness_passed": true,
-    "effectiveness_results": {
-      "burst_review_or_higher": {
-        "actual": 1.0,
-        "minimum": 0.9,
-        "passed": true
-      },
-      "evasive_review_or_higher": {
-        "actual": 0.9444444444444444,
-        "minimum": 0.5,
-        "passed": true
-      },
-      "overall_block": {
-        "actual": 0.7666666666666667,
-        "minimum": 0.5,
-        "passed": true
-      },
-      "overall_review_or_higher": {
-        "actual": 0.9133333333333333,
-        "minimum": 0.7,
-        "passed": true
-      },
-      "patient_review_or_higher": {
-        "actual": 0.7666666666666667,
-        "minimum": 0.4,
-        "passed": true
-      }
-    },
-    "failed_constraints": [],
-    "feasible": true,
-    "intervention_distributions": {
-      "authorizations_processed_before_first_action": {
-        "count": 274,
-        "mean": 4.2846715328467155,
-        "median": 4.0,
-        "p90": 5.0
-      },
-      "distinct_cards_processed_before_first_action": {
-        "count": 274,
-        "mean": 2.2518248175182483,
-        "median": 2.0,
-        "p90": 3.0
-      },
-      "distinct_cards_requested_through_first_action": {
-        "count": 274,
-        "mean": 2.6204379562043796,
-        "median": 3.0,
-        "p90": 4.0
-      },
-      "requests_scored_through_first_action": {
-        "count": 274,
-        "mean": 5.361313868613139,
-        "median": 5.0,
-        "p90": 6.0
-      },
-      "seconds_to_first_review": {
-        "count": 274,
-        "mean": 67434.95620437956,
-        "median": 324.0,
-        "p90": 260640.5
-      }
-    },
-    "legitimate_blocks": 0,
-    "legitimate_review_or_higher": 5,
-    "never_detected_attackers": 26,
-    "potentially_preventable_later_attempts_offline_upper_bound": 786,
-    "safety_failures": [],
-    "safety_passed": true,
-    "subtype": {
-      "burst": {
-        "block": {
-          "denominator": 120,
-          "numerator": 112,
-          "rate": 0.9333333333333333
-        },
-        "never_detected": 0,
-        "review_or_higher": {
-          "denominator": 120,
-          "numerator": 120,
-          "rate": 1.0
-        },
-        "within_attempt": {
-          "1": {
-            "block": 0,
-            "denominator": 120,
-            "review_or_higher": 0
-          },
-          "10": {
-            "block": 112,
-            "denominator": 120,
-            "review_or_higher": 120
-          },
-          "3": {
-            "block": 0,
-            "denominator": 120,
-            "review_or_higher": 0
-          },
-          "5": {
-            "block": 3,
-            "denominator": 120,
-            "review_or_higher": 83
-          }
-        }
-      },
-      "evasive": {
-        "block": {
-          "denominator": 90,
-          "numerator": 69,
-          "rate": 0.7666666666666667
-        },
-        "never_detected": 5,
-        "review_or_higher": {
-          "denominator": 90,
-          "numerator": 85,
-          "rate": 0.9444444444444444
-        },
-        "within_attempt": {
-          "1": {
-            "block": 0,
-            "denominator": 90,
-            "review_or_higher": 0
-          },
-          "10": {
-            "block": 69,
-            "denominator": 90,
-            "review_or_higher": 85
-          },
-          "3": {
-            "block": 0,
-            "denominator": 90,
-            "review_or_higher": 0
-          },
-          "5": {
-            "block": 0,
-            "denominator": 90,
-            "review_or_higher": 54
-          }
-        }
-      },
-      "patient": {
-        "block": {
-          "denominator": 90,
-          "numerator": 49,
-          "rate": 0.5444444444444444
-        },
-        "never_detected": 21,
-        "review_or_higher": {
-          "denominator": 90,
-          "numerator": 69,
-          "rate": 0.7666666666666667
-        },
-        "within_attempt": {
-          "1": {
-            "block": 0,
-            "denominator": 90,
-            "review_or_higher": 0
-          },
-          "10": {
-            "block": 49,
-            "denominator": 90,
-            "review_or_higher": 69
-          },
-          "3": {
-            "block": 0,
-            "denominator": 90,
-            "review_or_higher": 0
-          },
-          "5": {
-            "block": 1,
-            "denominator": 90,
-            "review_or_higher": 29
-          }
-        }
-      }
-    },
-    "within_attempt": {
-      "1": {
-        "block": 0,
-        "denominator": 300,
-        "review_or_higher": 0
-      },
-      "10": {
-        "block": 230,
-        "denominator": 300,
-        "review_or_higher": 274
-      },
-      "3": {
-        "block": 0,
-        "denominator": 300,
-        "review_or_higher": 0
-      },
-      "5": {
-        "block": 4,
-        "denominator": 300,
-        "review_or_higher": 166
-      }
-    },
-    "worst_subtype_review_coverage": 0.7666666666666667
+    "min_attack_review_or_higher_recall": 0.7,
+    "min_review_to_block_ratio": 5.0
   },
-  "model_contract": {
-    "calibration_changed": false,
-    "feature_contract_sha256": "5de17dbf8abc06c835ba948e8cbc68706079973721cd25b081bb55e808bf57c6",
-    "feature_count": 44,
-    "frozen_model_sha256": "6c638fc05ca321e98c8b5417c477a58e2649bdd7e056bcd56e0d119d3eb80f88",
-    "model_changed": false
+  "created_utc": "2026-08-31T03:08:14.241574+00:00",
+  "dataset_config_sha256": "2f015ee8a09b2d1faf12f35ad793c1b05b9121d5ea964cc4970f82c3ec93b59a",
+  "degraded_block_rule_score": 6,
+  "degraded_review_rule_score": 4,
+  "family": "evidence_gated",
+  "feature_contract_sha256": "8406075180276565f1684bdd0ff7fa004addb919e7a295712581aac3ee8bc4e7",
+  "history_cap": 16,
+  "legitimate_scenario_friction": {
+    "cold_start_customer": {
+      "block_rate": 0.0,
+      "devices": 405,
+      "review_or_higher_rate": 0.0099
+    },
+    "failure_then_retry": {
+      "block_rate": 0.0,
+      "devices": 128,
+      "review_or_higher_rate": 0.1016
+    },
+    "flash_sale_customer": {
+      "block_rate": 0.0128,
+      "devices": 78,
+      "review_or_higher_rate": 0.1282
+    },
+    "micro_payment_customer": {
+      "block_rate": 0.0,
+      "devices": 90,
+      "review_or_higher_rate": 0.0778
+    },
+    "network_retry_storm": {
+      "block_rate": 0.0612,
+      "devices": 49,
+      "review_or_higher_rate": 0.2245
+    },
+    "network_switch_customer": {
+      "block_rate": 0.0139,
+      "devices": 72,
+      "review_or_higher_rate": 0.0694
+    },
+    "payment_method_change": {
+      "block_rate": 0.0,
+      "devices": 68,
+      "review_or_higher_rate": 0.0441
+    },
+    "repeated_genuine_failures": {
+      "block_rate": 0.0976,
+      "devices": 41,
+      "review_or_higher_rate": 0.4634
+    },
+    "returning_customer": {
+      "block_rate": 0.0,
+      "devices": 500,
+      "review_or_higher_rate": 0.002
+    },
+    "shared_household_device": {
+      "block_rate": 0.0,
+      "devices": 129,
+      "review_or_higher_rate": 0.0465
+    },
+    "shared_network_customer": {
+      "block_rate": 0.0,
+      "devices": 166,
+      "review_or_higher_rate": 0.006
+    },
+    "subscription_retry": {
+      "block_rate": 0.0,
+      "devices": 43,
+      "review_or_higher_rate": 0.0
+    }
   },
-  "original_development_freeze_sha256": "e3220ae35015ed5bf9737e4a6293cb11fc2351ab2aae6fee352ac8db1506bc54",
-  "phase2b_policy_preserved": true,
-  "policy": {
-    "block_evidence": 0,
-    "block_high_count": 4,
-    "block_rule_score": 6,
-    "block_threshold": 0.6,
-    "campaign_extra_evidence": 0,
-    "campaign_threshold_increment": 0.0,
-    "candidate_id": "phase2c_002",
-    "checkout_risk_multiplier": 0.55,
-    "family": "persistent_ml",
-    "half_life_hours": 168,
-    "high_window_hours": 336,
-    "recent_request_limit": 16,
-    "review_high_count": 3,
-    "review_rule_score": 5,
-    "review_threshold": 0.5,
-    "stable_retry_risk_multiplier": 0.8,
-    "strong_threshold": 0.8
-  },
-  "reason_code_contract": [
-    "persistent_high_model_risk",
-    "consecutive_high_model_risk",
-    "accumulated_model_risk",
-    "high_risk_with_card_switching",
-    "cross_session_card_diversity",
-    "high_risk_with_ip_rotation",
-    "high_risk_with_card_diversity",
-    "successful_checkout_risk_reduction",
-    "stable_retry_risk_reduction",
-    "campaign_threshold_adjustment",
-    "rule_corroborated_review",
-    "rule_corroborated_block"
+  "merchant_friction": [
+    {
+      "attack_block_recall": 0.5495,
+      "attack_devices": 91,
+      "attack_review_or_higher_recall": 0.8242,
+      "devices": 429,
+      "legitimate_block_rate": 0.0118,
+      "legitimate_devices": 338,
+      "legitimate_review_or_higher_rate": 0.0237,
+      "merchant_kind": "subscription"
+    },
+    {
+      "attack_block_recall": 0.6552,
+      "attack_devices": 58,
+      "attack_review_or_higher_recall": 0.8621,
+      "devices": 254,
+      "legitimate_block_rate": 0.0051,
+      "legitimate_devices": 196,
+      "legitimate_review_or_higher_rate": 0.0867,
+      "merchant_kind": "flash_sale"
+    },
+    {
+      "attack_block_recall": 0.5306,
+      "attack_devices": 49,
+      "attack_review_or_higher_recall": 0.7959,
+      "devices": 289,
+      "legitimate_block_rate": 0.0042,
+      "legitimate_devices": 240,
+      "legitimate_review_or_higher_rate": 0.0583,
+      "merchant_kind": "electronics"
+    },
+    {
+      "attack_block_recall": 0.5167,
+      "attack_devices": 60,
+      "attack_review_or_higher_recall": 0.85,
+      "devices": 337,
+      "legitimate_block_rate": 0.0036,
+      "legitimate_devices": 277,
+      "legitimate_review_or_higher_rate": 0.0469,
+      "merchant_kind": "small_ecommerce"
+    },
+    {
+      "attack_block_recall": 0.4872,
+      "attack_devices": 78,
+      "attack_review_or_higher_recall": 0.7692,
+      "devices": 427,
+      "legitimate_block_rate": 0.0029,
+      "legitimate_devices": 349,
+      "legitimate_review_or_higher_rate": 0.0201,
+      "merchant_kind": "digital_goods"
+    },
+    {
+      "attack_block_recall": 0.5574,
+      "attack_devices": 61,
+      "attack_review_or_higher_recall": 0.8361,
+      "devices": 430,
+      "legitimate_block_rate": 0.0027,
+      "legitimate_devices": 369,
+      "legitimate_review_or_higher_rate": 0.0569,
+      "merchant_kind": "education"
+    }
   ],
-  "selected_utc": "2026-08-25T23:50:06.299336+00:00",
-  "state_schema_version": "v2c-policy-state-1",
-  "version": "v2-phase2c-operational-policy-1"
+  "model_metadata_sha256": "5040fade83b220e1ef5bf299a4dd2e5b6422f3bb34210e843f3650b1176fd53d",
+  "model_sha256": "be39e1524ae7095e3ea512ce115e674563ed3313274ee38d42d00aa9aaa22ef7",
+  "model_stage": "development_frozen_candidate",
+  "persistence_window_hours": 24,
+  "policy_config_sha256": "53c2512e9ddcb7f20194578d69824b6bc8d82d72f29aba6137fb56334b967e52",
+  "policy_family": "evidence_gated",
+  "policy_version": "validation-selected-1",
+  "ranking": [
+    "maximise attack review-or-higher recall",
+    "maximise attack block recall",
+    "minimise median first review attempt",
+    "minimise legitimate review-or-higher rate"
+  ],
+  "review_meaning": "a decision state in this prototype; a production merchant could map it to step-up verification, rate limiting, a delayed retry or a manual queue. None of those are implemented here.",
+  "review_threshold": 0.6,
+  "selected_on": "validation split only",
+  "status": "validation_selected",
+  "training_config_sha256": "68098d33b6a53f5c9ec6f6c2c60b8912ae139be0ed10c59212aa98f3fa2cfe06",
+  "validation_metrics": {
+    "attack_block_recall": 0.5466,
+    "attack_devices": 397,
+    "attack_never_detected": 71,
+    "attack_review_or_higher_recall": 0.8212,
+    "legitimate_block_rate": 0.0051,
+    "legitimate_blocked_devices": 9,
+    "legitimate_devices": 1769,
+    "legitimate_review_or_higher_rate": 0.0452,
+    "legitimate_reviewed_devices": 80,
+    "median_first_block_attempt": 5.0,
+    "median_first_review_attempt": 4.0,
+    "p90_first_block_attempt": 7.0,
+    "p90_first_review_attempt": 5.0
+  }
 }

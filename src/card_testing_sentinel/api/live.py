@@ -53,6 +53,16 @@ def decisions(
     return {"items": _service(runtime).decisions(limit)}
 
 
+@router.get("/activity/recent")
+def recent_activity(
+    runtime: RuntimeDependency,
+    limit: Annotated[int, Query(ge=1, le=200)] = 50,
+) -> dict:
+    if not runtime.ready or runtime.razorpay is None:
+        raise RuntimeStateError("application is not ready")
+    return {"items": runtime.razorpay.recent_activity(limit)}
+
+
 @router.get("/runtime/devices/{device_id}/timeline")
 def timeline(device_id: str, runtime: RuntimeDependency) -> dict:
     return {

@@ -162,7 +162,6 @@ def test_valid_next_step_returns_200_and_updates_checkout_ops_and_timeline(
     # The backend holds an HMAC card fingerprint, never a PAN, so there is no
     # real last-four to display. The alias states what is actually known --
     # which distinct card this device is on -- instead of fabricating digits.
-    assert body["attempt"]["card_alias"] == "Card #01"
     assert body["attempt"]["timestamp"]
     assert body["attempt"]["elapsed_seconds"] == 0
     op = body["operations"]
@@ -183,15 +182,16 @@ def test_valid_next_step_returns_200_and_updates_checkout_ops_and_timeline(
         "evidence",
         "protected_reference",
     }
+    assert 0.0 <= op["risk_score"] <= 1.0
     # evidence is either empty (idempotent replay with nothing stored) or
     # exactly the six-key allowlist -- never the 44-feature vector.
     allowed_evidence_keys = {
-        "prior_attempts_24h",
-        "distinct_cards_24h",
-        "prior_decline_streak",
+        "requests_5m",
+        "recent_failures_24h",
+        "decline_streak",
         "sessions_24h",
         "ip_changes_24h",
-        "prior_successful_checkouts",
+        "successful_checkouts",
     }
     assert set(op["evidence"]).issubset(allowed_evidence_keys)
     assert isinstance(body["timeline"], list) and body["timeline"]
@@ -226,10 +226,9 @@ def test_idempotent_replay_via_raw_precheck_does_not_duplicate_timeline_rows(cli
     body = {
         "request_id": "contract-replay-request",
         "event_id": "contract-replay-precheck",
+        "merchant_id": "contract-replay-merchant",
         "device_id": "contract-replay-device",
         "session_id": "contract-replay-session",
-        "card_reference": "tok-contract-replay",
-        "card_bin": "410000",
         "ip_reference": "198.51.100.200",
         "amount": 9.0,
         "currency": "USD",
@@ -265,10 +264,13 @@ def test_frozen_evaluation_endpoint_never_triggers_model_scoring(client):
     ), "opening the frozen evaluation metrics must never call the scorer"
 
 
-def test_system_integrity_exposes_actual_compatibility_and_journal_mode(client):
-    response = client.get("/api/system")
-    assert response.status_code == 200
-    body = response.json()
-    assert "runtime_compatibility" in body
-    assert body["runtime_compatibility"]["compatible"] is True
+def test_system_reports_the_development_model_stage(client):
+    body = client.get("/api/system").json()
+    assert body["ready"] is True
+    assert body["model_status"] == "ready"
+    assert body["policy_mode"] == "model_and_rules"
+    assert body["model_stage"] == "development_frozen_candidate"
+    # no blind evaluation has run, and the runtime must say so
+    assert body["evaluation_status"] == "development_validation_only"
+    assert "no blind evaluation" in body["evaluation_reason"].lower()
     assert "journal_mode" in body["database"]

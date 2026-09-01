@@ -89,10 +89,9 @@ def test_wal_mode_survives_a_real_process_restart(tmp_path):
         body = {
             "request_id": "wal-restart-request",
             "event_id": "wal-restart-precheck",
+            "merchant_id": "wal-restart-merchant",
             "device_id": "wal-restart-device",
             "session_id": "wal-restart-session",
-            "card_reference": "tok-wal-restart",
-            "card_bin": "410000",
             "ip_reference": "198.51.100.77",
             "amount": 5.0,
             "currency": "USD",

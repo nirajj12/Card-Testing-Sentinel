@@ -1,0 +1,15 @@
+candidate,family,parameters,pr_auc,roc_auc,brier,log_loss,ece,positive_rate
+logistic_C10.0,logistic_regression,"{""C"": 10.0, ""max_iter"": 2000}",0.727634,0.889815,0.121742,0.410233,0.206746,0.16
+logistic_C3.0,logistic_regression,"{""C"": 3.0, ""max_iter"": 2000}",0.698817,0.879214,0.14052,0.458336,0.235969,0.16
+logistic_interactions_C1.0,logistic_interactions,"{""C"": 1.0, ""max_iter"": 2000}",0.682684,0.871131,0.162331,0.510084,0.2716,0.16
+logistic_C1.0,logistic_regression,"{""C"": 1.0, ""max_iter"": 2000}",0.673086,0.868528,0.166426,0.519167,0.276068,0.16
+logistic_interactions_C0.3,logistic_interactions,"{""C"": 0.3, ""max_iter"": 2000}",0.664081,0.86199,0.196718,0.584824,0.320709,0.16
+logistic_interactions_C0.1,logistic_interactions,"{""C"": 0.1, ""max_iter"": 2000}",0.653784,0.857023,0.22416,0.641251,0.331413,0.16
+logistic_C0.3,logistic_regression,"{""C"": 0.3, ""max_iter"": 2000}",0.649752,0.858561,0.200878,0.59345,0.32146,0.16
+logistic_interactions_C0.03,logistic_interactions,"{""C"": 0.03, ""max_iter"": 2000}",0.648696,0.854544,0.240758,0.674652,0.342383,0.16
+logistic_C0.1,logistic_regression,"{""C"": 0.1, ""max_iter"": 2000}",0.635982,0.852996,0.22672,0.646414,0.331428,0.16
+logistic_C0.03,logistic_regression,"{""C"": 0.03, ""max_iter"": 2000}",0.629041,0.850161,0.241776,0.676691,0.334708,0.16
+logistic_C0.01,logistic_regression,"{""C"": 0.01, ""max_iter"": 2000}",0.62677,0.849251,0.247111,0.68737,0.341092,0.16
+hist_gb_1,hist_gradient_boosting,"{""l2_regularization"": 1.0, ""learning_rate"": 0.05, ""max_iter"": 200, ""max_leaf_nodes"": 15}",0.51763,0.855305,0.15416,0.492089,0.23958,0.16
+hist_gb_2,hist_gradient_boosting,"{""l2_regularization"": 2.0, ""learning_rate"": 0.08, ""max_iter"": 160, ""max_leaf_nodes"": 31}",0.460048,0.843463,0.169352,0.527009,0.260351,0.16
+hist_gb_3,hist_gradient_boosting,"{""l2_regularization"": 5.0, ""learning_rate"": 0.05, ""max_iter"": 250, ""max_leaf_nodes"": 31}",0.451462,0.833292,0.204359,0.601166,0.299169,0.16

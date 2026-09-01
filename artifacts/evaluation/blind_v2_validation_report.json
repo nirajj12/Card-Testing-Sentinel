@@ -1,0 +1,445 @@
+{
+  "failures": [],
+  "status": "passed",
+  "summary": {
+    "behavioral_requirements": {
+      "cross_device_attack_actors": 146,
+      "legitimate_multi_device_actors": 484,
+      "patient_actor_attempts": {
+        "max": 8,
+        "median": 5.0,
+        "min": 3
+      },
+      "patient_low_velocity_request_share": 1.0,
+      "shared_ip_attack_requests": 938,
+      "shared_ip_legitimate_requests": 3621,
+      "shared_ips": 95,
+      "sparse_active_days": {
+        "max": 8,
+        "median": 6.0,
+        "min": 4
+      }
+    },
+    "composition_shift": {
+      "blind_v2_customer_id_request_share": 0.6378,
+      "blind_v2_merchant_device_share": {
+        "digital_goods": 0.0703,
+        "education": 0.2427,
+        "electronics": 0.144,
+        "flash_sale": 0.064,
+        "grocery_delivery": 0.1522,
+        "saas_tools": 0.0953,
+        "small_ecommerce": 0.0525,
+        "subscription": 0.0665,
+        "travel": 0.1125
+      },
+      "blind_v2_scenario_device_share": {
+        "burst_pause_burst_v2": 0.006,
+        "campaign_rush_v2": 0.0382,
+        "campus_office_shared_network": 0.0877,
+        "cross_device_partial": 0.0333,
+        "cross_device_strong": 0.046,
+        "cross_device_weak_guest": 0.0253,
+        "dormant_returning_customer_v2": 0.0415,
+        "fast_burst_v2": 0.0073,
+        "high_value_retry_v2": 0.03,
+        "household_shared_ip": 0.1025,
+        "merchant_normal_amount_attack": 0.0075,
+        "micro_payment_regular": 0.0445,
+        "mixed_campaign_behavior": 0.006,
+        "mobile_network_churn_v2": 0.041,
+        "multi_device_customer_v2": 0.154,
+        "network_retry_storm_v2": 0.029,
+        "new_guest_checkout": 0.1027,
+        "patient_tester_v2": 0.0115,
+        "persistent_card_problem_v2": 0.025,
+        "returning_long_history": 0.0717,
+        "session_churn_v2": 0.0067,
+        "sparse_multiday_v2": 0.0173,
+        "subscription_dunning_v2": 0.032,
+        "success_camouflage_v2": 0.007,
+        "ultra_patient_v2": 0.0112,
+        "variable_cadence_v2": 0.0073,
+        "warm_up_then_attack_v2": 0.0077
+      },
+      "dataset_v3_customer_id_request_share": 0.5926
+    },
+    "consumed": false,
+    "contains_model_scores": false,
+    "contains_policy_decisions": false,
+    "contract": {
+      "feature_count": 39,
+      "new_in_v2": [
+        "requests_7d",
+        "failures_7d",
+        "active_day_count_7d",
+        "failures_per_active_day_7d",
+        "median_gap_between_attempts",
+        "gap_variability",
+        "customer_id_present",
+        "customer_distinct_devices_7d",
+        "customer_failures_7d",
+        "customer_successful_checkouts_30d",
+        "customer_age_seconds"
+      ],
+      "rows": 15364
+    },
+    "customer_missingness": {
+      "attack_share_gap": 0.1115,
+      "presence_single_feature_f1": 0.4128,
+      "segments": {
+        "absent": {
+          "attack_share": 0.3312,
+          "rows": 5565,
+          "share_of_all_rows": 0.3622
+        },
+        "present": {
+          "attack_share": 0.2197,
+          "rows": 9799,
+          "share_of_all_rows": 0.6378
+        }
+      }
+    },
+    "decline_rate": {
+      "legitimate": 0.3449,
+      "overall": 0.4362
+    },
+    "evaluated": false,
+    "generator_reachable_modules": [
+      "card_testing_sentinel.common.paths",
+      "card_testing_sentinel.features.specification",
+      "card_testing_sentinel.features.specification_v2",
+      "card_testing_sentinel.ml.blind_v2_generator",
+      "card_testing_sentinel.ml.merchants",
+      "card_testing_sentinel.ml.primitives"
+    ],
+    "identity_overlap": {
+      "blind_v1_1": {
+        "customer_id": 0,
+        "device_id": 0,
+        "event_id": 0,
+        "ip_fingerprint": 0,
+        "merchant_id": 0,
+        "request_id": 0,
+        "session_id": 0
+      },
+      "dataset_v3": {
+        "customer_id": 0,
+        "device_id": 0,
+        "event_id": 0,
+        "ip_fingerprint": 0,
+        "merchant_id": 0,
+        "request_id": 0,
+        "session_id": 0
+      }
+    },
+    "identity_segments": {
+      "attack_guest": 1843,
+      "attack_logged_in": 2153,
+      "legitimate_guest": 3722,
+      "legitimate_logged_in": 7646
+    },
+    "overlap_coefficient": {
+      "active_day_count_7d": 0.8508,
+      "current_amount": 0.976,
+      "customer_distinct_devices_7d": 0.8133,
+      "customer_failures_7d": 0.8136,
+      "customer_successful_checkouts_30d": 0.8797,
+      "failure_ratio_24h": 0.6219,
+      "failures_7d": 0.6052,
+      "ip_changes_24h": 0.8614,
+      "low_amount_ratio_24h": 0.9733,
+      "requests_5m": 0.8863,
+      "requests_7d": 0.7168,
+      "sessions_24h": 0.8854
+    },
+    "realization": {
+      "active_attack_devices": 800,
+      "labelled_attack_devices": 800,
+      "merchant_kinds": [
+        "digital_goods",
+        "education",
+        "electronics",
+        "flash_sale",
+        "grocery_delivery",
+        "saas_tools",
+        "small_ecommerce",
+        "subscription",
+        "travel"
+      ],
+      "scenario_devices": {
+        "burst_pause_burst_v2": 24,
+        "campaign_rush_v2": 153,
+        "campus_office_shared_network": 351,
+        "cross_device_partial": 133,
+        "cross_device_strong": 184,
+        "cross_device_weak_guest": 101,
+        "dormant_returning_customer_v2": 166,
+        "fast_burst_v2": 29,
+        "high_value_retry_v2": 120,
+        "household_shared_ip": 410,
+        "merchant_normal_amount_attack": 30,
+        "micro_payment_regular": 178,
+        "mixed_campaign_behavior": 24,
+        "mobile_network_churn_v2": 164,
+        "multi_device_customer_v2": 616,
+        "network_retry_storm_v2": 116,
+        "new_guest_checkout": 411,
+        "patient_tester_v2": 46,
+        "persistent_card_problem_v2": 100,
+        "returning_long_history": 287,
+        "session_churn_v2": 27,
+        "sparse_multiday_v2": 69,
+        "subscription_dunning_v2": 128,
+        "success_camouflage_v2": 28,
+        "ultra_patient_v2": 45,
+        "variable_cadence_v2": 29,
+        "warm_up_then_attack_v2": 31
+      },
+      "scenario_requests": {
+        "burst_pause_burst_v2": 284,
+        "campaign_rush_v2": 580,
+        "campus_office_shared_network": 747,
+        "cross_device_partial": 378,
+        "cross_device_strong": 407,
+        "cross_device_weak_guest": 274,
+        "dormant_returning_customer_v2": 924,
+        "fast_burst_v2": 330,
+        "high_value_retry_v2": 417,
+        "household_shared_ip": 527,
+        "merchant_normal_amount_attack": 275,
+        "micro_payment_regular": 816,
+        "mixed_campaign_behavior": 268,
+        "mobile_network_churn_v2": 685,
+        "multi_device_customer_v2": 1163,
+        "network_retry_storm_v2": 811,
+        "new_guest_checkout": 605,
+        "patient_tester_v2": 160,
+        "persistent_card_problem_v2": 676,
+        "returning_long_history": 1982,
+        "session_churn_v2": 284,
+        "sparse_multiday_v2": 185,
+        "subscription_dunning_v2": 1435,
+        "success_camouflage_v2": 304,
+        "ultra_patient_v2": 141,
+        "variable_cadence_v2": 313,
+        "warm_up_then_attack_v2": 393
+      }
+    },
+    "shift_summary": {
+      "features": 39,
+      "largest_shifts": [
+        {
+          "blind_v2_median": 7846.8562,
+          "blind_v2_p90": 6084837.1252,
+          "development_median": 157135.3673,
+          "development_p90": 1464302.9424,
+          "feature": "device_age_seconds",
+          "ks": 0.247,
+          "overlap_coefficient": 0.8026,
+          "psi": 0.9358
+        },
+        {
+          "blind_v2_median": 0.0,
+          "blind_v2_p90": 4802032.9806,
+          "development_median": 0.0,
+          "development_p90": 841424.7661,
+          "feature": "customer_age_seconds",
+          "ks": 0.1353,
+          "overlap_coefficient": 0.8648,
+          "psi": 0.5285
+        },
+        {
+          "blind_v2_median": 1.0,
+          "blind_v2_p90": 2.0,
+          "development_median": 1.0,
+          "development_p90": 3.0,
+          "feature": "active_day_count_7d",
+          "ks": 0.2913,
+          "overlap_coefficient": 0.7087,
+          "psi": 0.4269
+        },
+        {
+          "blind_v2_median": 0.0,
+          "blind_v2_p90": 1.062,
+          "development_median": 0.0,
+          "development_p90": 2.0302,
+          "feature": "gap_variability",
+          "ks": 0.2108,
+          "overlap_coefficient": 0.7867,
+          "psi": 0.3542
+        },
+        {
+          "blind_v2_median": 0.0,
+          "blind_v2_p90": 37319.0396,
+          "development_median": 0.0,
+          "development_p90": 2142.8689,
+          "feature": "session_age_seconds",
+          "ks": 0.219,
+          "overlap_coefficient": 0.9214,
+          "psi": 0.3271
+        },
+        {
+          "blind_v2_median": 4320.94,
+          "blind_v2_p90": 52738.869,
+          "development_median": 1125.08,
+          "development_p90": 21004.334,
+          "feature": "current_amount",
+          "ks": 0.2145,
+          "overlap_coefficient": 0.889,
+          "psi": 0.2887
+        },
+        {
+          "blind_v2_median": 1641.4124,
+          "blind_v2_p90": 1219403.7691,
+          "development_median": 1092.3229,
+          "development_p90": 499762.7378,
+          "feature": "seconds_since_last_payment",
+          "ks": 0.0962,
+          "overlap_coefficient": 0.9039,
+          "psi": 0.2432
+        },
+        {
+          "blind_v2_median": 1641.4124,
+          "blind_v2_p90": 1219403.7691,
+          "development_median": 1091.8512,
+          "development_p90": 499762.7378,
+          "feature": "seconds_since_last_request",
+          "ks": 0.0962,
+          "overlap_coefficient": 0.9039,
+          "psi": 0.2431
+        },
+        {
+          "blind_v2_median": 2.0,
+          "blind_v2_p90": 6.0,
+          "development_median": 3.0,
+          "development_p90": 10.0,
+          "feature": "requests_7d",
+          "ks": 0.1488,
+          "overlap_coefficient": 0.8512,
+          "psi": 0.193
+        },
+        {
+          "blind_v2_median": 0.0,
+          "blind_v2_p90": 3.0,
+          "development_median": 1.0,
+          "development_p90": 7.0,
+          "feature": "failures_7d",
+          "ks": 0.1397,
+          "overlap_coefficient": 0.8603,
+          "psi": 0.1786
+        }
+      ],
+      "max_psi": 0.9358,
+      "median_ks": 0.083,
+      "median_overlap": 0.9169,
+      "median_psi": 0.0792
+    },
+    "shuffled_label_roc_auc": 0.5063,
+    "temporal": {
+      "blind_v2_first_event": "2027-06-01 00:52:04.542691+00:00",
+      "blind_v2_last_event": "2028-02-09 16:24:54.356856+00:00",
+      "dataset_v3_last_event": "2027-03-20 06:57:28.917236+00:00",
+      "separation_days": 72.746
+    },
+    "univariate_max_f1": [
+      {
+        "feature": "failures_per_active_day_7d",
+        "max_f1": 0.548
+      },
+      {
+        "feature": "failures_7d",
+        "max_f1": 0.5463
+      },
+      {
+        "feature": "failure_ratio_24h",
+        "max_f1": 0.5358
+      },
+      {
+        "feature": "recent_failures_24h",
+        "max_f1": 0.5358
+      },
+      {
+        "feature": "decline_streak",
+        "max_f1": 0.4855
+      },
+      {
+        "feature": "distinct_card_networks_7d",
+        "max_f1": 0.4775
+      },
+      {
+        "feature": "distinct_card_last4_7d",
+        "max_f1": 0.4775
+      },
+      {
+        "feature": "requests_7d",
+        "max_f1": 0.4723
+      },
+      {
+        "feature": "amount_variation_24h",
+        "max_f1": 0.4679
+      },
+      {
+        "feature": "device_age_seconds",
+        "max_f1": 0.4638
+      },
+      {
+        "feature": "prior_payments_24h",
+        "max_f1": 0.4625
+      },
+      {
+        "feature": "requests_24h",
+        "max_f1": 0.4625
+      }
+    ],
+    "univariate_max_f1_new_features": [
+      {
+        "feature": "failures_per_active_day_7d",
+        "max_f1": 0.548
+      },
+      {
+        "feature": "failures_7d",
+        "max_f1": 0.5463
+      },
+      {
+        "feature": "requests_7d",
+        "max_f1": 0.4723
+      },
+      {
+        "feature": "gap_variability",
+        "max_f1": 0.4593
+      },
+      {
+        "feature": "customer_age_seconds",
+        "max_f1": 0.4576
+      },
+      {
+        "feature": "median_gap_between_attempts",
+        "max_f1": 0.4448
+      },
+      {
+        "feature": "customer_successful_checkouts_30d",
+        "max_f1": 0.424
+      },
+      {
+        "feature": "customer_failures_7d",
+        "max_f1": 0.4128
+      },
+      {
+        "feature": "customer_distinct_devices_7d",
+        "max_f1": 0.4128
+      },
+      {
+        "feature": "customer_id_present",
+        "max_f1": 0.4128
+      },
+      {
+        "feature": "active_day_count_7d",
+        "max_f1": 0.4128
+      }
+    ]
+  },
+  "warnings": [
+    "legitimate decline rate 0.345 outside warning band [0.100, 0.340]"
+  ]
+}

@@ -1,0 +1,518 @@
+{
+  "failures": [
+    "legitimate decline rate 0.418 is outside the plausible band [0.05, 0.4]; rebalance the legitimate scenario mixture rather than raising approval globally"
+  ],
+  "status": "failed",
+  "summary": {
+    "contains_model_metrics": false,
+    "decline_rate": {
+      "attack": 0.7499,
+      "band": {
+        "fail_above": 0.4,
+        "fail_below": 0.05,
+        "warn_above": 0.3,
+        "warn_below": 0.1
+      },
+      "legitimate": 0.4179,
+      "legitimate_ordinary_customers": 0.2419,
+      "note": "The legitimate aggregate is inflated on purpose: retry-heavy scenarios exist to stress false positives and make more attempts each. `legitimate_ordinary_customers` is the realistic merchant-book figure.",
+      "overall": 0.5859
+    },
+    "eda": {
+      "attempts_per_device": {
+        "max": 16,
+        "mean": 2.77,
+        "median": 1.5,
+        "p90": 7.0
+      },
+      "by_population": {
+        "current_amount": {
+          "attack": {
+            "mean": 7759.455,
+            "median": 721.185,
+            "p90": 17134.874
+          },
+          "legitimate": {
+            "mean": 9488.281,
+            "median": 758.11,
+            "p90": 21969.618
+          }
+        },
+        "distinct_card_last4_7d": {
+          "attack": {
+            "mean": 1.241,
+            "median": 1.0,
+            "p90": 3.0
+          },
+          "legitimate": {
+            "mean": 0.282,
+            "median": 0.0,
+            "p90": 1.0
+          }
+        },
+        "failure_ratio_24h": {
+          "attack": {
+            "mean": 0.538,
+            "median": 0.667,
+            "p90": 1.0
+          },
+          "legitimate": {
+            "mean": 0.313,
+            "median": 0.0,
+            "p90": 1.0
+          }
+        },
+        "ip_changes_24h": {
+          "attack": {
+            "mean": 0.545,
+            "median": 0.0,
+            "p90": 2.0
+          },
+          "legitimate": {
+            "mean": 0.143,
+            "median": 0.0,
+            "p90": 1.0
+          }
+        },
+        "low_amount_ratio_24h": {
+          "attack": {
+            "mean": 0.033,
+            "median": 0.0,
+            "p90": 0.0
+          },
+          "legitimate": {
+            "mean": 0.024,
+            "median": 0.0,
+            "p90": 0.0
+          }
+        },
+        "requests_5m": {
+          "attack": {
+            "mean": 1.36,
+            "median": 1.0,
+            "p90": 2.0
+          },
+          "legitimate": {
+            "mean": 1.274,
+            "median": 1.0,
+            "p90": 2.0
+          }
+        },
+        "seconds_since_last_request": {
+          "attack": {
+            "mean": 28262.936,
+            "median": 848.097,
+            "p90": 68931.183
+          },
+          "legitimate": {
+            "mean": 215377.473,
+            "median": 0.0,
+            "p90": 11882.147
+          }
+        },
+        "sessions_24h": {
+          "attack": {
+            "mean": 1.999,
+            "median": 1.0,
+            "p90": 4.0
+          },
+          "legitimate": {
+            "mean": 1.223,
+            "median": 1.0,
+            "p90": 2.0
+          }
+        }
+      },
+      "checkouts": 2242,
+      "class_balance_devices": {
+        "attack": 874,
+        "legitimate": 2126
+      },
+      "class_balance_requests": {
+        "attack": 3950,
+        "legitimate": 3857
+      },
+      "devices": 3000,
+      "merchant_kind_devices": {
+        "digital_goods": 520,
+        "education": 724,
+        "electronics": 459,
+        "food_delivery": 239,
+        "gaming_topups": 588,
+        "small_ecommerce": 214,
+        "subscription": 256
+      },
+      "merchants": 11,
+      "outcomes": 7807,
+      "overall_decline_rate": 0.5859,
+      "requests": 7807,
+      "scenario_devices": {
+        "burst_pause_burst": 64,
+        "campaign_rush": 188,
+        "campaign_shadow": 48,
+        "cold_start_wave": 683,
+        "cross_device_campaign": 414,
+        "dormant_returning_customer": 157,
+        "dunning_variant": 93,
+        "event_venue_burst": 256,
+        "high_value_retry": 111,
+        "long_warm_up": 48,
+        "merchant_normal_amounts": 44,
+        "mobile_network_churn": 206,
+        "moderate_mixed_rotation": 52,
+        "multi_session_comparison_shopper": 162,
+        "persistent_genuine_failures": 147,
+        "sparse_multiday": 50,
+        "successful_card_camouflage": 44,
+        "ultra_patient_tester": 56,
+        "unstable_connection_retries": 123,
+        "variable_cadence": 54
+      }
+    },
+    "generator_reachable_modules": [
+      "card_testing_sentinel.common.paths",
+      "card_testing_sentinel.features.specification",
+      "card_testing_sentinel.ml.blind_generator",
+      "card_testing_sentinel.ml.merchants",
+      "card_testing_sentinel.ml.primitives",
+      "card_testing_sentinel.ml.scenarios"
+    ],
+    "identity_overlap": {
+      "customer_id": 0,
+      "device_id": 0,
+      "event_id": 0,
+      "ip_fingerprint": 0,
+      "request_id": 0,
+      "session_id": 0
+    },
+    "merchants": {
+      "blind_merchants": 11,
+      "devices_on_unseen_kinds": 827,
+      "known_kinds": [
+        "digital_goods",
+        "education",
+        "electronics",
+        "small_ecommerce",
+        "subscription"
+      ],
+      "unseen_kinds": [
+        "food_delivery",
+        "gaming_topups"
+      ]
+    },
+    "overlap_coefficient": {
+      "current_amount": 0.9792,
+      "failure_ratio_24h": 0.6808,
+      "ip_changes_24h": 0.7671,
+      "low_amount_ratio_24h": 0.9505,
+      "requests_5m": 0.9396,
+      "sessions_24h": 0.6613
+    },
+    "scenario_profile": {
+      "burst_pause_burst": {
+        "checkouts": 7,
+        "decline_rate": 0.812,
+        "declines": 393,
+        "devices": 64,
+        "events": 975,
+        "mean_attempts_per_device": 7.562,
+        "outcomes": 484,
+        "population": "attack",
+        "requests": 484,
+        "share_of_population_devices": 0.0732,
+        "share_of_population_requests": 0.1225
+      },
+      "campaign_rush": {
+        "checkouts": 163,
+        "decline_rate": 0.5143,
+        "declines": 216,
+        "devices": 188,
+        "events": 1003,
+        "mean_attempts_per_device": 2.234,
+        "outcomes": 420,
+        "population": "legitimate",
+        "requests": 420,
+        "share_of_population_devices": 0.0884,
+        "share_of_population_requests": 0.1089
+      },
+      "campaign_shadow": {
+        "checkouts": 11,
+        "decline_rate": 0.8333,
+        "declines": 280,
+        "devices": 48,
+        "events": 683,
+        "mean_attempts_per_device": 7.0,
+        "outcomes": 336,
+        "population": "attack",
+        "requests": 336,
+        "share_of_population_devices": 0.0549,
+        "share_of_population_requests": 0.0851
+      },
+      "cold_start_wave": {
+        "checkouts": 474,
+        "decline_rate": 0.2124,
+        "declines": 168,
+        "devices": 683,
+        "events": 2056,
+        "mean_attempts_per_device": 1.158,
+        "outcomes": 791,
+        "population": "legitimate",
+        "requests": 791,
+        "share_of_population_devices": 0.3213,
+        "share_of_population_requests": 0.2051
+      },
+      "cross_device_campaign": {
+        "checkouts": 15,
+        "decline_rate": 0.8237,
+        "declines": 626,
+        "devices": 414,
+        "events": 1535,
+        "mean_attempts_per_device": 1.836,
+        "outcomes": 760,
+        "population": "attack",
+        "requests": 760,
+        "share_of_population_devices": 0.4737,
+        "share_of_population_requests": 0.1924
+      },
+      "dormant_returning_customer": {
+        "checkouts": 200,
+        "decline_rate": 0.212,
+        "declines": 60,
+        "devices": 157,
+        "events": 766,
+        "mean_attempts_per_device": 1.803,
+        "outcomes": 283,
+        "population": "legitimate",
+        "requests": 283,
+        "share_of_population_devices": 0.0738,
+        "share_of_population_requests": 0.0734
+      },
+      "dunning_variant": {
+        "checkouts": 66,
+        "decline_rate": 0.635,
+        "declines": 127,
+        "devices": 93,
+        "events": 466,
+        "mean_attempts_per_device": 2.151,
+        "outcomes": 200,
+        "population": "legitimate",
+        "requests": 200,
+        "share_of_population_devices": 0.0437,
+        "share_of_population_requests": 0.0519
+      },
+      "event_venue_burst": {
+        "checkouts": 211,
+        "decline_rate": 0.2874,
+        "declines": 100,
+        "devices": 256,
+        "events": 907,
+        "mean_attempts_per_device": 1.359,
+        "outcomes": 348,
+        "population": "legitimate",
+        "requests": 348,
+        "share_of_population_devices": 0.1204,
+        "share_of_population_requests": 0.0902
+      },
+      "high_value_retry": {
+        "checkouts": 88,
+        "decline_rate": 0.4949,
+        "declines": 98,
+        "devices": 111,
+        "events": 484,
+        "mean_attempts_per_device": 1.784,
+        "outcomes": 198,
+        "population": "legitimate",
+        "requests": 198,
+        "share_of_population_devices": 0.0522,
+        "share_of_population_requests": 0.0513
+      },
+      "long_warm_up": {
+        "checkouts": 236,
+        "decline_rate": 0.3829,
+        "declines": 193,
+        "devices": 48,
+        "events": 1244,
+        "mean_attempts_per_device": 10.5,
+        "outcomes": 504,
+        "population": "attack",
+        "requests": 504,
+        "share_of_population_devices": 0.0549,
+        "share_of_population_requests": 0.1276
+      },
+      "merchant_normal_amounts": {
+        "checkouts": 7,
+        "decline_rate": 0.8067,
+        "declines": 217,
+        "devices": 44,
+        "events": 545,
+        "mean_attempts_per_device": 6.114,
+        "outcomes": 269,
+        "population": "attack",
+        "requests": 269,
+        "share_of_population_devices": 0.0503,
+        "share_of_population_requests": 0.0681
+      },
+      "mobile_network_churn": {
+        "checkouts": 191,
+        "decline_rate": 0.3215,
+        "declines": 109,
+        "devices": 206,
+        "events": 869,
+        "mean_attempts_per_device": 1.646,
+        "outcomes": 339,
+        "population": "legitimate",
+        "requests": 339,
+        "share_of_population_devices": 0.0969,
+        "share_of_population_requests": 0.0879
+      },
+      "moderate_mixed_rotation": {
+        "checkouts": 9,
+        "decline_rate": 0.8196,
+        "declines": 259,
+        "devices": 52,
+        "events": 641,
+        "mean_attempts_per_device": 6.077,
+        "outcomes": 316,
+        "population": "attack",
+        "requests": 316,
+        "share_of_population_devices": 0.0595,
+        "share_of_population_requests": 0.08
+      },
+      "multi_session_comparison_shopper": {
+        "checkouts": 289,
+        "decline_rate": 0.2141,
+        "declines": 85,
+        "devices": 162,
+        "events": 1083,
+        "mean_attempts_per_device": 2.451,
+        "outcomes": 397,
+        "population": "legitimate",
+        "requests": 397,
+        "share_of_population_devices": 0.0762,
+        "share_of_population_requests": 0.1029
+      },
+      "persistent_genuine_failures": {
+        "checkouts": 78,
+        "decline_rate": 0.8382,
+        "declines": 487,
+        "devices": 147,
+        "events": 1240,
+        "mean_attempts_per_device": 3.952,
+        "outcomes": 581,
+        "population": "legitimate",
+        "requests": 581,
+        "share_of_population_devices": 0.0691,
+        "share_of_population_requests": 0.1506
+      },
+      "sparse_multiday": {
+        "checkouts": 8,
+        "decline_rate": 0.7634,
+        "declines": 200,
+        "devices": 50,
+        "events": 532,
+        "mean_attempts_per_device": 5.24,
+        "outcomes": 262,
+        "population": "attack",
+        "requests": 262,
+        "share_of_population_devices": 0.0572,
+        "share_of_population_requests": 0.0663
+      },
+      "successful_card_camouflage": {
+        "checkouts": 63,
+        "decline_rate": 0.6323,
+        "declines": 196,
+        "devices": 44,
+        "events": 683,
+        "mean_attempts_per_device": 7.045,
+        "outcomes": 310,
+        "population": "attack",
+        "requests": 310,
+        "share_of_population_devices": 0.0503,
+        "share_of_population_requests": 0.0785
+      },
+      "ultra_patient_tester": {
+        "checkouts": 4,
+        "decline_rate": 0.9239,
+        "declines": 267,
+        "devices": 56,
+        "events": 582,
+        "mean_attempts_per_device": 5.161,
+        "outcomes": 289,
+        "population": "attack",
+        "requests": 289,
+        "share_of_population_devices": 0.0641,
+        "share_of_population_requests": 0.0732
+      },
+      "unstable_connection_retries": {
+        "checkouts": 106,
+        "decline_rate": 0.54,
+        "declines": 162,
+        "devices": 123,
+        "events": 706,
+        "mean_attempts_per_device": 2.439,
+        "outcomes": 300,
+        "population": "legitimate",
+        "requests": 300,
+        "share_of_population_devices": 0.0579,
+        "share_of_population_requests": 0.0778
+      },
+      "variable_cadence": {
+        "checkouts": 16,
+        "decline_rate": 0.7881,
+        "declines": 331,
+        "devices": 54,
+        "events": 856,
+        "mean_attempts_per_device": 7.778,
+        "outcomes": 420,
+        "population": "attack",
+        "requests": 420,
+        "share_of_population_devices": 0.0618,
+        "share_of_population_requests": 0.1063
+      }
+    },
+    "shuffled_label_roc_auc": 0.4944,
+    "temporal": {
+      "blind_first_event": "2026-09-01 00:08:15.493328+00:00",
+      "blind_last_event": "2027-03-23 19:05:31.936637+00:00",
+      "development_last_event": "2026-06-28 05:13:16.378062+00:00",
+      "separation_days": 64.788
+    },
+    "univariate_max_f1": [
+      {
+        "feature": "seconds_since_last_request",
+        "max_f1": 0.7291
+      },
+      {
+        "feature": "device_age_seconds",
+        "max_f1": 0.729
+      },
+      {
+        "feature": "seconds_since_last_payment",
+        "max_f1": 0.729
+      },
+      {
+        "feature": "is_new_device",
+        "max_f1": 0.7289
+      },
+      {
+        "feature": "requests_24h",
+        "max_f1": 0.6894
+      },
+      {
+        "feature": "prior_payments_24h",
+        "max_f1": 0.6894
+      },
+      {
+        "feature": "distinct_card_last4_7d",
+        "max_f1": 0.6847
+      },
+      {
+        "feature": "distinct_card_networks_7d",
+        "max_f1": 0.6847
+      }
+    ]
+  },
+  "warnings": [
+    "legitimate decline rate 0.418 sits outside the comfortable band [0.1, 0.3]"
+  ]
+}

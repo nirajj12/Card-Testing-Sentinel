@@ -1,0 +1,152 @@
+{
+  "failures": [],
+  "status": "passed",
+  "summary": {
+    "contract": {
+      "feature_count": 39,
+      "new_in_v2": [
+        "requests_7d",
+        "failures_7d",
+        "active_day_count_7d",
+        "failures_per_active_day_7d",
+        "median_gap_between_attempts",
+        "gap_variability",
+        "customer_id_present",
+        "customer_distinct_devices_7d",
+        "customer_failures_7d",
+        "customer_successful_checkouts_30d",
+        "customer_age_seconds"
+      ],
+      "rows": 40517
+    },
+    "customer_missingness": {
+      "attack_share_gap": 0.1185,
+      "presence_single_feature_f1": 0.5252,
+      "segments": {
+        "absent": {
+          "attack_share": 0.4263,
+          "rows": 16505,
+          "share_of_all_rows": 0.4074
+        },
+        "present": {
+          "attack_share": 0.3078,
+          "rows": 24012,
+          "share_of_all_rows": 0.5926
+        }
+      }
+    },
+    "model_trained": false,
+    "overlap_coefficient": {
+      "active_day_count_7d": 0.8381,
+      "current_amount": 0.9827,
+      "customer_distinct_devices_7d": 0.8064,
+      "customer_failures_7d": 0.7468,
+      "customer_successful_checkouts_30d": 0.8095,
+      "failure_ratio_24h": 0.5767,
+      "failures_7d": 0.4602,
+      "ip_changes_24h": 0.8662,
+      "low_amount_ratio_24h": 0.9265,
+      "requests_5m": 0.8998,
+      "requests_7d": 0.534,
+      "sessions_24h": 0.5758
+    },
+    "shuffled_label_roc_auc": 0.5001,
+    "univariate_max_f1": [
+      {
+        "feature": "failures_per_active_day_7d",
+        "max_f1": 0.7065
+      },
+      {
+        "feature": "failures_7d",
+        "max_f1": 0.7047
+      },
+      {
+        "feature": "decline_streak",
+        "max_f1": 0.6565
+      },
+      {
+        "feature": "requests_7d",
+        "max_f1": 0.6546
+      },
+      {
+        "feature": "distinct_card_last4_7d",
+        "max_f1": 0.6279
+      },
+      {
+        "feature": "distinct_card_networks_7d",
+        "max_f1": 0.6279
+      },
+      {
+        "feature": "failure_ratio_24h",
+        "max_f1": 0.6266
+      },
+      {
+        "feature": "recent_failures_24h",
+        "max_f1": 0.6266
+      },
+      {
+        "feature": "amount_variation_24h",
+        "max_f1": 0.6247
+      },
+      {
+        "feature": "requests_24h",
+        "max_f1": 0.6218
+      },
+      {
+        "feature": "prior_payments_24h",
+        "max_f1": 0.6211
+      },
+      {
+        "feature": "gap_variability",
+        "max_f1": 0.6153
+      }
+    ],
+    "univariate_max_f1_new_features": [
+      {
+        "feature": "failures_per_active_day_7d",
+        "max_f1": 0.7065
+      },
+      {
+        "feature": "failures_7d",
+        "max_f1": 0.7047
+      },
+      {
+        "feature": "requests_7d",
+        "max_f1": 0.6546
+      },
+      {
+        "feature": "gap_variability",
+        "max_f1": 0.6153
+      },
+      {
+        "feature": "median_gap_between_attempts",
+        "max_f1": 0.5987
+      },
+      {
+        "feature": "customer_successful_checkouts_30d",
+        "max_f1": 0.5617
+      },
+      {
+        "feature": "customer_age_seconds",
+        "max_f1": 0.5422
+      },
+      {
+        "feature": "active_day_count_7d",
+        "max_f1": 0.5252
+      },
+      {
+        "feature": "customer_id_present",
+        "max_f1": 0.5252
+      },
+      {
+        "feature": "customer_distinct_devices_7d",
+        "max_f1": 0.5252
+      },
+      {
+        "feature": "customer_failures_7d",
+        "max_f1": 0.5252
+      }
+    ]
+  },
+  "warnings": []
+}

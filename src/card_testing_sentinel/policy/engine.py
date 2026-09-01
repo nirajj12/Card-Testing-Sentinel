@@ -1,289 +1,208 @@
-"""Deterministic, serializable per-device evidence accumulation policy."""
+"""Risk policy: turn a risk score into allow / review / temporary block.
+
+The model estimates behaviour. The policy decides what friction a merchant
+is willing to impose. Those are different jobs, and the thresholds live here
+(and in the selected policy artifact), never inside the model.
+
+Three families are supported so the choice between them is an evidence
+question, settled on validation, rather than an architectural assumption:
+
+* ``threshold``       -- score alone decides both bands.
+* ``evidence_gated``  -- review on score; block additionally needs corroborating
+  merchant-visible evidence.
+* ``persistent``      -- review on score; block additionally needs the device to
+  have been elevated more than once inside a recent window.
+
+`review` is a decision state in this prototype. A production merchant could
+map it to step-up verification, rate limiting, a delayed retry or a manual
+queue; none of those are implemented here and none are claimed.
+
+`block` is always temporary. It carries an expiry, nothing is permanently
+labelled fraudulent, and a later request is scored from current history --
+so a device whose behaviour changes returns to allow on its own.
+
+``degraded_rules_only`` is a failover for a missing or unloadable model. It
+uses the deterministic rule score only, never the validation-selected ML
+thresholds, and is always surfaced in the reason codes.
+"""
 
 from __future__ import annotations
 
-import hashlib
-import json
-from datetime import datetime
+from dataclasses import dataclass, field
+from datetime import datetime, timedelta
 
+from card_testing_sentinel.policy.evidence import evidence_codes
 from card_testing_sentinel.policy.reasons import REASON_CODES
-from card_testing_sentinel.policy.rules import evaluate_rules
-from card_testing_sentinel.policy.state import Action, PolicyDecision, PolicyState
+from card_testing_sentinel.policy.rules import MAX_RULE_SCORE, evaluate_rules
+from card_testing_sentinel.policy.state import PolicyDecision
+
+FAMILIES = ("threshold", "evidence_gated", "persistent")
 
 
-class OperationalPolicy:
-    """Apply one candidate to isolated per-device state.
+@dataclass
+class DeviceRiskHistory:
+    """The minimal state a persistent policy needs: recent elevated scores.
 
-    Risk is a decayed sum of calibrated risk scores. Scores are retained only
-    for the declared high-risk window. Successful-checkout history and stable
-    same-card/amount retries attenuate existing risk; neither can allowlist a
-    device or erase the current score. Campaign requests raise thresholds and
-    evidence requirements. A block requires repeated risk, which is itself a
-    causal corroborating signal; long-term candidates additionally require
-    card, session, IP, switch, or rule evidence.
+    Only (timestamp, score) pairs inside the window are kept, and the list is
+    capped, so this can never grow into a prediction store.
     """
 
-    def __init__(self, candidate: dict):
-        self.candidate = dict(candidate)
-        self.states: dict[str, PolicyState] = {}
+    recent: list[tuple[str, float]] = field(default_factory=list)
 
-    def state_for(self, device_id: str) -> PolicyState:
-        return self.states.setdefault(device_id, PolicyState())
+    def record(
+        self, timestamp: datetime, score: float, window: timedelta, cap: int
+    ) -> None:
+        self.recent.append((timestamp.isoformat(), float(score)))
+        self.prune(timestamp, window, cap)
 
-    @staticmethod
-    def _event_digest(
-        event_id: str,
-        timestamp: datetime,
-        session_id: str,
-        risk_score: float,
-        snapshot: dict,
-    ) -> str:
-        safe = {
-            "event_id": event_id,
-            "timestamp": timestamp.isoformat(),
-            "session_id": session_id,
-            "risk_score": float(risk_score),
-            "features": {
-                name: snapshot.get(name)
-                for name in (
-                    "campaign_active",
-                    "prior_successful_checkouts",
-                    "same_card_retry_ratio_24h",
-                    "amount_delta_from_previous",
-                    "distinct_cards_14d",
-                    "card_switches_after_decline_24h",
-                    "sessions_7d",
-                    "cross_session_cards_7d",
-                    "ip_changes_24h",
-                )
-            },
-        }
-        return hashlib.sha256(
-            json.dumps(safe, sort_keys=True, default=str).encode()
-        ).hexdigest()
+    def prune(self, now: datetime, window: timedelta, cap: int) -> None:
+        boundary = now - window
+        self.recent = [
+            row
+            for row in self.recent[-cap:]
+            if datetime.fromisoformat(row[0]) >= boundary
+        ]
+
+    def elevated_count(self, now: datetime, threshold: float, window: timedelta) -> int:
+        boundary = now - window
+        return sum(
+            1
+            for stamp, score in self.recent
+            if score >= threshold and datetime.fromisoformat(stamp) >= boundary
+        )
+
+
+class RiskPolicy:
+    def __init__(self, config: dict):
+        self.family = str(config["family"])
+        if self.family not in FAMILIES:
+            raise ValueError(f"unknown policy family: {self.family}")
+        self.review_threshold = float(config["review_threshold"])
+        self.block_threshold = float(config["block_threshold"])
+        self.block_evidence = int(config.get("block_evidence", 0))
+        self.block_elevated_count = int(config.get("block_elevated_count", 1))
+        self.persistence_window = timedelta(
+            hours=float(config.get("persistence_window_hours", 24))
+        )
+        self.history_cap = int(config.get("history_cap", 16))
+        self.block_ttl = timedelta(seconds=int(config["block_ttl_seconds"]))
+        # Campaign tolerance: a genuine sale produces genuine bursts, so the
+        # bands may be nudged up while the merchant is running one. Zero
+        # unless validation showed it earns its place.
+        self.campaign_review_increment = float(
+            config.get("campaign_review_increment", 0.0)
+        )
+        self.campaign_block_increment = float(
+            config.get("campaign_block_increment", 0.0)
+        )
+        # Degraded failover only -- never used while a model is available.
+        self.degraded_review_rule_score = int(config["degraded_review_rule_score"])
+        self.degraded_block_rule_score = int(config["degraded_block_rule_score"])
+
+        if not 0.0 <= self.review_threshold <= self.block_threshold <= 1.0:
+            raise ValueError("risk thresholds must satisfy 0 <= review <= block <= 1")
+        if not (
+            0
+            <= self.degraded_review_rule_score
+            <= self.degraded_block_rule_score
+            <= MAX_RULE_SCORE
+        ):
+            raise ValueError("degraded rule thresholds are out of range")
+
+    @property
+    def campaign_aware(self) -> bool:
+        return bool(self.campaign_review_increment or self.campaign_block_increment)
+
+    # -- decision ----------------------------------------------------------
 
     def decide(
         self,
         *,
-        device_id: str,
-        event_id: str,
-        timestamp: datetime,
-        session_id: str,
-        risk_score: float,
         snapshot: dict,
+        risk_score: float | None,
+        timestamp: datetime,
+        campaign_active: bool = False,
+        history: DeviceRiskHistory | None = None,
     ) -> PolicyDecision:
-        if not 0.0 <= risk_score <= 1.0:
-            raise ValueError("calibrated risk_score must be in [0, 1]")
-        state = self.state_for(device_id)
-        digest = self._event_digest(
-            event_id, timestamp, session_id, risk_score, snapshot
-        )
-        if event_id in state.event_digests:
-            if state.event_digests[event_id] != digest:
-                raise ValueError("conflicting retry for an existing policy event")
-            return PolicyDecision(**state.decisions_by_event[event_id])
-        if state.last_timestamp is not None:
-            previous = datetime.fromisoformat(state.last_timestamp)
-            if timestamp < previous:
-                raise ValueError("late policy event refused")
-            elapsed_hours = (timestamp - previous).total_seconds() / 3600.0
-            half_life = float(self.candidate["half_life_hours"])
-            state.accumulated_risk *= 0.5 ** (elapsed_hours / half_life)
+        """`campaign_active` is a merchant fact carried on the request, not a
+        model feature -- the policy is told it explicitly rather than reading
+        it out of the causal snapshot."""
+        rule_score, _fired = evaluate_rules(snapshot)
+        if risk_score is None:
+            return self._degraded(rule_score)
 
+        campaign = bool(campaign_active)
+        review_at = self.review_threshold + (
+            self.campaign_review_increment if campaign else 0.0
+        )
+        block_at = self.block_threshold + (
+            self.campaign_block_increment if campaign else 0.0
+        )
+
+        evidence = evidence_codes(snapshot)
         reasons: list[str] = []
-        successful = int(snapshot.get("prior_successful_checkouts", 0))
-        if successful > state.last_successful_checkout_count:
-            state.accumulated_risk *= float(self.candidate["checkout_risk_multiplier"])
-            if self.candidate["family"] == "checkout_protected":
-                state.checkout_protection_remaining = 3
-            reasons.append("successful_checkout_risk_reduction")
-        state.last_successful_checkout_count = max(
-            state.last_successful_checkout_count, successful
-        )
-        stable_retry = (
-            float(snapshot.get("same_card_retry_ratio_24h", 0.0)) >= 0.75
-            and abs(float(snapshot.get("amount_delta_from_previous", 0.0))) <= 2.0
-            and int(snapshot.get("prior_attempts_24h", 0)) >= 1
-        )
-        if stable_retry:
-            state.accumulated_risk *= float(
-                self.candidate["stable_retry_risk_multiplier"]
-            )
-            reasons.append("stable_retry_risk_reduction")
+        action = "allow"
 
-        effective_risk_score = float(risk_score)
-        if (
-            self.candidate["family"] == "checkout_protected"
-            and state.checkout_protection_remaining > 0
-        ):
-            effective_risk_score *= float(self.candidate["checkout_risk_multiplier"])
-            state.checkout_protection_remaining -= 1
-        state.accumulated_risk += effective_risk_score
-        state.last_timestamp = timestamp.isoformat()
-        state.request_count += 1
-        if session_id not in state.sessions:
-            state.sessions.append(session_id)
-        review_threshold = float(self.candidate.get("review_threshold", 1.1))
-        block_threshold = float(self.candidate.get("block_threshold", 1.1))
-        increment = float(self.candidate.get("campaign_threshold_increment", 0))
-        extra_evidence = int(self.candidate.get("campaign_extra_evidence", 0))
-        if bool(snapshot.get("campaign_active", False)) and (
-            increment > 0 or extra_evidence > 0
-        ):
-            review_threshold += increment
-            block_threshold += increment
-            reasons.append("campaign_threshold_adjustment")
-
-        state.consecutive_review = (
-            state.consecutive_review + 1
-            if effective_risk_score >= review_threshold
-            else 0
-        )
-        state.consecutive_strong = (
-            state.consecutive_strong + 1
-            if effective_risk_score >= block_threshold
-            else 0
-        )
-        state.recent_scores.append((timestamp.isoformat(), effective_risk_score))
-        boundary = (
-            timestamp.timestamp() - float(self.candidate["high_window_hours"]) * 3600
-        )
-        state.recent_scores = [
-            row
-            for row in state.recent_scores[
-                -int(self.candidate["recent_request_limit"]) :
-            ]
-            if datetime.fromisoformat(row[0]).timestamp() >= boundary
-        ]
-        review_high_count = sum(
-            score >= review_threshold for _, score in state.recent_scores
-        )
-        block_high_count = sum(
-            score >= block_threshold for _, score in state.recent_scores
-        )
-
-        rule_score, _rule_reasons = evaluate_rules(snapshot)
-        evidence = self._evidence(snapshot, state, block_high_count, reasons)
-        evidence_count = len(evidence)
-        campaign_extra = (
-            extra_evidence if bool(snapshot.get("campaign_active", False)) else 0
-        )
-        family = self.candidate["family"]
-        if family == "rules_only":
-            review_trigger = rule_score >= int(self.candidate["review_rule_score"])
-            block_trigger = rule_score >= int(self.candidate["block_rule_score"])
-        elif family == "consecutive_high":
-            review_trigger = state.consecutive_review >= int(
-                self.candidate["review_consecutive"]
-            )
-            block_trigger = state.consecutive_strong >= int(
-                self.candidate["block_consecutive"]
-            )
-        elif family == "accumulated_decay":
-            review_trigger = state.accumulated_risk >= float(
-                self.candidate["review_accumulated"]
-            )
-            block_trigger = state.accumulated_risk >= float(
-                self.candidate["block_accumulated"]
-            )
-        else:
-            review_trigger = review_high_count >= int(
-                self.candidate["review_high_count"]
-            )
-            block_trigger = block_high_count >= int(self.candidate["block_high_count"])
-        review_evidence = int(self.candidate.get("review_evidence", 0))
-        block_evidence = int(self.candidate.get("block_evidence", 0))
-        review_trigger = review_trigger and evidence_count >= (
-            review_evidence + campaign_extra
-        )
-        block_trigger = block_trigger and evidence_count >= (
-            block_evidence + campaign_extra
-        )
-
-        rules_review = rule_score >= int(self.candidate["review_rule_score"])
-        rules_block = rule_score >= int(self.candidate["block_rule_score"])
-        if rules_block or block_trigger:
-            action: Action = "block"
-            reasons.append(
-                "rule_corroborated_block"
-                if rules_block
-                else self._risk_reason(family, block=True)
-            )
-        elif rules_review or review_trigger:
+        if risk_score >= block_at and self._block_allowed(evidence, history, timestamp):
+            action = "block"
+            reasons.append("elevated_model_risk")
+            reasons.extend(evidence)
+            if self.family == "persistent":
+                reasons.append("persistent_elevated_risk")
+        elif risk_score >= review_at:
             action = "review"
-            reasons.append(
-                "rule_corroborated_review"
-                if rules_review
-                else self._risk_reason(family, block=False)
+            reasons.append("elevated_model_risk")
+            reasons.extend(evidence)
+
+        if campaign and action != "allow" and self.campaign_aware:
+            reasons.append("campaign_tolerance_applied")
+
+        reasons = list(dict.fromkeys(reasons))
+        if any(code not in REASON_CODES for code in reasons):
+            raise RuntimeError("policy emitted an uncontracted reason code")
+        return PolicyDecision(
+            action=action,
+            reason_codes=tuple(reasons),
+            rule_score=rule_score,
+            risk_score=risk_score,
+            block_expires_at=(
+                timestamp + self.block_ttl if action == "block" else None
+            ),
+        )
+
+    def _block_allowed(
+        self,
+        evidence: list[str],
+        history: DeviceRiskHistory | None,
+        timestamp: datetime,
+    ) -> bool:
+        if self.family == "threshold":
+            return True
+        if self.family == "evidence_gated":
+            return len(evidence) >= self.block_evidence
+        # persistent: this attempt plus prior elevated attempts in the window
+        prior = (
+            history.elevated_count(
+                timestamp, self.review_threshold, self.persistence_window
             )
+            if history is not None
+            else 0
+        )
+        return (prior + 1) >= self.block_elevated_count and len(
+            evidence
+        ) >= self.block_evidence
+
+    def _degraded(self, rule_score: int) -> PolicyDecision:
+        if rule_score >= self.degraded_block_rule_score:
+            action = "block"
+        elif rule_score >= self.degraded_review_rule_score:
+            action = "review"
         else:
             action = "allow"
-        selected_reasons = tuple(dict.fromkeys([*reasons, *evidence]))
-        if any(reason not in REASON_CODES for reason in selected_reasons):
-            raise RuntimeError("policy emitted an uncontracted reason code")
-        decision = PolicyDecision(
+        return PolicyDecision(
             action=action,
-            reason_codes=selected_reasons,
-            risk_score=float(risk_score),
-            rule_score=int(rule_score),
-            accumulated_risk=float(state.accumulated_risk),
-            high_risk_count=int(review_high_count),
-            consecutive_high_count=int(state.consecutive_review),
-            evidence_count=int(evidence_count),
+            reason_codes=("degraded_rules_only",),
+            rule_score=rule_score,
+            risk_score=None,
+            block_expires_at=None,
         )
-        state.event_digests[event_id] = digest
-        state.decisions_by_event[event_id] = decision.to_dict()
-        return decision
-
-    @staticmethod
-    def _risk_reason(family: str, *, block: bool) -> str:
-        if family == "consecutive_high":
-            return "consecutive_high_model_risk"
-        if family == "accumulated_decay":
-            return "accumulated_model_risk"
-        return "persistent_high_model_risk"
-
-    @staticmethod
-    def _evidence(
-        snapshot: dict,
-        state: PolicyState,
-        block_high_count: int,
-        existing_reasons: list[str],
-    ) -> list[str]:
-        evidence = []
-        if int(snapshot.get("distinct_cards_14d", 0)) >= 2:
-            evidence.append("high_risk_with_card_diversity")
-        if int(snapshot.get("card_switches_after_decline_24h", 0)) >= 1:
-            evidence.append("high_risk_with_card_switching")
-        if (
-            int(snapshot.get("sessions_7d", 0)) >= 2
-            and int(snapshot.get("cross_session_cards_7d", 0)) >= 2
-        ):
-            evidence.append("cross_session_card_diversity")
-        if int(snapshot.get("ip_changes_24h", 0)) >= 1:
-            evidence.append("high_risk_with_ip_rotation")
-        if block_high_count >= 2:
-            evidence.append("persistent_high_model_risk")
-        return [
-            code for code in dict.fromkeys(evidence) if code not in existing_reasons
-        ]
-
-    def serialize(self) -> str:
-        payload = {
-            "candidate": self.candidate,
-            "states": {
-                device_id: state.to_dict()
-                for device_id, state in sorted(self.states.items())
-            },
-        }
-        return json.dumps(payload, sort_keys=True, separators=(",", ":"))
-
-    @classmethod
-    def deserialize(cls, encoded: str) -> OperationalPolicy:
-        payload = json.loads(encoded)
-        policy = cls(payload["candidate"])
-        policy.states = {
-            device_id: PolicyState.from_dict(state)
-            for device_id, state in payload["states"].items()
-        }
-        return policy

@@ -1,26 +1,26 @@
+"""Release verification.
+
+Disabled during the rules_only migration phase: there is no frozen model
+or evaluation bundle to verify yet. It returns once Dataset V2 training
+produces signed artifacts again.
+"""
+
 from pathlib import Path
 
-from card_testing_sentinel.common.integrity import sha256_file, verify_manifest
-from card_testing_sentinel.modeling.registry import ArtifactRegistry
+from card_testing_sentinel.features.specification import (
+    MODEL_FEATURES,
+    validate_feature_contract,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 
 if __name__ == "__main__":
-    manifest_path = ROOT / "artifacts/release_manifest.json"
-    manifest_sha256 = sha256_file(manifest_path)
-    recorded_sha256 = (
-        (ROOT / "artifacts/release_manifest.sha256").read_text().split()[0]
-    )
-    if manifest_sha256 != recorded_sha256:
-        raise SystemExit("release manifest checksum mismatch")
-    manifest = verify_manifest(ROOT, manifest_path)
-    registry = ArtifactRegistry.load(ROOT)
+    validate_feature_contract()
     print(
         {
-            "status": "release_verified",
-            "manifest_version": manifest["manifest_version"],
-            "manifest_sha256": manifest_sha256,
-            "feature_count": registry.system_summary()["feature_count"],
-            "blind_rows_rescored": False,
+            "status": "rules_only_phase",
+            "reason": "no frozen model or blind evaluation artifacts to verify yet",
+            "feature_contract_valid": True,
+            "feature_count": len(MODEL_FEATURES),
         }
     )

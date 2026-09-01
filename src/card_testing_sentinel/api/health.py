@@ -22,13 +22,15 @@ def ready(runtime: RuntimeDependency) -> dict:
 @router.get("/api/system")
 def system(runtime: RuntimeDependency) -> dict:
     if not runtime.ready or runtime.registry is None or runtime.service is None:
-        payload: dict = {"ready": False, "error": runtime.startup_error}
-        if runtime.compatibility_report is not None:
-            payload["compatibility"] = runtime.compatibility_report
-        return payload
+        return {"ready": False, "error": runtime.startup_error}
     return {
         "ready": True,
         **runtime.registry.system_summary(),
         "database": runtime.service.repository.status(),
-        "concurrency": "global asynchronous transition lock",
+        "ordering": "per-device (timestamp, event_sequence)",
+        "razorpay": (
+            runtime.razorpay.public_status
+            if runtime.razorpay is not None
+            else {"configured": False, "mode": "unavailable"}
+        ),
     }

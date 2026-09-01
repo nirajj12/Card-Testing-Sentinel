@@ -1,0 +1,104 @@
+# Model v2 training configuration.
+#
+# Trains on Dataset v3 TRAIN only, under Feature Contract v2. The validation
+# split is not touched until a candidate, its hyperparameters and its
+# calibration have all been frozen from train cross-validation.
+#
+# Model v1, Policy v1, Dataset V2, Dataset v3 and Blind v1.1 are untouched.
+
+model_version: model-v2
+dataset: data/generated/development_v3/features_v2.csv
+feature_contract: merchant-visible-causal-2
+
+training:
+  seed: 90210443
+  folds: 5
+  # How much device-weighted PR-AUC a calibrator may cost before it is
+  # rejected, however good its Brier score looks.
+  pr_auc_tolerance: 0.005
+  # Grouping key for cross-validation. A customer can own several devices, so
+  # grouping by device alone would split one account across folds and leak
+  # its own history into the fold scoring it.
+  group_by: customer_then_device
+  candidate_grids:
+    # Phase 9 found 15 feature pairs at |rho| >= 0.85, and Model v1 showed
+    # coefficient sign instability from exactly that. A wider C grid is the
+    # cheapest thing that can fix it, so it is tested explicitly.
+    logistic_regression:
+      C: [0.01, 0.03, 0.1, 0.3, 1.0, 3.0, 10.0]
+      max_iter: 2000
+    # A small, named, explainable set -- not a polynomial expansion.
+    logistic_interactions:
+      C: [0.03, 0.1, 0.3, 1.0]
+      max_iter: 2000
+    hist_gradient_boosting:
+      - learning_rate: 0.05
+        max_leaf_nodes: 15
+        max_iter: 200
+        l2_regularization: 1.0
+      - learning_rate: 0.08
+        max_leaf_nodes: 31
+        max_iter: 160
+        l2_regularization: 2.0
+      - learning_rate: 0.05
+        max_leaf_nodes: 31
+        max_iter: 250
+        l2_regularization: 5.0
+
+# Named interaction terms. Each one encodes a hypothesis the Phase 8 audit
+# raised, and each stays readable in a coefficient table.
+interactions:
+  - [failures_7d, customer_age_seconds]
+  - [failures_7d, customer_successful_checkouts_30d]
+  - [customer_failures_7d, customer_distinct_devices_7d]
+  - [requests_7d, active_day_count_7d]
+
+# Which new information actually earns its place.
+ablations:
+  full_v2: []
+  v1_equivalent_families:
+    - requests_7d
+    - failures_7d
+    - active_day_count_7d
+    - failures_per_active_day_7d
+    - median_gap_between_attempts
+    - gap_variability
+    - customer_id_present
+    - customer_distinct_devices_7d
+    - customer_failures_7d
+    - customer_successful_checkouts_30d
+    - customer_age_seconds
+  minus_long_horizon:
+    - requests_7d
+    - failures_7d
+    - active_day_count_7d
+    - failures_per_active_day_7d
+    - median_gap_between_attempts
+    - gap_variability
+  minus_customer_context:
+    - customer_id_present
+    - customer_distinct_devices_7d
+    - customer_failures_7d
+    - customer_successful_checkouts_30d
+    - customer_age_seconds
+  minus_card_history:
+    - distinct_card_last4_7d
+    - distinct_card_networks_7d
+    - card_change_after_decline_7d
+  minus_correlated_duplicates:
+    - failures_per_active_day_7d
+    - customer_distinct_devices_7d
+
+evaluation:
+  reporting_threshold: 0.60
+  score_thresholds: [0.30, 0.40, 0.50, 0.60, 0.70, 0.80]
+  # Every v1 baseline at its exact v1 threshold, so a v1-to-v2 comparison
+  # stays valid, plus the two new long-horizon / cross-device counters.
+  request_count_thresholds: [2, 3, 4, 5, 6]
+  request_count_24h_thresholds: [3, 4, 5, 6, 8]
+  rule_score_thresholds: [2, 3, 4, 5, 6]
+  failures_7d_thresholds: [1, 2, 3, 4, 6]
+  customer_devices_thresholds: [2, 3, 4]
+  risk_thresholds: [0.3, 0.4, 0.5, 0.6, 0.7, 0.8]
+  combined_risk_thresholds: [0.5, 0.6, 0.7]
+  combined_rule_thresholds: [4, 5]

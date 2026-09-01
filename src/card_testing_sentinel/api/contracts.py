@@ -1,4 +1,10 @@
-"""Strict raw-event API schemas; client-computed features are never accepted."""
+"""Strict API schemas.
+
+The precheck request carries only raw facts a merchant owns before Razorpay
+Checkout opens. It never accepts card data, payment method, a risk score, or
+any client-computed feature -- Sentinel derives everything from trusted
+server-side history.
+"""
 
 from __future__ import annotations
 
@@ -7,6 +13,13 @@ from datetime import datetime
 from typing import Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
+
+from card_testing_sentinel.domain.events import (
+    CardNetwork,
+    CardType,
+    FailureReason,
+    PaymentMethod,
+)
 
 Identifier = Annotated[
     str, Field(strict=True, min_length=1, max_length=200, pattern=r"^[^\s]+$")
@@ -22,16 +35,16 @@ class StrictRequest(BaseModel):
 class PrecheckRequest(StrictRequest):
     request_id: Identifier
     event_id: Identifier
+    merchant_id: Identifier
+    customer_id: Identifier | None = None
     device_id: Identifier
     session_id: Identifier
-    card_reference: Identifier
-    card_bin: Annotated[str, Field(strict=True, pattern=r"^\d{6,8}$")]
     ip_reference: Identifier
     amount: Amount
     currency: Literal["USD", "INR"]
+    campaign_active: Annotated[bool, Field(strict=True)]
     timestamp: datetime
     event_sequence: EventSequence
-    campaign_active: Annotated[bool, Field(strict=True)]
 
     @field_validator("amount", mode="before")
     @classmethod
@@ -63,9 +76,15 @@ class OutcomeRequest(StrictRequest):
     timestamp: datetime
     event_sequence: EventSequence
     authorization_result: Literal["approved", "declined"]
-    decline_reason: (
-        Literal["generic_decline", "insufficient_funds", "do_not_honor"] | None
-    ) = None
+    failure_reason: FailureReason | None = None
+    # Card / method metadata from a VERIFIED Razorpay outcome. Optional,
+    # historical only -- it influences future prechecks, never this one.
+    payment_method: PaymentMethod | None = None
+    card_last4: Annotated[str, Field(pattern=r"^\d{4}$")] | None = None
+    card_network: CardNetwork | None = None
+    card_type: CardType | None = None
+    card_issuer: Annotated[str, Field(min_length=1, max_length=64)] | None = None
+    international: bool | None = None
 
     @field_validator("timestamp")
     @classmethod
@@ -97,15 +116,18 @@ class PrecheckResponse(BaseModel):
     request_id: str
     event_id: str
     decision: Literal["allow", "review", "block"]
-    risk_score: float
+    #: null only in the degraded failover, when no model could be loaded.
+    risk_score: float | None
     rule_score: int
     reason_codes: list[str]
-    model_version: str
-    policy_version: str
+    decision_basis: Literal["model_and_rules", "degraded_rules_only"]
+    model_status: Literal["ready", "degraded_rules_only"]
     device_state_version: int
     idempotent_replay: bool
     processed_at: datetime
     latency_ms: float
+    #: set when decision == "block"; the merchant may expire the block after this.
+    block_expires_at: datetime | None = None
 
 
 class TransitionResponse(BaseModel):
@@ -134,30 +156,29 @@ class DemoStepRequest(StrictRequest):
 
 
 class TrafficStartRequest(StrictRequest):
-    """Begin a mixed-traffic run.
-
-    `seed` is optional. Omitted, the server draws one so consecutive runs
-    differ; supplied, the run is reproduced exactly. It selects which devices
-    arrive and when — never what any of them does, and never anything the
-    scoring path can see.
-    """
-
     seed: int | None = Field(default=None, ge=0, lt=2**31)
 
 
 class TrafficStepRequest(StrictRequest):
-    """Advance a mixed-traffic run by one payment.
-
-    Deliberately carries no scenario, device or expected-outcome field: the
-    schedule lives entirely on the server, and the operator cannot steer
-    which device arrives next. Like every other request model here this
-    forbids extra fields, so no ground-truth hint can be smuggled in.
-    """
-
     traffic_run_id: Identifier
 
 
 class TrafficTruthRequest(StrictRequest):
-    """Ask the simulator to attribute already-made decisions to scenarios."""
-
     traffic_run_id: Identifier
+
+
+class RazorpayOrderRequest(StrictRequest):
+    sentinel_request_id: Identifier
+    device_id: Identifier
+    session_id: Identifier
+
+
+class RazorpayPaymentVerificationRequest(StrictRequest):
+    sentinel_request_id: Identifier
+    device_id: Identifier
+    session_id: Identifier
+    razorpay_order_id: Identifier
+    razorpay_payment_id: Identifier
+    razorpay_signature: Annotated[
+        str, Field(min_length=64, max_length=64, pattern=r"^[a-fA-F0-9]{64}$")
+    ]

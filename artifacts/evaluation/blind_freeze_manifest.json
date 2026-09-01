@@ -1,0 +1,107 @@
+{
+  "blind": {
+    "blind_config_sha256": "13a0d3901e06f724071f4f430576da4605dc646b026e849c92110c6d2ae0b50d",
+    "blind_generator_sha256": "2fd46583fa1c99827f2c6c29d7d10780b1da9a3326dddecd679bf524611fbf8e",
+    "blind_generator_sources": [
+      "src/card_testing_sentinel/ml/blind_generator.py",
+      "src/card_testing_sentinel/ml/primitives.py",
+      "src/card_testing_sentinel/ml/merchants.py",
+      "src/card_testing_sentinel/ml/scenarios.py",
+      "pipelines/generate_blind.py"
+    ],
+    "blind_spec_sha256": "2fc6c28a0d057b5caabf79890a8cb8446b22f38ad29aa7ccd0db82bfe58d0971",
+    "files": {
+      "blind_config_sha256": "configs/blind.yaml",
+      "blind_spec_sha256": "docs/blind_spec.md"
+    },
+    "frozen_utc": "2026-08-31T04:07:59.519551+00:00"
+  },
+  "blind_evaluated": true,
+  "blind_metrics_file": "blind_metrics_v1_1.json",
+  "blind_metrics_sha256": "746daf53f6cea04c880f9e65ffb4a55f07a1aeb8efa2e74070383512c99bba01",
+  "blind_version": "v1.1",
+  "consumed": true,
+  "consumption_note": "Consumed at the moment the frozen model was first scored against blind v1.1. This flag is set BEFORE the metrics are written, so an interrupted evaluation still spends the benchmark.",
+  "dataset": {
+    "features_sha256": "9dabecd22f1e7177b6650ae1ab1f5752b72b01df803fff16111713e93ad28d05",
+    "files": {
+      "features_sha256": "data/generated/blind/features.csv",
+      "labels_sha256": "data/generated/blind/labels.csv",
+      "manifest_sha256": "data/generated/blind/manifest.json",
+      "raw_events_sha256": "data/generated/blind/raw_events.csv"
+    },
+    "frozen_utc": "2026-08-31T04:08:33.258218+00:00",
+    "labels_sha256": "37c8a7e4e8f768cfcb5544a1d2974a21c6f9fda278e3e1134390c486d41d99de",
+    "manifest_sha256": "b284c418b79ced694151e13dd07d5f2c4feb978bdbdf339228b0ef4a199d4e6b",
+    "raw_events_sha256": "b0a268847b5496e7b4f4bf060f8fa82fa00e5bf3e4dd3f6cb72a954ca1e1634f"
+  },
+  "development": {
+    "development_manifest_sha256": "abb3e30b49fe0c5f55dfb06b5387e21e32ee33748c6d0cadfd7c8a0238a0d045",
+    "feature_config_sha256": "676e2705c46c537369230b17000dcd31bfb681a9b12cd00aa0fc9a5a0df02510",
+    "feature_contract_sha256": "608bfdf6ee00f7e277d507f58a6f3c09a4347cc766a7e07daf1a6ce3b0b26d62",
+    "files": {
+      "development_manifest_sha256": "data/generated/development/manifest.json",
+      "feature_config_sha256": "configs/features.yaml",
+      "feature_contract_sha256": "artifacts/model/feature_contract.json",
+      "model_metadata_sha256": "artifacts/model/metadata.json",
+      "model_sha256": "artifacts/model/risk_model.joblib",
+      "policy_config_sha256": "configs/policy.yaml",
+      "policy_sha256": "artifacts/policy/operational_policy.json",
+      "training_config_sha256": "configs/training.yaml"
+    },
+    "frozen_utc": "2026-08-31T03:42:13.961471+00:00",
+    "model_metadata_sha256": "5040fade83b220e1ef5bf299a4dd2e5b6422f3bb34210e843f3650b1176fd53d",
+    "model_sha256": "be39e1524ae7095e3ea512ce115e674563ed3313274ee38d42d00aa9aaa22ef7",
+    "policy_config_sha256": "13ae649cc667870ccc87d6fd52e75aba313d8795013c886fdbdd8a60d6fe1df1",
+    "policy_sha256": "1e67b377f476209dcabfe87db648d81f2519e60d3ff1fa528e6debc9ccbb4c96",
+    "training_config_sha256": "68098d33b6a53f5c9ec6f6c2c60b8912ae139be0ed10c59212aa98f3fa2cfe06"
+  },
+  "evaluation_completed_utc": "2026-08-31T04:16:42.963085+00:00",
+  "evaluation_started_utc": "2026-08-31T04:16:41.617747+00:00",
+  "note": "Frozen dependencies for the blind benchmark. Once any blind model or policy metric is observed this benchmark version is CONSUMED: the frozen files must not be edited, and a changed model or policy requires a new blind version with a new seed and spec revision.",
+  "revision_history": [
+    {
+      "blind": {
+        "blind_config_sha256": "c7897e3862ac9752472adc32f64722df8f434e16c1fbb18738f7bb956afb9284",
+        "blind_generator_sha256": "57380541a29cadb92eeea6b7330dad96b0496e3ebaeea1db1ec4c9ba4b8a708d",
+        "blind_generator_sources": [
+          "src/card_testing_sentinel/ml/blind_generator.py",
+          "src/card_testing_sentinel/ml/primitives.py",
+          "pipelines/generate_blind.py"
+        ],
+        "blind_spec_sha256": "874e74b8483493f3a969a73087f390b6d1a72db79613c916bc8f9a582a06da9d",
+        "files": {
+          "blind_config_sha256": "configs/blind.yaml",
+          "blind_spec_sha256": "docs/blind_spec.md"
+        },
+        "frozen_utc": "2026-08-31T03:42:23.146555+00:00"
+      },
+      "blind_evaluated": false,
+      "blind_version": "v1",
+      "consumed": false,
+      "development": {
+        "development_manifest_sha256": "abb3e30b49fe0c5f55dfb06b5387e21e32ee33748c6d0cadfd7c8a0238a0d045",
+        "feature_config_sha256": "676e2705c46c537369230b17000dcd31bfb681a9b12cd00aa0fc9a5a0df02510",
+        "feature_contract_sha256": "608bfdf6ee00f7e277d507f58a6f3c09a4347cc766a7e07daf1a6ce3b0b26d62",
+        "files": {
+          "development_manifest_sha256": "data/generated/development/manifest.json",
+          "feature_config_sha256": "configs/features.yaml",
+          "feature_contract_sha256": "artifacts/model/feature_contract.json",
+          "model_metadata_sha256": "artifacts/model/metadata.json",
+          "model_sha256": "artifacts/model/risk_model.joblib",
+          "policy_config_sha256": "configs/policy.yaml",
+          "policy_sha256": "artifacts/policy/operational_policy.json",
+          "training_config_sha256": "configs/training.yaml"
+        },
+        "frozen_utc": "2026-08-31T03:42:13.961471+00:00",
+        "model_metadata_sha256": "5040fade83b220e1ef5bf299a4dd2e5b6422f3bb34210e843f3650b1176fd53d",
+        "model_sha256": "be39e1524ae7095e3ea512ce115e674563ed3313274ee38d42d00aa9aaa22ef7",
+        "policy_config_sha256": "13ae649cc667870ccc87d6fd52e75aba313d8795013c886fdbdd8a60d6fe1df1",
+        "policy_sha256": "1e67b377f476209dcabfe87db648d81f2519e60d3ff1fa528e6debc9ccbb4c96",
+        "training_config_sha256": "68098d33b6a53f5c9ec6f6c2c60b8912ae139be0ed10c59212aa98f3fa2cfe06"
+      },
+      "reason": "v1.0 was frozen and generated, then FAILED its own pre-evaluation validation. Three objective generation defects: merchant kinds were sampled with replacement so flash_sale, travel and the unseen ticketing_events archetype had zero merchants; scenarios whose declared merchant kinds were all absent silently fell back to the full merchant pool; and the attack fraction was applied per actor, producing 0.291 attack devices against a configured 0.20. The legitimate decline rate of 0.4179 also breached the benchmark's own plausibility gate of 0.40. NO model score, policy decision, recall, precision, PR-AUC, FPR or any other blind performance result was observed for v1.0; it was never evaluated and was never consumed.",
+      "superseded_utc": "2026-08-31T04:03:33.863460+00:00"
+    }
+  ]
+}

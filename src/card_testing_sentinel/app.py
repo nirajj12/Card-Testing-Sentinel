@@ -10,24 +10,37 @@ from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from card_testing_sentinel.api import demo, health, live, metrics, replay
+from card_testing_sentinel.api import (
+    demo,
+    health,
+    live,
+    metrics,
+    razorpay,
+    replay,
+    webhooks,
+)
 from card_testing_sentinel.api.dependencies import ApplicationRuntime
 from card_testing_sentinel.common.config import load_config
+from card_testing_sentinel.common.environment import load_local_environment
 from card_testing_sentinel.common.logging import configure_logging
 from card_testing_sentinel.common.paths import project_root
-from card_testing_sentinel.domain.events import EventContractError, LateEventError
+from card_testing_sentinel.domain.events import EventContractError
 from card_testing_sentinel.domain.exceptions import ApplicationError
-from card_testing_sentinel.modeling.compatibility import RuntimeCompatibilityError
 from card_testing_sentinel.modeling.registry import ArtifactRegistry
 from card_testing_sentinel.persistence.repository import StateRepository
 from card_testing_sentinel.persistence.sqlite_repository import SQLiteStateRepository
 from card_testing_sentinel.security.identifiers import IdentifierProtector
 from card_testing_sentinel.services.demo import DemoManager
-from card_testing_sentinel.services.fraud_detection import FraudDetectionService
+from card_testing_sentinel.services.razorpay import (
+    RazorpayCheckoutService,
+    RazorpayClient,
+    RazorpayCredentials,
+)
+from card_testing_sentinel.services.risk_service import RiskService
 
 PROJECT_ROOT = project_root()
 
@@ -39,11 +52,21 @@ def create_app(
     repository: StateRepository | None = None,
     hmac_secret: str | None = None,
 ) -> FastAPI:
+    load_local_environment(
+        root,
+        (
+            "CTS_HMAC_SECRET",
+            "RAZORPAY_KEY_ID",
+            "RAZORPAY_KEY_SECRET",
+            "RAZORPAY_WEBHOOK_SECRET",
+        ),
+    )
     config = load_config(config_path or root / "configs/app.yaml")
     configure_logging(str(config.get("log_level", "INFO")))
     templates = Jinja2Templates(
         directory=root / "src/card_testing_sentinel/web/templates"
     )
+    frontend_dist = root / "frontend/dist"
 
     @asynccontextmanager
     async def lifespan(application: FastAPI):
@@ -57,16 +80,20 @@ def create_app(
             state_repository = repository or SQLiteStateRepository(
                 root / config["database_path"]
             )
-            service = FraudDetectionService(registry, state_repository, protector)
+            service = RiskService(registry, state_repository, protector)
+            credentials = RazorpayCredentials.from_environment()
+            runtime.razorpay = RazorpayCheckoutService(
+                client=(RazorpayClient(credentials) if credentials else None),
+                repository=state_repository,
+                risk_service=service,
+                protector=protector,
+                webhook_secret=os.environ.get("RAZORPAY_WEBHOOK_SECRET"),
+            )
             runtime.registry = registry
             runtime.service = service
             if bool(config.get("demo_mode")):
                 runtime.demo = DemoManager(service, protector)
             runtime.ready = True
-        except RuntimeCompatibilityError as error:
-            runtime.ready = False
-            runtime.startup_error = str(error)
-            runtime.compatibility_report = error.report.as_dict()
         except Exception as error:
             runtime.ready = False
             runtime.startup_error = f"{type(error).__name__}: {error}"
@@ -90,9 +117,17 @@ def create_app(
         StaticFiles(directory=root / "src/card_testing_sentinel/web/static"),
         name="static",
     )
+    if frontend_dist.is_dir():
+        application.mount(
+            "/assets",
+            StaticFiles(directory=frontend_dist / "assets"),
+            name="frontend-assets",
+        )
     application.include_router(health.router)
     application.include_router(live.router)
     application.include_router(metrics.router)
+    application.include_router(razorpay.router)
+    application.include_router(webhooks.router)
     application.include_router(replay.router)
     application.include_router(demo.router)
 
@@ -107,8 +142,12 @@ def create_app(
         response.headers["X-Frame-Options"] = "DENY"
         response.headers["Referrer-Policy"] = "no-referrer"
         response.headers["Content-Security-Policy"] = (
-            "default-src 'self'; script-src 'self'; style-src 'self'; "
-            "img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'"
+            "default-src 'self'; script-src 'self' https://checkout.razorpay.com "
+            "https://cdn.razorpay.com; "
+            "style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; "
+            "connect-src 'self' https://api.razorpay.com; "
+            "frame-src https://api.razorpay.com https://checkout.razorpay.com; "
+            "frame-ancestors 'none'"
         )
         runtime = request.app.state.runtime
         runtime.recent_api_latencies_ms.append(
@@ -169,19 +208,9 @@ def create_app(
             },
         )
 
-    @application.exception_handler(LateEventError)
-    async def late_event(request: Request, _error: LateEventError):
-        return JSONResponse(
-            status_code=409,
-            content={
-                "error": "causal_ordering_error",
-                "message": "event is older than committed causal state",
-                "correlation_id": getattr(request.state, "correlation_id", None),
-            },
-        )
-
-    @application.get("/", response_class=HTMLResponse)
-    async def dashboard(request: Request):
+    async def product_page(request: Request):
+        if (frontend_dist / "index.html").is_file():
+            return FileResponse(frontend_dist / "index.html")
         return templates.TemplateResponse(
             request=request,
             name="dashboard.html",
@@ -190,6 +219,10 @@ def create_app(
                 "demo_mode": bool(config.get("demo_mode")),
             },
         )
+
+    application.add_api_route("/", product_page, methods=["GET"])
+    for product_path in ("/store", "/checkout", "/how-it-works", "/evidence"):
+        application.add_api_route(product_path, product_page, methods=["GET"])
 
     return application
 

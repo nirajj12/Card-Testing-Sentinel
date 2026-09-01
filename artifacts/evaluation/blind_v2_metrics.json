@@ -1,0 +1,290 @@
+{
+  "causal_replay": {
+    "byte_frozen_projection_sha256": "b661517f5dac5eda5e772e30ccd765dfa084d980e107957f055bda89e22d388f",
+    "fresh_replay_matches_frozen_projection": true,
+    "ordering": [
+      "timestamp",
+      "event_sequence"
+    ],
+    "projection_rows": 15364,
+    "raw_rows": 38154,
+    "request_rows": 15364
+  },
+  "consumed": true,
+  "consumption": {
+    "blind_features_v2_sha256": "b661517f5dac5eda5e772e30ccd765dfa084d980e107957f055bda89e22d388f",
+    "blind_labels_sha256": "3a838bb77ee9137324f72ba544bc5edb5af3a3e3c5e46029304ff146135b4db7",
+    "blind_raw_sha256": "bfdc709863c89a6f496a95dd56cb86fd63290a7669817918bebe1165f79bf16d",
+    "blind_version": "v2",
+    "consumed": true,
+    "evaluated": true,
+    "evaluation_module_sha256": "4b39bf139be61201d5e4f4900a8ebffb50f7cb6d1269f2f875694711911a8c44",
+    "evaluation_pipeline_sha256": "5238c301b23c727088bff8d9e996a8ed7b0e426eac4da2187b9f0d91c8be8f9a",
+    "feature_contract_v2_artifact_sha256": "db9bbfdd78b315fd902e4a9f2ef05204ca5222522b921edbd3b2a64b077c1928",
+    "feature_contract_v2_source_sha256": "29819cc2ff6f2d4ae2eac112ed1d239633bf48ef0931d344149692ac5cd5dd52",
+    "feature_engine_v2_sha256": "6aa29b5953bb4f6d875bd51848e81dbeece6d0a1939816cd8bc031b59b6901c0",
+    "first_successful_score_utc": "2026-08-31T18:11:07.909388+00:00",
+    "freeze_manifest_pre_evaluation_sha256": "4eaf9a000ef3c0752c2d7b64c53dd7d0d5e9530c4d2affa530244da68f7f0a73",
+    "model_v2_sha256": "0317cef5d310bc5d5d2ed55e755d995a34c54ad28df5ea780a36cb1e6fea2e3c",
+    "policy_v2_artifact_sha256": "8e874ef83085b9bac063c3b0ac3044bb3c171071d00bf2db44c0390d944fe74c",
+    "policy_v2_config_sha256": "92b0173e0ba073a9a20b7f09e5d0d82c9d40a52598cb9140ede36714a03c0052",
+    "post_blind_tuning": false,
+    "scoring_started_utc": "2026-08-31T18:11:07.900670+00:00",
+    "status": "results_in_progress"
+  },
+  "customer_id_segments": {
+    "device_segments": [
+      {
+        "attack_block_rate": 0.031646,
+        "attack_devices": 158,
+        "attack_review_or_higher_rate": 0.322785,
+        "devices": 912,
+        "legitimate_block_rate": 0.0,
+        "legitimate_devices": 754,
+        "legitimate_review_or_higher_rate": 0.007958,
+        "segment": "always_guest"
+      },
+      {
+        "attack_block_rate": 0.417445,
+        "attack_devices": 642,
+        "attack_review_or_higher_rate": 0.799065,
+        "devices": 3088,
+        "legitimate_block_rate": 0.066639,
+        "legitimate_devices": 2446,
+        "legitimate_review_or_higher_rate": 0.192559,
+        "segment": "ever_customer_present"
+      }
+    ],
+    "request_segments": [
+      {
+        "allow_requests": 4219,
+        "block_requests": 453,
+        "devices": 2721,
+        "model_metrics": {
+          "brier": 0.171575,
+          "ece": 0.138176,
+          "log_loss": 0.566837,
+          "positive_rate": 0.22455,
+          "pr_auc": 0.491878,
+          "roc_auc": 0.704461
+        },
+        "requests": 5565,
+        "review_requests": 893,
+        "segment": "customer_absent"
+      },
+      {
+        "allow_requests": 7625,
+        "block_requests": 869,
+        "devices": 3088,
+        "model_metrics": {
+          "brier": 0.157503,
+          "ece": 0.125567,
+          "log_loss": 0.504091,
+          "positive_rate": 0.207902,
+          "pr_auc": 0.510085,
+          "roc_auc": 0.767346
+        },
+        "requests": 9799,
+        "review_requests": 1305,
+        "segment": "customer_present"
+      }
+    ]
+  },
+  "development_to_blind": {
+    "attack_block": -0.25065,
+    "attack_review_or_higher": -0.1689,
+    "brier": 0.077767,
+    "ece": 0.099018,
+    "legitimate_block": 0.042037,
+    "legitimate_review_or_higher": 0.096062,
+    "pr_auc": -0.291126,
+    "roc_auc": -0.169021
+  },
+  "evaluated": true,
+  "evidence_gate": {
+    "attacks_no_longer_blocked": 116,
+    "attempts_at_or_above_block_threshold": 1879,
+    "attempts_withheld_low_evidence": 557,
+    "attempts_withheld_trusted": 0,
+    "block_attempts_suppressed_by_gate": 557,
+    "devices_blocked_with_gate": 436,
+    "devices_blocked_without_gate": 595,
+    "devices_suppressed_by_gate": 159,
+    "evidence_qualified_block_attempts": 1322,
+    "legitimate_blocks_prevented": 43,
+    "score_only_block_candidate_attempts": 1879,
+    "withheld_attack_scenarios": {
+      "cross_device_strong": 3,
+      "patient_tester_v2": 28,
+      "sparse_multiday_v2": 49,
+      "ultra_patient_v2": 35,
+      "variable_cadence_v2": 1
+    },
+    "withheld_legitimate_scenarios": {
+      "high_value_retry_v2": 7,
+      "mobile_network_churn_v2": 1,
+      "network_retry_storm_v2": 1,
+      "subscription_dunning_v2": 34
+    }
+  },
+  "feature_count": 39,
+  "guest_friction_interpretation": "not disproportionately penalized by more than one percentage point",
+  "linkage_diagnostic": [
+    {
+      "attack_block_rate": 0.079208,
+      "attack_devices": 202,
+      "attack_review_or_higher_rate": 0.564356,
+      "devices": 612,
+      "legitimate_block_rate": 0.0,
+      "legitimate_devices": 410,
+      "legitimate_review_or_higher_rate": 0.012195,
+      "linkage_class": "partial"
+    },
+    {
+      "attack_block_rate": 0.557522,
+      "attack_devices": 452,
+      "attack_review_or_higher_rate": 0.862832,
+      "devices": 2891,
+      "legitimate_block_rate": 0.066831,
+      "legitimate_devices": 2439,
+      "legitimate_review_or_higher_rate": 0.189832,
+      "linkage_class": "strong"
+    },
+    {
+      "attack_block_rate": 0.034247,
+      "attack_devices": 146,
+      "attack_review_or_higher_rate": 0.410959,
+      "devices": 497,
+      "legitimate_block_rate": 0.0,
+      "legitimate_devices": 351,
+      "legitimate_review_or_higher_rate": 0.025641,
+      "linkage_class": "weak"
+    }
+  ],
+  "long_horizon_interpretation": "useful under the frozen system",
+  "model_metrics": {
+    "brier": 0.152069,
+    "ece": 0.117139,
+    "log_loss": 0.500684,
+    "positive_rate": 0.2,
+    "pr_auc": 0.487127,
+    "roc_auc": 0.73512
+  },
+  "model_version": "model-v2",
+  "operating_targets": {
+    "attack_review_or_higher": "PASS",
+    "legitimate_block": "FAIL",
+    "legitimate_review_or_higher": "FAIL"
+  },
+  "policy": {
+    "attack_block_devices": 273,
+    "attack_block_rate": 0.34125,
+    "attack_devices": 800,
+    "attack_review_or_higher_devices": 564,
+    "attack_review_or_higher_rate": 0.705,
+    "attempt_actions": {
+      "allow": {
+        "count": 11844,
+        "rate": 0.770893
+      },
+      "block": {
+        "count": 1322,
+        "rate": 0.086045
+      },
+      "review": {
+        "count": 2198,
+        "rate": 0.143062
+      }
+    },
+    "confidence_intervals_95": {
+      "attack_block": {
+        "high": 0.374794,
+        "low": 0.309224
+      },
+      "attack_review_or_higher": {
+        "high": 0.735562,
+        "low": 0.672479
+      },
+      "legitimate_block": {
+        "high": 0.059108,
+        "low": 0.043844
+      },
+      "legitimate_review_or_higher": {
+        "high": 0.161823,
+        "low": 0.137144
+      }
+    },
+    "legitimate_block_devices": 163,
+    "legitimate_block_rate": 0.050937,
+    "legitimate_devices": 3200,
+    "legitimate_review_or_higher_devices": 477,
+    "legitimate_review_or_higher_rate": 0.149062
+  },
+  "policy_config": {
+    "block_evidence": 2,
+    "block_threshold": 0.9,
+    "block_ttl_seconds": 3600,
+    "campaign_block_increment": 0.0,
+    "campaign_review_increment": 0.0,
+    "degraded_block_rule_score": 6,
+    "degraded_review_rule_score": 4,
+    "evidence_set": "v2_full",
+    "family": "evidence_gated_v2",
+    "review_threshold": 0.75,
+    "trust_suppression": "none"
+  },
+  "post_blind_tuning": false,
+  "pre_evaluation": {
+    "feature_contract_sha256": "51bfa6604ed0486447ee16a43270f2092f0cac96b3ab0c2f0bad2748e8c28a38",
+    "freeze_manifest_pre_evaluation_sha256": "4eaf9a000ef3c0752c2d7b64c53dd7d0d5e9530c4d2affa530244da68f7f0a73",
+    "model_metadata_sha256": "ebd146a7d9387b7f6eff3b0260a71b68cbad87ba4410a2fd6f424a74fc3c9c71",
+    "status": "passed",
+    "training_config_sha256": "1bb21be77d6d39bc052ae2e21b6b9cd745d4faed453acf692f1d0213f828c3fa",
+    "verified_hashes": {
+      "dataset.features_v2_sha256": "b661517f5dac5eda5e772e30ccd765dfa084d980e107957f055bda89e22d388f",
+      "dataset.labels_sha256": "3a838bb77ee9137324f72ba544bc5edb5af3a3e3c5e46029304ff146135b4db7",
+      "dataset.manifest_sha256": "3a4d96facab33f46bd31041a8da8b0db85d71528c8f8d08c38027927ba18aa95",
+      "dataset.raw_events_sha256": "bfdc709863c89a6f496a95dd56cb86fd63290a7669817918bebe1165f79bf16d",
+      "dataset.reproducibility_sha256": "f0faccec4a5093a7ebd2849a92a1fd3c5620c962e504e25a22e19ec0d38b8f30",
+      "dataset.shift_report_sha256": "6f7b0ba8c96fc86c1c1fd7067b439a9e49918784df846e99f7f77b20fe299caf",
+      "dataset.validation_report_sha256": "321a75cfa1ba43428e0efa3e56020927e2e95fbf25f504e714d32ac03b79681c",
+      "foundation.blind_v1_1_freeze_sha256": "d39ff0f9aed0bb82dd471e407df178d1d80f9f049d2cc4ffb566a1d813edbe7a",
+      "foundation.dataset_v3_features_v2_sha256": "000c52aebbd0e2dbc58207289d6cba3db47ae4d771db3be251207dbb0365d51e",
+      "foundation.dataset_v3_labels_sha256": "daf0c116cd6d71a210d7a662743df0c9ce58c5d1a0c2c723b0cd2cf6a8f9e90d",
+      "foundation.dataset_v3_raw_sha256": "f02de8d4d186e4084cf9fd7104211655bf82960358f3517327e57e59392f49f8",
+      "foundation.feature_contract_v2_artifact_sha256": "db9bbfdd78b315fd902e4a9f2ef05204ca5222522b921edbd3b2a64b077c1928",
+      "foundation.feature_contract_v2_source_sha256": "29819cc2ff6f2d4ae2eac112ed1d239633bf48ef0931d344149692ac5cd5dd52",
+      "foundation.feature_engine_v2_sha256": "6aa29b5953bb4f6d875bd51848e81dbeece6d0a1939816cd8bc031b59b6901c0",
+      "foundation.model_v2_metadata_sha256": "ebd146a7d9387b7f6eff3b0260a71b68cbad87ba4410a2fd6f424a74fc3c9c71",
+      "foundation.model_v2_sha256": "0317cef5d310bc5d5d2ed55e755d995a34c54ad28df5ea780a36cb1e6fea2e3c",
+      "foundation.policy_v2_artifact_sha256": "8e874ef83085b9bac063c3b0ac3044bb3c171071d00bf2db44c0390d944fe74c",
+      "foundation.policy_v2_config_sha256": "92b0173e0ba073a9a20b7f09e5d0d82c9d40a52598cb9140ede36714a03c0052",
+      "sources.config_sha256": "bce8b8777d5c87329143ba0d989e0f8f3e232fa20b08d37acc491c22db9fbaf1",
+      "sources.feature_projection_sha256": "5c0dbaf478eddcad94f055092c5de65ac06a894f7959c14112992b886bbc4f9d",
+      "sources.generation_pipeline_sha256": "906bf0f582dd24d429f6e8fa326d2de41718747036b254c4d24b9f03f487a824",
+      "sources.generator_sha256": "4f17429f9b1b8bec92432385c9f7cd91d19ca6e7750f3902893769e327388532",
+      "sources.merchant_mechanics_sha256": "c6571fde583043487b333f5a3d48d187a2f851363affa1a3fe19b8bc804cb8db",
+      "sources.neutral_primitives_sha256": "fec1eeb4e9bbd46a6c08ce7e69c285051a2db515706e0d8ae8965d8480219e7e",
+      "sources.spec_sha256": "e528eebfb200bd481cb9393d614cf6f650d8875615308d00276c853454f71378",
+      "sources.validation_pipeline_sha256": "d3f5c552696a93e1aac0a7acc23e12e22c0917cde4bc5ebd6ca8b9391a09875b",
+      "sources.validator_sha256": "37a7108e612d2cc8ad854c9453fb54e7ff351d1a50d968494328f021c4a8f303"
+    }
+  },
+  "realism_warning": "Blind v2 legitimate decline rate 34.49% exceeded the 34% warning level but remained below the 46% hard gate.",
+  "remaining_weaknesses": "aggregate legitimate REVIEW+ exceeds 6%; aggregate legitimate BLOCK exceeds 1%; subscription dunning has elevated friction.",
+  "status": "official_one_time_blind_v2_evaluation",
+  "subscription_dunning": {
+    "allow_device_rate": 0.007812,
+    "block_rate": 0.726562,
+    "blocked_devices": 93,
+    "customer_id_absent_requests": 321,
+    "customer_id_present_requests": 1114,
+    "devices": 128,
+    "devices_with_historical_success_in_30d": 112,
+    "requests": 1435,
+    "review_or_higher_rate": 0.992188,
+    "reviewed_devices": 127
+  },
+  "verdict": "WEAK",
+  "verdict_reason": "core attack-review coverage or the 2% legitimate-block ceiling failed"
+}

@@ -1,0 +1,549 @@
+# Blind benchmark v1.1 — configuration.
+#
+# Frozen before generation. See docs/blind_spec.md for the reasoning behind
+# every number here.
+#
+# REVISION v1.1 (pre-evaluation). v1.0 was generated and FAILED its own
+# pre-evaluation validation. No model score, policy decision, recall,
+# precision, PR-AUC, FPR or any other blind performance result was observed
+# before this revision was frozen. The corrections are objective generation
+# defects only -- see docs/blind_spec.md §13.
+#
+# This file is NOT a copy of training.yaml with a new seed. It declares its
+# own merchants (including three archetypes that did not exist during
+# development), its own twenty scenario families, its own time window and its
+# own shift ranges.
+#
+# INDEPENDENCE: nothing below is derived from a model coefficient, a feature
+# importance, a policy threshold, or any development/validation result. No
+# value here was chosen by measuring the frozen system's response to it.
+
+blind_version: v1.1
+dataset_name: blind-v1.1
+generator_version: blind-generator-2
+currency: INR
+
+# Unrelated to every development seed (train 20260101, validation 771103,
+# merchants 4242001, training 20260401).
+seed: 90210007
+
+# ── time window ──────────────────────────────────────────────────────────
+# Development validation's last event is in late June 2026. Blind opens well
+# after it; the generator asserts strict separation against the development
+# manifest at generation time and refuses to write on overlap.
+window:
+  start: 2026-09-01T00:00:00+00:00
+  # v1.1: renamed from `days`. This bounds when actors BEGIN, not when the
+  # benchmark ends. ultra_patient_tester, sparse_multiday and
+  # dormant_returning_customer deliberately run for days-to-months after their
+  # start, so the realized event span is longer. Truncating them to force
+  # every event inside the window would delete the long-horizon behaviour the
+  # benchmark exists to test.
+  actor_start_window_days: 60
+  # Hard floor: generation fails if any blind event lands before this.
+  must_start_after: 2026-07-15T00:00:00+00:00
+
+population:
+  devices: 3000
+  # A SAMPLING CHOICE so all ten attack families carry enough devices to
+  # report per-family recall -- not an estimate of real card-testing
+  # prevalence. Any precision computed here is `benchmark_precision`.
+  #
+  # v1.1: renamed from `benchmark_attack_fraction` and now applied at DEVICE
+  # level, because the evaluation is device-level. In v1.0 it was applied when
+  # drawing an actor; blind attack actors own 4-9 devices each, so the realized
+  # device prevalence came out at 0.291 instead of 0.20.
+  benchmark_attack_device_fraction: 0.20
+
+# ── merchants ────────────────────────────────────────────────────────────
+# All instances are new. Ten kinds are declared: seven known kinds re-drawn
+# with shifted parameters, and three kinds that did not exist in development
+# at all. `merchant_kind` is not a model feature, so an unseen kind tests
+# behavioural generalisation rather than a missing lookup key.
+#
+# v1.1: EVERY declared kind is realized. `count` (11) is the number of merchant
+# INSTANCES; each of the ten kinds gets one instance and the remaining slot is
+# drawn by weight. v1.0 sampled all eleven slots by weight with replacement,
+# which left flash_sale, travel and ticketing_events -- including one of the
+# three unseen archetypes -- with zero merchants and zero devices.
+merchants:
+  seed: 55501234
+  count: 11
+  campaign_calendar:
+    start: 2026-08-01T00:00:00+00:00
+    days: 200
+    # Shorter, sharper campaigns than development's [1.5, 5.0] days.
+    window_days: [0.5, 3.0]
+  kinds:
+    # -- known kinds, new instances, shifted parameters -------------------
+    small_ecommerce:
+      origin: known
+      weight: 3
+      typical_amount: [850, 3200]        # dev [700, 2600]
+      amount_spread: [0.70, 1.05]        # dev [0.55, 0.85] -- wider
+      base_success_rate: [0.90, 0.96]    # dev [0.94, 0.98] -- slightly lower
+      campaign_share: [0.04, 0.14]
+      returning_customer_rate: [0.20, 0.45]
+      shared_ip_pressure: [0.08, 0.22]
+    digital_goods:
+      origin: known
+      weight: 2
+      typical_amount: [90, 480]
+      amount_spread: [1.00, 1.45]
+      base_success_rate: [0.91, 0.97]
+      campaign_share: [0.06, 0.18]
+      returning_customer_rate: [0.35, 0.62]
+      shared_ip_pressure: [0.10, 0.26]
+    subscription:
+      origin: known
+      weight: 2
+      typical_amount: [149, 1200]
+      amount_spread: [0.35, 0.65]
+      base_success_rate: [0.86, 0.94]
+      campaign_share: [0.0, 0.03]
+      returning_customer_rate: [0.55, 0.82]
+      shared_ip_pressure: [0.05, 0.15]
+    electronics:
+      origin: known
+      weight: 2
+      typical_amount: [5000, 55000]
+      amount_spread: [0.80, 1.20]
+      base_success_rate: [0.84, 0.93]
+      campaign_share: [0.08, 0.22]
+      returning_customer_rate: [0.08, 0.24]
+      shared_ip_pressure: [0.05, 0.15]
+    education:
+      origin: known
+      weight: 2
+      typical_amount: [700, 18000]
+      amount_spread: [0.90, 1.30]
+      base_success_rate: [0.86, 0.94]
+      campaign_share: [0.02, 0.10]
+      returning_customer_rate: [0.12, 0.35]
+      shared_ip_pressure: [0.30, 0.62]
+    flash_sale:
+      origin: known
+      weight: 2
+      typical_amount: [350, 2600]
+      amount_spread: [0.70, 1.10]
+      base_success_rate: [0.80, 0.91]
+      campaign_share: [0.35, 0.60]
+      returning_customer_rate: [0.18, 0.42]
+      shared_ip_pressure: [0.25, 0.50]
+    travel:
+      origin: known
+      weight: 1
+      typical_amount: [4000, 36000]
+      amount_spread: [0.85, 1.20]
+      base_success_rate: [0.83, 0.92]
+      campaign_share: [0.04, 0.14]
+      returning_customer_rate: [0.06, 0.20]
+      shared_ip_pressure: [0.06, 0.18]
+
+    # -- unseen kinds: absent from development ----------------------------
+    ticketing_events:
+      origin: unseen
+      weight: 2
+      # On-sale moments: violent short bursts, heavy venue/office egress.
+      typical_amount: [600, 9000]
+      amount_spread: [0.75, 1.15]
+      base_success_rate: [0.79, 0.90]
+      campaign_share: [0.30, 0.55]
+      returning_customer_rate: [0.10, 0.30]
+      shared_ip_pressure: [0.45, 0.80]
+    food_delivery:
+      origin: unseen
+      weight: 2
+      # Very frequent small baskets, mobile-heavy so IPs churn constantly.
+      typical_amount: [120, 900]
+      amount_spread: [0.55, 0.90]
+      base_success_rate: [0.89, 0.96]
+      campaign_share: [0.05, 0.16]
+      returning_customer_rate: [0.65, 0.90]
+      shared_ip_pressure: [0.30, 0.55]
+    gaming_topups:
+      origin: unseen
+      weight: 2
+      # Micro-payments in rapid succession from returning users: legitimate
+      # traffic whose velocity and amount profile structurally resembles
+      # card testing. The sharpest generalisation test in the set.
+      typical_amount: [20, 400]
+      amount_spread: [1.10, 1.60]
+      base_success_rate: [0.88, 0.96]
+      campaign_share: [0.08, 0.20]
+      returning_customer_rate: [0.70, 0.92]
+      shared_ip_pressure: [0.20, 0.45]
+
+# ── latent behaviour defaults ────────────────────────────────────────────
+# Same schema as development so the neutral primitives can be reused, but the
+# values differ. As before, a scenario declares RANGES; every observable is
+# drawn from them. No branch anywhere keys on the label.
+scenario_defaults:
+  attempts: [1, 4]
+  gap_seconds: [60, 1200]
+  gap_spread: [0.6, 1.3]              # dev [0.5, 1.1] -- more variable
+  method_validity: [0.72, 0.94]
+  network_instability: [0.02, 0.07]
+  session_rotation: [0.03, 0.15]
+  ip_rotation: [0.03, 0.14]
+  instrument_reuse: [0.72, 0.94]
+  checkout_completion: [0.68, 0.95]
+  continue_after_success: [0.05, 0.30]
+  device_pool: [1, 1]
+  customer_pool: [1, 1]
+  ip_pool: private
+  amount_style_weights:
+    merchant_typical: 0.76
+    repeat: 0.14
+    low: 0.04
+    varied: 0.04
+    high: 0.02
+  phases: []
+  # Blind-only mechanics (absent from the development generator):
+  dormant_gap_days: [0, 0]            # long initial inactivity before returning
+  burst_pause: null                   # alternating fast/slow blocks
+
+# ── legitimate families (10) ─────────────────────────────────────────────
+#
+# v1.1 MIXTURE CORRECTION. v1.0 generated a legitimate decline rate of 0.4179,
+# and 0.4384 after the merchant fix -- both above this config's own
+# plausibility ceiling of 0.40. No merchant's approval rate was raised and no
+# family's behaviour was softened: `persistent_genuine_failures` still draws
+# `method_validity: [0.15, 0.45]` and still declines ~80% of the time. Only
+# POPULATION SHARE changed, so the hard tails stay genuinely hard but stop
+# dominating a merchant's book. Every changed weight is annotated inline with
+# its v1.0 value.
+#
+# The corrected aggregate still sits above the comfortable band [0.10, 0.30]
+# and the validator still warns about it. That is left standing rather than
+# tuned away: blind merchants were deliberately given lower approval bands
+# (§7 of the spec), and the campaign families now correctly run on
+# campaign-heavy merchants whose base success rate is the lowest in the set.
+# Part of the elevation is a declared shift, not a mixture error.
+scenarios:
+
+  cold_start_wave:
+    population: legitimate
+    weight: 30
+    attempts: [1, 2]
+    gap_seconds: [45, 900]
+    method_validity: [0.82, 0.97]
+    checkout_completion: [0.62, 0.92]
+
+  persistent_genuine_failures:
+    population: legitimate
+    weight: 3   # v1.1: was 6
+    attempts: [3, 8]
+    gap_seconds: [90, 5400]           # dev rgf [25, 900] -- longer, irregular
+    gap_spread: [0.9, 1.6]
+    method_validity: [0.15, 0.45]
+    network_instability: [0.05, 0.16]
+    instrument_reuse: [0.40, 0.78]
+    session_rotation: [0.10, 0.35]
+    ip_rotation: [0.12, 0.40]
+    checkout_completion: [0.70, 0.92]
+
+  unstable_connection_retries:
+    population: legitimate
+    weight: 3   # v1.1: was 6
+    attempts: [3, 9]
+    gap_seconds: [8, 120]             # dev storm [4, 45] -- different cadence
+    gap_spread: [0.4, 1.0]
+    method_validity: [0.80, 0.96]
+    network_instability: [0.20, 0.42]
+    instrument_reuse: [0.86, 0.99]
+    session_rotation: [0.20, 0.50]
+    checkout_completion: [0.72, 0.94]
+
+  event_venue_burst:
+    population: legitimate
+    weight: 12   # v1.1: was 10
+    attempts: [1, 4]
+    gap_seconds: [15, 400]
+    method_validity: [0.80, 0.96]
+    ip_pool: shared
+    session_rotation: [0.05, 0.20]
+    checkout_completion: [0.78, 0.95]
+    merchant_kinds: [ticketing_events, education, flash_sale]
+
+  campaign_rush:
+    population: legitimate
+    weight: 5   # v1.1: was 8
+    attempts: [2, 8]
+    gap_seconds: [4, 70]              # sharper than development's flash rush
+    gap_spread: [0.3, 0.9]
+    method_validity: [0.78, 0.95]
+    network_instability: [0.12, 0.32]
+    ip_pool: shared
+    prefers_campaign: true
+    merchant_kinds: [flash_sale, ticketing_events]
+    checkout_completion: [0.70, 0.93]
+    amount_style_weights:
+      merchant_typical: 0.58
+      repeat: 0.34
+      low: 0.03
+      varied: 0.03
+      high: 0.02
+
+  high_value_retry:
+    population: legitimate
+    weight: 2   # v1.1: was 5
+    attempts: [2, 5]
+    gap_seconds: [120, 3600]
+    method_validity: [0.55, 0.85]
+    instrument_reuse: [0.45, 0.80]
+    checkout_completion: [0.80, 0.96]
+    merchant_kinds: [electronics, travel, education, ticketing_events]
+    amount_style_weights:             # new style: genuine big-ticket retries
+      merchant_typical: 0.30
+      repeat: 0.24
+      low: 0.0
+      varied: 0.06
+      high: 0.40
+
+  dormant_returning_customer:
+    population: legitimate
+    weight: 16   # v1.1: was 7
+    attempts: [2, 5]
+    gap_seconds: [600, 86400]
+    method_validity: [0.86, 0.98]
+    instrument_reuse: [0.55, 0.85]    # the old card may have expired
+    checkout_completion: [0.85, 0.98]
+    continue_after_success: [0.20, 0.50]
+    dormant_gap_days: [45, 200]       # long inactivity before returning
+
+  multi_session_comparison_shopper:
+    population: legitimate
+    weight: 14   # v1.1: was 8
+    attempts: [3, 9]
+    gap_seconds: [300, 21600]
+    method_validity: [0.84, 0.97]
+    session_rotation: [0.55, 0.90]    # genuinely high session count
+    instrument_reuse: [0.60, 0.90]
+    continue_after_success: [0.35, 0.70]
+    checkout_completion: [0.82, 0.96]
+
+  mobile_network_churn:
+    population: legitimate
+    weight: 8
+    attempts: [2, 6]
+    gap_seconds: [30, 600]
+    method_validity: [0.82, 0.96]
+    ip_rotation: [0.55, 0.88]         # dev switch [0.40, 0.75] -- more churn
+    network_instability: [0.10, 0.26]
+    checkout_completion: [0.78, 0.95]
+    merchant_kinds: [food_delivery, gaming_topups, digital_goods]
+
+  dunning_variant:
+    population: legitimate
+    weight: 2   # v1.1: was 4
+    attempts: [2, 7]
+    gap_seconds: [21600, 172800]      # dev [43200, 259200] -- tighter rhythm
+    gap_spread: [0.3, 0.7]
+    method_validity: [0.45, 0.78]
+    instrument_reuse: [0.82, 0.98]
+    continue_after_success: [0.02, 0.12]
+    checkout_completion: [0.86, 0.98]
+    merchant_kinds: [subscription, gaming_topups]
+
+  # ── attack families (10) ───────────────────────────────────────────────
+
+  ultra_patient_tester:
+    population: attack
+    weight: 3
+    attempts: [3, 8]
+    gap_seconds: [86400, 345600]      # 1-4 days; longer than any dev family
+    gap_spread: [0.4, 0.9]
+    method_validity: [0.06, 0.30]
+    instrument_reuse: [0.25, 0.60]
+    session_rotation: [0.60, 0.92]
+    ip_rotation: [0.30, 0.70]
+    continue_after_success: [0.60, 0.92]
+    checkout_completion: [0.04, 0.30]
+    amount_style_weights:
+      merchant_typical: 0.60
+      repeat: 0.16
+      low: 0.18
+      varied: 0.04
+      high: 0.02
+
+  burst_pause_burst:
+    population: attack
+    weight: 3
+    attempts: [6, 14]
+    gap_seconds: [5, 40]
+    gap_spread: [0.3, 0.8]
+    method_validity: [0.05, 0.26]
+    instrument_reuse: [0.08, 0.35]
+    session_rotation: [0.20, 0.55]
+    ip_rotation: [0.15, 0.45]
+    continue_after_success: [0.70, 0.94]
+    checkout_completion: [0.02, 0.20]
+    burst_pause:                      # alternating fast block / long quiet
+      burst_length: [3, 5]
+      pause_seconds: [7200, 43200]
+
+  successful_card_camouflage:
+    population: attack
+    weight: 3
+    attempts: [5, 12]
+    gap_seconds: [120, 2400]
+    method_validity: [0.35, 0.60]     # deliberately mixes working cards in
+    instrument_reuse: [0.20, 0.50]
+    session_rotation: [0.20, 0.55]
+    continue_after_success: [0.80, 0.97]
+    checkout_completion: [0.45, 0.80]  # completes some checkouts to blend in
+    amount_style_weights:
+      merchant_typical: 0.72
+      repeat: 0.16
+      low: 0.06
+      varied: 0.04
+      high: 0.02
+
+  merchant_normal_amounts:
+    population: attack
+    weight: 3
+    attempts: [4, 11]
+    gap_seconds: [180, 5400]
+    method_validity: [0.10, 0.36]
+    instrument_reuse: [0.20, 0.55]
+    session_rotation: [0.18, 0.50]
+    ip_rotation: [0.12, 0.42]
+    continue_after_success: [0.60, 0.90]
+    checkout_completion: [0.08, 0.38]
+    amount_style_weights:             # no near-minimum tendency whatsoever
+      merchant_typical: 0.84
+      repeat: 0.10
+      low: 0.0
+      varied: 0.04
+      high: 0.02
+
+  moderate_mixed_rotation:
+    population: attack
+    weight: 3
+    attempts: [4, 10]
+    gap_seconds: [90, 2400]
+    method_validity: [0.08, 0.32]
+    instrument_reuse: [0.30, 0.62]    # moderate, not maximal churn
+    session_rotation: [0.25, 0.55]
+    ip_rotation: [0.20, 0.50]
+    continue_after_success: [0.65, 0.90]
+    checkout_completion: [0.05, 0.32]
+
+  campaign_shadow:
+    population: attack
+    weight: 3
+    attempts: [4, 12]
+    gap_seconds: [6, 200]
+    gap_spread: [0.3, 0.9]
+    method_validity: [0.08, 0.34]
+    network_instability: [0.10, 0.30]
+    instrument_reuse: [0.15, 0.48]
+    session_rotation: [0.15, 0.45]
+    ip_pool: shared
+    prefers_campaign: true
+    merchant_kinds: [flash_sale, ticketing_events]
+    continue_after_success: [0.68, 0.92]
+    checkout_completion: [0.04, 0.28]
+
+  cross_device_campaign:
+    population: attack
+    weight: 3
+    attempts: [8, 20]
+    gap_seconds: [45, 1800]
+    method_validity: [0.05, 0.28]
+    instrument_reuse: [0.06, 0.32]
+    session_rotation: [0.30, 0.70]
+    ip_rotation: [0.25, 0.60]
+    device_pool: [4, 9]               # dev campaign [2, 5] -- thinner history
+    continue_after_success: [0.78, 0.96]
+    checkout_completion: [0.02, 0.18]
+
+  long_warm_up:
+    population: attack
+    weight: 3
+    attempts: [8, 16]
+    gap_seconds: [600, 10800]
+    method_validity: [0.84, 0.97]
+    instrument_reuse: [0.84, 0.97]
+    checkout_completion: [0.75, 0.95]
+    continue_after_success: [0.88, 0.99]
+    phases:                           # dev switched at 0.35; blind at 0.60
+      - after_fraction: 0.60
+        method_validity: [0.05, 0.26]
+        instrument_reuse: [0.05, 0.30]
+        gap_seconds: [30, 900]
+        session_rotation: [0.30, 0.70]
+        checkout_completion: [0.02, 0.20]
+        amount_style_weights:
+          merchant_typical: 0.52
+          repeat: 0.16
+          low: 0.26
+          varied: 0.04
+          high: 0.02
+
+  variable_cadence:
+    population: attack
+    weight: 3
+    attempts: [5, 13]
+    gap_seconds: [30, 7200]
+    gap_spread: [1.4, 2.2]            # very wide: no regular rhythm at all
+    method_validity: [0.07, 0.30]
+    instrument_reuse: [0.15, 0.48]
+    session_rotation: [0.20, 0.60]
+    ip_rotation: [0.15, 0.50]
+    continue_after_success: [0.70, 0.93]
+    checkout_completion: [0.04, 0.26]
+
+  sparse_multiday:
+    population: attack
+    weight: 3
+    attempts: [4, 9]
+    gap_seconds: [43200, 172800]      # a couple of attempts a day, for days
+    gap_spread: [0.5, 1.1]
+    method_validity: [0.08, 0.32]
+    instrument_reuse: [0.25, 0.58]
+    session_rotation: [0.45, 0.85]
+    ip_rotation: [0.25, 0.60]
+    continue_after_success: [0.62, 0.90]
+    checkout_completion: [0.05, 0.30]
+
+# ── instruments / identity ───────────────────────────────────────────────
+instruments:
+  last4_pool: 2600
+  networks: [visa, mastercard, rupay, amex, diners, other]
+  network_weights: [0.38, 0.27, 0.25, 0.05, 0.02, 0.03]
+  types: [credit, debit, prepaid, unknown]
+  type_weights: [0.30, 0.54, 0.12, 0.04]
+  issuers: 30
+  international_rate: 0.09
+  methods: [card, upi, netbanking, wallet]
+  method_weights: [0.55, 0.30, 0.07, 0.08]
+
+identity:
+  shared_ip_pool: 70                  # smaller pool -> denser shared-IP traffic
+  outcome_lag_seconds: [1, 8]
+  checkout_lag_seconds: [10, 300]
+
+# ── validation gates ─────────────────────────────────────────────────────
+# Same *kinds* of gate as development, but the blind set is deliberately
+# shifted, so the overlap floor is lower. These are integrity gates, not
+# performance targets.
+gates:
+  max_univariate_f1: 0.85
+  max_shuffled_label_roc_auc: 0.60
+  min_overlap_coefficient: 0.20
+  min_scenario_devices: 20
+  min_scenario_requests: 40
+  max_scenario_request_share: 0.30
+  legitimate_decline_rate:
+    fail_below: 0.05
+    warn_below: 0.10
+    warn_above: 0.30
+    fail_above: 0.40
+  ordinary_legitimate_scenarios:
+    - cold_start_wave
+    - dormant_returning_customer
+    - multi_session_comparison_shopper
+    - event_venue_burst
+    - mobile_network_churn

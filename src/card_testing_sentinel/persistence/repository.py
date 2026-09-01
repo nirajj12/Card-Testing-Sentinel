@@ -4,7 +4,13 @@ from __future__ import annotations
 
 from typing import Protocol
 
-from card_testing_sentinel.persistence.models import StoredEvent, StoredRequest
+from card_testing_sentinel.persistence.models import (
+    StoredEvent,
+    StoredGatewayOrder,
+    StoredGatewayPayment,
+    StoredRequest,
+    StoredWebhookDelivery,
+)
 
 
 class StateRepository(Protocol):
@@ -28,11 +34,41 @@ class StateRepository(Protocol):
 
     def save_event(self, event: StoredEvent) -> None: ...
 
+    def get_gateway_order(
+        self, sentinel_request_id: str
+    ) -> StoredGatewayOrder | None: ...
+
+    def get_gateway_order_by_id(
+        self, razorpay_order_id: str
+    ) -> StoredGatewayOrder | None: ...
+
+    def save_gateway_order(self, order: StoredGatewayOrder) -> None: ...
+
+    def mark_gateway_checkout_opened(self, razorpay_order_id: str) -> None: ...
+
+    def update_gateway_order_status(
+        self, razorpay_order_id: str, status: str
+    ) -> None: ...
+
+    def get_gateway_payment(
+        self, razorpay_payment_id: str
+    ) -> StoredGatewayPayment | None: ...
+
+    def save_gateway_payment(self, payment: StoredGatewayPayment) -> None: ...
+
+    def gateway_payments_for_order(
+        self, razorpay_order_id: str
+    ) -> list[StoredGatewayPayment]: ...
+
+    def get_webhook_delivery(self, event_id: str) -> StoredWebhookDelivery | None: ...
+
+    def save_webhook_delivery(self, delivery: StoredWebhookDelivery) -> None: ...
+
+    def recent_activity(self, limit: int) -> list[dict]: ...
+
     def requests_in_order(self) -> list[StoredRequest]: ...
 
     def events_in_order(self) -> list[StoredEvent]: ...
-
-    def latest_order(self) -> tuple[str, int] | None: ...
 
     def decisions(self, limit: int) -> list[dict]: ...
 

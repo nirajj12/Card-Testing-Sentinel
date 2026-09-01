@@ -1,39 +1,552 @@
-seed: 20260825
-folds: 5
-probability_tolerance: 1.0e-12
-ece_bins: 10
-calibration_device_fraction: 0.20
-calibration_minimum_positive_devices: 50
-candidate_grids:
-  logistic_regression:
-    C: [0.1, 1.0, 10.0]
-    max_iter: 500
-  hist_gradient_boosting:
-    - learning_rate: 0.05
-      max_leaf_nodes: 15
-      max_iter: 120
-      l2_regularization: 1.0
-    - learning_rate: 0.08
-      max_leaf_nodes: 15
-      max_iter: 160
-      l2_regularization: 2.0
-    - learning_rate: 0.05
-      max_leaf_nodes: 31
-      max_iter: 160
-      l2_regularization: 4.0
-calibration_methods: [none, sigmoid, isotonic]
-diagnostic_review_rates: [0.01, 0.03, 0.05]
-synthetic_data:
-  dataset_name: development-synthetic-1
-  seed: 20260825
-  start_timestamp: 2026-01-01T00:00:00+00:00
-  currency: USD
-  validation_fraction: 0.20
-  device_counts:
-    normal_standard: 6000
-    normal_bad_luck: 500
-    flash_standard: 1500
-    flash_hard_retry: 500
-    attack_burst: 600
-    attack_evasive: 450
-    attack_patient: 450
+# Synthetic development dataset (Dataset V2).
+#
+# Everything the generator needs lives here so a config hash + seed fully
+# determines the output. Behaviour is described by LATENT PARAMETER RANGES,
+# never by the label: a scenario declares how fast an actor tends to retry,
+# how often its payment instruments are valid, how much it rotates identity,
+# and the observable events emerge from those draws. The ranges deliberately
+# overlap between legitimate and attack scenarios -- a genuinely unlucky
+# shopper and a patient card tester are supposed to be hard to separate from
+# one attempt.
+
+dataset_name: development-v2
+generator_version: dataset-v2-1
+currency: INR
+
+# ── merchants ────────────────────────────────────────────────────────────
+# A merchant kind describes a business, not a risk level. Attackers target
+# ordinary merchants, so merchant kind must never imply the label.
+#
+# `base_success_rate` is the gateway's approval rate for a KNOWN-GOOD
+# instrument. Unusable cards (`method_validity`) and transient failures
+# (`network_instability`) are modelled separately and must not be folded in
+# here, or failure gets counted twice.
+merchants:
+  seed: 4242001
+  count: 14
+  # One shared calendar for every merchant, spanning both split windows.
+  # `campaign_share` is roughly the fraction of these days a merchant is
+  # running a sale, so campaigns are a property of the merchant and the
+  # clock -- not of whoever happens to be paying.
+  campaign_calendar:
+    start: 2026-01-01T00:00:00+00:00
+    days: 400
+    window_days: [1.5, 5.0]
+  kinds:
+    small_ecommerce:
+      weight: 4
+      typical_amount: [700, 2600]
+      amount_spread: [0.55, 0.85]
+      base_success_rate: [0.94, 0.98]
+      campaign_share: [0.03, 0.10]
+      returning_customer_rate: [0.25, 0.45]
+      shared_ip_pressure: [0.05, 0.15]
+    digital_goods:
+      weight: 3
+      typical_amount: [60, 340]
+      amount_spread: [0.90, 1.35]
+      base_success_rate: [0.94, 0.98]
+      campaign_share: [0.05, 0.15]
+      returning_customer_rate: [0.35, 0.60]
+      shared_ip_pressure: [0.08, 0.20]
+    subscription:
+      weight: 2
+      typical_amount: [199, 899]
+      amount_spread: [0.30, 0.50]
+      base_success_rate: [0.92, 0.97]
+      campaign_share: [0.0, 0.02]
+      returning_customer_rate: [0.55, 0.80]
+      shared_ip_pressure: [0.05, 0.12]
+    electronics:
+      weight: 2
+      typical_amount: [6000, 42000]
+      amount_spread: [0.70, 1.05]
+      base_success_rate: [0.90, 0.96]
+      campaign_share: [0.06, 0.18]
+      returning_customer_rate: [0.10, 0.25]
+      shared_ip_pressure: [0.04, 0.12]
+    education:
+      weight: 2
+      typical_amount: [900, 14000]
+      amount_spread: [0.80, 1.20]
+      base_success_rate: [0.92, 0.97]
+      campaign_share: [0.02, 0.08]
+      returning_customer_rate: [0.15, 0.35]
+      shared_ip_pressure: [0.25, 0.55]   # campus / institutional networks
+    flash_sale:
+      weight: 2
+      typical_amount: [400, 2200]
+      amount_spread: [0.60, 0.95]
+      base_success_rate: [0.87, 0.94]    # gateway strain during drops
+      campaign_share: [0.30, 0.55]
+      returning_customer_rate: [0.20, 0.40]
+      shared_ip_pressure: [0.20, 0.45]
+    travel:
+      weight: 1
+      typical_amount: [3500, 28000]
+      amount_spread: [0.75, 1.10]
+      base_success_rate: [0.89, 0.95]
+      campaign_share: [0.04, 0.12]
+      returning_customer_rate: [0.08, 0.20]
+      shared_ip_pressure: [0.05, 0.15]
+
+# ── latent behaviour defaults ────────────────────────────────────────────
+# Every scenario inherits these and overrides only what makes it distinct.
+# All values are [low, high] ranges drawn uniformly per actor.
+scenario_defaults:
+  attempts: [1, 4]
+  # base inter-attempt gap in seconds; the actual gap is lognormal around a
+  # value drawn from this range, so tails overlap heavily across scenarios.
+  gap_seconds: [40, 900]
+  gap_spread: [0.5, 1.1]
+  # probability that a freshly picked payment instrument is actually usable.
+  # This is the single biggest driver of decline behaviour and it is drawn
+  # from overlapping ranges -- an unlucky shopper and a tester can land on
+  # the same value.
+  method_validity: [0.75, 0.95]
+  # transient gateway/network failure independent of the instrument
+  network_instability: [0.01, 0.05]
+  session_rotation: [0.02, 0.12]
+  ip_rotation: [0.02, 0.10]
+  instrument_reuse: [0.75, 0.95]
+  checkout_completion: [0.70, 0.95]
+  continue_after_success: [0.05, 0.25]
+  device_pool: [1, 1]
+  customer_pool: [1, 1]
+  ip_pool: private            # private | shared
+  amount_style_weights:
+    merchant_typical: 0.80
+    repeat: 0.14
+    low: 0.03
+    varied: 0.03
+  phases: []                  # optional per-phase parameter overrides
+
+# ── scenarios ────────────────────────────────────────────────────────────
+scenarios:
+
+  # -- legitimate ---------------------------------------------------------
+
+  returning_customer:
+    population: legitimate
+    weight: 38
+    attempts: [1, 4]
+    gap_seconds: [1800, 172800]
+    method_validity: [0.93, 0.99]
+    instrument_reuse: [0.85, 0.97]
+    checkout_completion: [0.88, 0.98]
+    continue_after_success: [0.20, 0.45]
+    customer_pool: [1, 1]
+
+  cold_start_customer:
+    population: legitimate
+    weight: 30
+    attempts: [1, 2]
+    gap_seconds: [60, 600]
+    method_validity: [0.86, 0.97]
+    checkout_completion: [0.60, 0.90]
+
+  failure_then_retry:
+    population: legitimate
+    weight: 9
+    attempts: [2, 4]
+    gap_seconds: [30, 420]
+    gap_spread: [0.4, 0.9]
+    method_validity: [0.62, 0.88]
+    instrument_reuse: [0.40, 0.72]
+    checkout_completion: [0.75, 0.95]
+
+  repeated_genuine_failures:
+    population: legitimate
+    weight: 4
+    attempts: [3, 7]
+    gap_seconds: [25, 900]
+    gap_spread: [0.6, 1.2]
+    method_validity: [0.18, 0.48]     # a genuinely failing card
+    network_instability: [0.05, 0.18]
+    instrument_reuse: [0.45, 0.80]
+    session_rotation: [0.05, 0.25]
+    ip_rotation: [0.10, 0.35]         # switches network hoping it helps
+    checkout_completion: [0.70, 0.92]
+
+  network_retry_storm:
+    population: legitimate
+    weight: 4
+    attempts: [3, 8]
+    gap_seconds: [4, 45]              # seconds apart, like a fast attacker
+    gap_spread: [0.3, 0.7]
+    method_validity: [0.70, 0.94]
+    network_instability: [0.16, 0.36] # the failures are the network, not the card
+    instrument_reuse: [0.88, 0.99]
+    session_rotation: [0.10, 0.35]
+    checkout_completion: [0.75, 0.95]
+
+  shared_household_device:
+    population: legitimate
+    weight: 10
+    attempts: [3, 9]
+    gap_seconds: [3600, 259200]
+    method_validity: [0.90, 0.98]
+    instrument_reuse: [0.25, 0.55]    # different family members, different cards
+    session_rotation: [0.35, 0.70]
+    customer_pool: [2, 4]
+    continue_after_success: [0.55, 0.85]
+    checkout_completion: [0.85, 0.97]
+
+  shared_network_customer:
+    population: legitimate
+    weight: 13
+    attempts: [1, 4]
+    gap_seconds: [300, 86400]
+    method_validity: [0.86, 0.97]
+    ip_pool: shared                   # campus / office egress
+    checkout_completion: [0.82, 0.96]
+
+  flash_sale_customer:
+    population: legitimate
+    weight: 6
+    attempts: [2, 7]
+    gap_seconds: [6, 90]
+    gap_spread: [0.3, 0.8]
+    method_validity: [0.80, 0.95]
+    network_instability: [0.10, 0.26]
+    session_rotation: [0.08, 0.30]
+    ip_pool: shared
+    merchant_kinds: [flash_sale]
+    prefers_campaign: true
+    checkout_completion: [0.70, 0.92]
+    amount_style_weights:
+      merchant_typical: 0.62
+      repeat: 0.32
+      low: 0.03
+      varied: 0.03
+
+  network_switch_customer:
+    population: legitimate
+    weight: 4
+    attempts: [2, 5]
+    gap_seconds: [20, 300]
+    method_validity: [0.80, 0.95]
+    ip_rotation: [0.40, 0.75]         # wifi -> mobile data mid-session
+    network_instability: [0.08, 0.22]
+    checkout_completion: [0.78, 0.94]
+
+  payment_method_change:
+    population: legitimate
+    weight: 5
+    attempts: [2, 5]
+    gap_seconds: [40, 900]
+    method_validity: [0.50, 0.85]
+    instrument_reuse: [0.20, 0.50]    # genuinely tries another card
+    checkout_completion: [0.80, 0.95]
+
+  subscription_retry:
+    population: legitimate
+    weight: 3
+    attempts: [2, 6]
+    gap_seconds: [43200, 259200]      # daily-ish dunning retries
+    gap_spread: [0.2, 0.5]
+    method_validity: [0.48, 0.80]
+    instrument_reuse: [0.80, 0.97]
+    continue_after_success: [0.02, 0.10]
+    checkout_completion: [0.85, 0.98]
+
+  micro_payment_customer:
+    population: legitimate
+    weight: 8
+    attempts: [2, 8]
+    gap_seconds: [120, 7200]
+    method_validity: [0.86, 0.97]
+    continue_after_success: [0.60, 0.90]
+    checkout_completion: [0.85, 0.97]
+    amount_style_weights:             # tips / top-ups: genuinely tiny
+      merchant_typical: 0.20
+      repeat: 0.22
+      low: 0.55
+      varied: 0.03
+
+  # -- attack -------------------------------------------------------------
+
+  fast_burst:
+    population: attack
+    weight: 4                         # deliberately NOT the dominant family
+    attempts: [6, 14]
+    gap_seconds: [3, 30]
+    gap_spread: [0.3, 0.8]
+    method_validity: [0.03, 0.18]
+    instrument_reuse: [0.02, 0.20]
+    session_rotation: [0.10, 0.40]
+    ip_rotation: [0.10, 0.40]
+    continue_after_success: [0.75, 0.95]
+    checkout_completion: [0.02, 0.20]
+    amount_style_weights:
+      merchant_typical: 0.25
+      repeat: 0.25
+      low: 0.45
+      varied: 0.05
+
+  slow_drip:
+    population: attack
+    weight: 5
+    attempts: [4, 10]
+    gap_seconds: [600, 9000]
+    gap_spread: [0.5, 1.1]
+    method_validity: [0.05, 0.28]
+    instrument_reuse: [0.15, 0.45]
+    session_rotation: [0.25, 0.60]
+    ip_rotation: [0.15, 0.45]
+    continue_after_success: [0.70, 0.92]
+    checkout_completion: [0.05, 0.30]
+    amount_style_weights:
+      merchant_typical: 0.45
+      repeat: 0.20
+      low: 0.30
+      varied: 0.05
+
+  patient_tester:
+    population: attack
+    weight: 5
+    attempts: [3, 8]
+    gap_seconds: [14400, 172800]      # overlaps subscription_retry timing
+    gap_spread: [0.4, 0.9]
+    method_validity: [0.08, 0.32]
+    instrument_reuse: [0.20, 0.55]
+    session_rotation: [0.55, 0.90]
+    ip_rotation: [0.30, 0.65]
+    continue_after_success: [0.60, 0.90]
+    checkout_completion: [0.05, 0.35]
+    amount_style_weights:
+      merchant_typical: 0.55
+      repeat: 0.18
+      low: 0.22
+      varied: 0.05
+
+  session_churn:
+    population: attack
+    weight: 4
+    attempts: [5, 12]
+    gap_seconds: [60, 1200]
+    method_validity: [0.06, 0.30]
+    instrument_reuse: [0.10, 0.40]
+    session_rotation: [0.70, 0.95]
+    ip_rotation: [0.08, 0.30]
+    continue_after_success: [0.70, 0.92]
+    checkout_completion: [0.03, 0.25]
+
+  bounded_ip_rotation:
+    population: attack
+    weight: 4
+    attempts: [4, 11]
+    gap_seconds: [45, 1800]
+    method_validity: [0.05, 0.26]
+    instrument_reuse: [0.10, 0.40]
+    ip_rotation: [0.45, 0.80]         # bounded: draws from a small owned pool
+    session_rotation: [0.20, 0.55]
+    continue_after_success: [0.70, 0.92]
+    checkout_completion: [0.03, 0.25]
+
+  merchant_typical_amounts:
+    population: attack
+    weight: 4
+    attempts: [4, 10]
+    gap_seconds: [90, 3600]
+    method_validity: [0.10, 0.35]     # overlaps repeated_genuine_failures
+    instrument_reuse: [0.20, 0.50]
+    session_rotation: [0.20, 0.55]
+    ip_rotation: [0.15, 0.45]
+    continue_after_success: [0.60, 0.88]
+    checkout_completion: [0.10, 0.40]
+    amount_style_weights:             # blends into normal merchant traffic
+      merchant_typical: 0.86
+      repeat: 0.10
+      low: 0.0
+      varied: 0.04
+
+  low_and_slow:
+    population: attack
+    weight: 5
+    attempts: [3, 7]
+    gap_seconds: [1200, 21600]        # broadly evasive cadence, chosen with
+    gap_spread: [0.5, 1.2]            # no reference to any policy threshold
+    method_validity: [0.12, 0.38]
+    instrument_reuse: [0.35, 0.70]
+    session_rotation: [0.15, 0.45]
+    ip_rotation: [0.10, 0.35]
+    continue_after_success: [0.55, 0.85]
+    checkout_completion: [0.15, 0.45]
+    amount_style_weights:
+      merchant_typical: 0.62
+      repeat: 0.20
+      low: 0.14
+      varied: 0.04
+
+  warm_up_then_test:
+    population: attack
+    weight: 4
+    attempts: [5, 12]
+    gap_seconds: [300, 5400]
+    method_validity: [0.80, 0.95]     # phase 1 looks like a real customer
+    instrument_reuse: [0.80, 0.95]
+    checkout_completion: [0.70, 0.92]
+    continue_after_success: [0.85, 0.98]
+    phases:                           # after the warm-up the behaviour shifts
+      - after_fraction: 0.35
+        method_validity: [0.05, 0.25]
+        instrument_reuse: [0.05, 0.30]
+        gap_seconds: [20, 600]
+        session_rotation: [0.30, 0.70]
+        checkout_completion: [0.02, 0.20]
+        amount_style_weights:
+          merchant_typical: 0.35
+          repeat: 0.20
+          low: 0.40
+          varied: 0.05
+
+  flash_sale_camouflage:
+    population: attack
+    weight: 4
+    attempts: [4, 11]
+    gap_seconds: [8, 240]             # indistinguishable cadence from the
+    gap_spread: [0.3, 0.8]            # legitimate flash-sale crowd
+    method_validity: [0.08, 0.32]
+    network_instability: [0.20, 0.45]
+    instrument_reuse: [0.15, 0.45]
+    session_rotation: [0.15, 0.45]
+    ip_pool: shared
+    continue_after_success: [0.65, 0.90]
+    checkout_completion: [0.05, 0.30]
+    merchant_kinds: [flash_sale]      # this family only attacks sale traffic
+    prefers_campaign: true
+
+  device_rotation_campaign:
+    population: attack
+    weight: 4
+    attempts: [6, 16]
+    gap_seconds: [30, 900]
+    method_validity: [0.05, 0.25]
+    instrument_reuse: [0.08, 0.35]
+    session_rotation: [0.30, 0.70]
+    ip_rotation: [0.20, 0.50]
+    device_pool: [2, 5]               # bounded, not an infinite device supply
+    continue_after_success: [0.75, 0.95]
+    checkout_completion: [0.02, 0.20]
+
+# ── instruments / identity pools ─────────────────────────────────────────
+instruments:
+  # A small last4 space so collisions happen naturally: last4 is a weak,
+  # colliding hint, never an identity.
+  last4_pool: 2200
+  networks: [visa, mastercard, rupay, amex, diners, other]
+  network_weights: [0.42, 0.28, 0.20, 0.05, 0.02, 0.03]
+  types: [credit, debit, prepaid, unknown]
+  type_weights: [0.34, 0.52, 0.10, 0.04]
+  issuers: 24
+  international_rate: 0.07
+  methods: [card, upi, netbanking, wallet]
+  method_weights: [0.62, 0.24, 0.08, 0.06]
+
+identity:
+  shared_ip_pool: 90          # campus / office / CGNAT egress addresses
+  outcome_lag_seconds: [1, 6]
+  checkout_lag_seconds: [8, 240]
+
+# ── splits ───────────────────────────────────────────────────────────────
+# Train and validation differ by device set, seed AND time window. The final
+# blind set is NOT produced here.
+splits:
+  train:
+    seed: 20260101
+    devices: 6000
+    # Deliberate positive enrichment for model development: 10 attack
+    # families need enough examples each. This is a SAMPLING CHOICE, not an
+    # estimate of how common card testing is in real merchant traffic.
+    benchmark_attack_fraction: 0.14
+    start: 2026-01-05T00:00:00+00:00
+    days: 45
+  validation:
+    seed: 771103
+    devices: 2200
+    benchmark_attack_fraction: 0.17
+    # Validation arrivals begin this many days after the LAST training
+    # event, so long-horizon training actors cannot bleed into the
+    # validation window. The absolute start is resolved at generation time
+    # and recorded in the manifest.
+    starts_after_train_gap_days: 3
+    days: 30
+    # a mild distribution shift so validation is not just "more train"
+    shift:
+      gap_multiplier: 1.25
+      amount_multiplier: 1.15
+      attempts_bonus: 1
+
+# ── validation gates ─────────────────────────────────────────────────────
+gates:
+  max_univariate_f1: 0.85
+  max_shuffled_label_roc_auc: 0.60
+  min_overlap_coefficient: 0.25
+  min_scenario_devices: 20
+  min_scenario_requests: 40
+  # Aggregate attempt-level decline rate for the LEGITIMATE population. This
+  # is a plausibility band for this synthetic benchmark, not an industry
+  # claim. Outside the outer band the mixture is wrong and generation fails;
+  # inside the outer band but outside the comfortable band it only warns.
+  # The aggregate runs above a real merchant's book on purpose: retry-heavy
+  # legitimate scenarios are over-represented to stress false positives, and
+  # they make more attempts each. `ordinary_legitimate_scenarios` below is
+  # reported separately and is the figure that should look realistic.
+  legitimate_decline_rate:
+    fail_below: 0.05
+    warn_below: 0.10
+    warn_above: 0.28
+    fail_above: 0.35
+  ordinary_legitimate_scenarios:
+    - returning_customer
+    - cold_start_customer
+    - shared_household_device
+    - shared_network_customer
+    - micro_payment_customer
+  # No single scenario may account for more than this share of its own
+  # population's requests, or one behaviour silently becomes the benchmark.
+  max_scenario_request_share: 0.30
+
+# ── model training (Phase 4) ─────────────────────────────────────────────
+# Deliberately small: the question is "does ML beat rules and counters on
+# this benchmark", not "which of forty hyperparameter settings wins".
+# Selection happens on TRAIN out-of-fold predictions only; the validation
+# split is scored once, afterwards.
+training:
+  seed: 20260401
+  folds: 5
+  # How much device-weighted PR-AUC a calibrator may cost before it is
+  # rejected, however good its Brier score looks.
+  pr_auc_tolerance: 0.005
+  candidate_grids:
+    logistic_regression:
+      C: [0.1, 1.0, 10.0]
+      max_iter: 1000
+    hist_gradient_boosting:
+      - learning_rate: 0.05
+        max_leaf_nodes: 15
+        max_iter: 200
+        l2_regularization: 1.0
+      - learning_rate: 0.08
+        max_leaf_nodes: 31
+        max_iter: 160
+        l2_regularization: 2.0
+      - learning_rate: 0.05
+        max_leaf_nodes: 31
+        max_iter: 250
+        l2_regularization: 5.0
+
+# ── validation evaluation (Phase 4) ──────────────────────────────────────
+# Every sweep value is reported; nothing is cherry-picked after the fact.
+evaluation:
+  request_count_thresholds: [2, 3, 4, 5, 6]
+  request_count_24h_thresholds: [3, 4, 5, 6, 8]
+  rule_score_thresholds: [2, 3, 4, 5, 6]
+  risk_thresholds: [0.3, 0.4, 0.5, 0.6, 0.7, 0.8]
+  combined_risk_thresholds: [0.5, 0.6, 0.7]
+  combined_rule_thresholds: [4, 5]
+  # A provisional flag threshold used only to make the per-scenario and
+  # ablation tables comparable. NOT a product operating point -- the policy
+  # phase selects those under a false-friction budget.
+  reporting_threshold: 0.6

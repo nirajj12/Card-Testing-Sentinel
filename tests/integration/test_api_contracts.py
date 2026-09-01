@@ -12,11 +12,15 @@ def test_valid_precheck_safe_schema(client):
     forbidden = {
         "features",
         "card_reference",
+        "card_bin",
         "ip_reference",
         "raw_probability",
         "threshold",
     }
     assert forbidden.isdisjoint(body)
+    assert body["model_status"] == "ready"
+    assert body["decision_basis"] == "model_and_rules"
+    assert 0.0 <= body["risk_score"] <= 1.0
 
 
 def test_missing_extra_sensitive_and_client_feature_fields_rejected(client):
@@ -33,6 +37,9 @@ def test_missing_extra_sensitive_and_client_feature_fields_rejected(client):
         {**base, "cvv": "123"},
         {**base, "expiry": "12/30"},
         {**base, "authorization_result": "declined"},
+        {**base, "card_reference": "tok-1"},
+        {**base, "card_bin": "410000"},
+        {**base, "payment_method": "card"},
     ]
     for payload in cases:
         assert client.post("/api/precheck", json=payload).status_code == 422
@@ -84,7 +91,7 @@ def test_outcome_idempotency_conflict_and_past_decision_immutable(client):
     assert retry.json()["idempotent_replay"] is True
     conflict = client.post(
         "/api/outcomes",
-        json={**payload, "authorization_result": "approved", "decline_reason": None},
+        json={**payload, "authorization_result": "approved", "failure_reason": None},
     )
     assert conflict.status_code == 409
     saved = client.get("/api/runtime/decisions").json()["items"][0]

@@ -1,0 +1,5 @@
+segment,group,requests_7d,failures_7d,active_day_count_7d,failures_per_active_day_7d,median_gap_between_attempts,gap_variability,customer_id_present,customer_distinct_devices_7d,customer_failures_7d,customer_successful_checkouts_30d,customer_age_seconds,rows
+customer_absent,attack,5.0,3.0,2.0,1.732,524.325,0.753,0.0,0.0,0.0,0.0,0.0,7036
+customer_absent,legitimate,2.0,0.0,1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,9469
+customer_present,attack,5.0,3.0,2.0,1.2,1470.042,0.835,1.0,1.0,3.0,0.0,60075.1,7392
+customer_present,legitimate,2.0,0.0,1.0,0.0,0.0,0.0,1.0,1.0,0.0,0.0,140617.815,16620

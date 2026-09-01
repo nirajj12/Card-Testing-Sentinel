@@ -42,33 +42,33 @@ def test_risk_bands_are_independent_of_any_private_policy_threshold():
 
 def test_safe_evidence_selects_only_the_allowlist():
     snapshot = {
-        "prior_attempts_24h": 3,
-        "distinct_cards_24h": 2,
-        "prior_decline_streak": 1,
+        "requests_5m": 3,
+        "recent_failures_24h": 2,
+        "decline_streak": 1,
         "sessions_24h": 1,
         "ip_changes_24h": 0,
-        "prior_successful_checkouts": 4,
+        "successful_checkouts": 4,
         # everything below must never appear in the result
         "device_age_seconds": 12345,
-        "amount_delta_from_previous": 5.0,
+        "amount_delta": 5.0,
         "campaign_active": True,
         "current_amount": 999.0,
     }
     result = safe_evidence(snapshot)
     assert set(result) == set(SAFE_EVIDENCE_FEATURES)
-    assert result["prior_attempts_24h"] == 3
+    assert result["requests_5m"] == 3
     assert "device_age_seconds" not in result
-    assert "amount_delta_from_previous" not in result
+    assert "amount_delta" not in result
 
 
-def test_safe_evidence_allowlist_matches_stage4_bullet_list_exactly():
+def test_safe_evidence_allowlist_is_exactly_six_merchant_visible_signals():
     assert SAFE_EVIDENCE_FEATURES == (
-        "prior_attempts_24h",
-        "distinct_cards_24h",
-        "prior_decline_streak",
+        "requests_5m",
+        "recent_failures_24h",
+        "decline_streak",
         "sessions_24h",
         "ip_changes_24h",
-        "prior_successful_checkouts",
+        "successful_checkouts",
     )
 
 
@@ -78,9 +78,9 @@ def test_safe_evidence_returns_empty_dict_for_missing_or_empty_snapshot():
 
 
 def test_safe_evidence_never_fabricates_a_missing_feature():
-    partial = {"prior_attempts_24h": 1}
+    partial = {"requests_5m": 1}
     result = safe_evidence(partial)
-    assert result == {"prior_attempts_24h": 1}
+    assert result == {"requests_5m": 1}
 
 
 def test_build_projection_contains_only_allowlisted_keys():
@@ -95,7 +95,7 @@ def test_build_projection_contains_only_allowlisted_keys():
         authorization="sent",
         outcome_status="declined",
         checkout_status=None,
-        evidence={"prior_attempts_24h": 2},
+        evidence={"requests_5m": 2},
         protected_reference="hmac_device_ab12",
     )
     assert set(projection) == {

@@ -21,21 +21,22 @@ _RISK_BANDS = (
 )
 
 #: The only causal snapshot fields ever allowed to leave the backend for
-#: operations display. Matches the Stage 4 allowlist exactly: recent
-#: attempt count, recent distinct-card count, prior decline streak, session
-#: count, IP-change count, prior successful checkout count.
+#: operations display: recent request count, recent verified failures,
+#: decline streak, session count, IP-change count, prior successful checkouts.
 SAFE_EVIDENCE_FEATURES: tuple[str, ...] = (
-    "prior_attempts_24h",
-    "distinct_cards_24h",
-    "prior_decline_streak",
+    "requests_5m",
+    "recent_failures_24h",
+    "decline_streak",
     "sessions_24h",
     "ip_changes_24h",
-    "prior_successful_checkouts",
+    "successful_checkouts",
 )
 
 
-def risk_band(risk_score: float) -> str:
+def risk_band(risk_score: float | None) -> str:
     """Bucket a risk score into a fixed, coarse, non-confidential band."""
+    if risk_score is None:
+        return "unavailable"
     for threshold, label in _RISK_BANDS:
         if risk_score < threshold:
             return label

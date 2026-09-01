@@ -1,0 +1,16 @@
+left,right,spearman
+seconds_since_last_request,seconds_since_last_payment,0.9997
+requests_24h,prior_payments_24h,0.9991
+distinct_card_last4_7d,distinct_card_networks_7d,0.9924
+failures_7d,failures_per_active_day_7d,0.9809
+customer_id_present,customer_distinct_devices_7d,0.9716
+recent_failures_24h,failure_ratio_24h,0.9551
+requests_24h,ip_rotation_ratio_24h,-0.9411
+ip_rotation_ratio_24h,prior_payments_24h,-0.9401
+requests_5m,requests_per_ip_5m,0.924
+requests_24h,amount_variation_24h,0.8949
+prior_payments_24h,amount_variation_24h,0.8942
+successful_checkouts_30d,seconds_since_last_success,0.884
+prior_payments_24h,recent_failures_24h,0.8632
+requests_24h,recent_failures_24h,0.8626
+recent_failures_24h,failures_per_active_day_7d,0.8601

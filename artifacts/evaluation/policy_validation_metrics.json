@@ -1,0 +1,150 @@
+{
+  "aggregate": {
+    "attack_block_recall": 0.5466,
+    "attack_devices": 397,
+    "attack_never_detected": 71,
+    "attack_review_or_higher_recall": 0.8212,
+    "legitimate_block_rate": 0.0051,
+    "legitimate_blocked_devices": 9,
+    "legitimate_devices": 1769,
+    "legitimate_review_or_higher_rate": 0.0452,
+    "legitimate_reviewed_devices": 80,
+    "median_first_block_attempt": 5.0,
+    "median_first_review_attempt": 4.0,
+    "p90_first_block_attempt": 7.0,
+    "p90_first_review_attempt": 5.0
+  },
+  "blind_evaluated": false,
+  "campaign_comparison": [
+    {
+      "attack_block_recall": 0.5567,
+      "attack_devices": 397,
+      "attack_never_detected": 71,
+      "attack_review_or_higher_recall": 0.8212,
+      "block_increment": 0.0,
+      "flash_sale_customer_block_rate": 0.0385,
+      "flash_sale_customer_review_rate": 0.141,
+      "legitimate_block_rate": 0.0062,
+      "legitimate_blocked_devices": 11,
+      "legitimate_devices": 1769,
+      "legitimate_review_or_higher_rate": 0.0464,
+      "legitimate_reviewed_devices": 82,
+      "median_first_block_attempt": 5.0,
+      "median_first_review_attempt": 4.0,
+      "p90_first_block_attempt": 7.0,
+      "p90_first_review_attempt": 5.0,
+      "review_increment": 0.0,
+      "variant": "campaign_agnostic"
+    },
+    {
+      "attack_block_recall": 0.5466,
+      "attack_devices": 397,
+      "attack_never_detected": 71,
+      "attack_review_or_higher_recall": 0.8212,
+      "block_increment": 0.02,
+      "flash_sale_customer_block_rate": 0.0128,
+      "flash_sale_customer_review_rate": 0.1282,
+      "legitimate_block_rate": 0.0051,
+      "legitimate_blocked_devices": 9,
+      "legitimate_devices": 1769,
+      "legitimate_review_or_higher_rate": 0.0452,
+      "legitimate_reviewed_devices": 80,
+      "median_first_block_attempt": 5.0,
+      "median_first_review_attempt": 4.0,
+      "p90_first_block_attempt": 7.0,
+      "p90_first_review_attempt": 5.0,
+      "review_increment": 0.05,
+      "variant": "campaign_aware_light"
+    },
+    {
+      "attack_block_recall": 0.5113,
+      "attack_devices": 397,
+      "attack_never_detected": 74,
+      "attack_review_or_higher_recall": 0.8136,
+      "block_increment": 0.05,
+      "flash_sale_customer_block_rate": 0.0,
+      "flash_sale_customer_review_rate": 0.1026,
+      "legitimate_block_rate": 0.0045,
+      "legitimate_blocked_devices": 8,
+      "legitimate_devices": 1769,
+      "legitimate_review_or_higher_rate": 0.0435,
+      "legitimate_reviewed_devices": 77,
+      "median_first_block_attempt": 5.0,
+      "median_first_review_attempt": 4.0,
+      "p90_first_block_attempt": 8.0,
+      "p90_first_review_attempt": 5.800000000000011,
+      "review_increment": 0.1,
+      "variant": "campaign_aware_strong"
+    }
+  ],
+  "candidates_eligible": 116,
+  "candidates_evaluated": 630,
+  "constraints": {
+    "max_legitimate_block_rate": 0.006,
+    "max_legitimate_review_or_higher_rate": 0.06,
+    "max_scenario_block_rate": {
+      "cold_start_customer": 0.01,
+      "failure_then_retry": 0.03,
+      "flash_sale_customer": 0.04,
+      "network_retry_storm": 0.08,
+      "repeated_genuine_failures": 0.1,
+      "returning_customer": 0.005,
+      "shared_network_customer": 0.01,
+      "subscription_retry": 0.05
+    },
+    "max_scenario_review_rate": {
+      "cold_start_customer": 0.04,
+      "flash_sale_customer": 0.25,
+      "network_retry_storm": 0.35,
+      "repeated_genuine_failures": 0.6,
+      "returning_customer": 0.015
+    },
+    "min_attack_review_or_higher_recall": 0.7,
+    "min_review_to_block_ratio": 5.0
+  },
+  "cost_table": {
+    "cost_per_device": 1.8015,
+    "counts": {
+      "attack_allow": 71,
+      "attack_block": 217,
+      "attack_review": 109,
+      "legitimate_allow": 1689,
+      "legitimate_block": 9,
+      "legitimate_review": 71
+    },
+    "total_cost": 3902.0,
+    "units": "illustrative prototype units, not Razorpay economics",
+    "weights": {
+      "attack_allow": 25,
+      "attack_block": 0,
+      "attack_review": 8,
+      "legitimate_allow": 0,
+      "legitimate_block": 100,
+      "legitimate_review": 5
+    }
+  },
+  "prevalence_note": "benchmark prevalence is enriched; rates are per-population and per-scenario, which is what makes them comparable",
+  "ranking": [
+    "maximise attack review-or-higher recall",
+    "maximise attack block recall",
+    "minimise median first review attempt",
+    "minimise legitimate review-or-higher rate"
+  ],
+  "selected_policy": {
+    "block_elevated_count": 1,
+    "block_evidence": 2,
+    "block_threshold": 0.78,
+    "block_ttl_seconds": 3600,
+    "campaign_block_increment": 0.02,
+    "campaign_review_increment": 0.05,
+    "degraded_block_rule_score": 6,
+    "degraded_review_rule_score": 4,
+    "family": "evidence_gated",
+    "history_cap": 16,
+    "persistence_window_hours": 24,
+    "review_threshold": 0.6
+  },
+  "status": "validation_selected",
+  "validation_devices": 2166,
+  "validation_rows": 6042
+}

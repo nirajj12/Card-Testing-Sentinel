@@ -1,489 +1,552 @@
 {
-  "catalog": {
-    "burst_attacker": {
-      "attempts": 8,
-      "label": "Burst Card Testing"
-    },
-    "evasive_attacker": {
-      "attempts": 9,
-      "label": "Evasive Card Testing"
-    },
-    "flash_hard_retry": {
-      "attempts": 5,
-      "label": "Flash-Sale Hard Retry"
-    },
-    "flash_standard": {
-      "attempts": 3,
-      "label": "Flash Sale"
-    },
-    "normal_bad_luck": {
-      "attempts": 4,
-      "label": "Bad-Luck Retry"
-    },
-    "normal_customer": {
-      "attempts": 2,
-      "label": "Everyday Checkout"
-    },
-    "patient_attacker": {
-      "attempts": 9,
-      "label": "Patient Card Testing"
-    }
-  },
-  "note": "Deterministic scenario input fixtures (Stage 3). These are the exact raw-event shapes (identity suffixes, timing gaps, amounts, campaign flag, honest processor-outcome guess) SCENARIO_PLANS produces -- no randomness, no scenario label leaking into any field a fraud decision ever sees, and no expected decision recorded here. What each real run actually decides is left for the real FraudDetectionService to determine.",
   "plans": {
-    "burst_attacker": [
+    "normal_customer": [
       {
-        "amount": 2.0,
         "attempt": 1,
-        "authorization_result": "declined",
-        "campaign_active": false,
-        "card_suffix": "card1",
-        "decline_reason": "do_not_honor",
         "gap_seconds": 0,
+        "session_suffix": "session1",
         "ip_suffix": "ip1",
-        "session_suffix": "session1"
+        "amount": 2400.0,
+        "campaign_active": false,
+        "authorization_result": "declined",
+        "failure_reason": "generic_decline",
+        "outcome_card_last4": "4242",
+        "outcome_card_network": "visa"
       },
       {
-        "amount": 3.0,
         "attempt": 2,
-        "authorization_result": "declined",
-        "campaign_active": false,
-        "card_suffix": "card2",
-        "decline_reason": "do_not_honor",
-        "gap_seconds": 4,
+        "gap_seconds": 95,
+        "session_suffix": "session1",
         "ip_suffix": "ip1",
-        "session_suffix": "session1"
-      },
-      {
-        "amount": 2.0,
-        "attempt": 3,
-        "authorization_result": "declined",
+        "amount": 2400.0,
         "campaign_active": false,
-        "card_suffix": "card3",
-        "decline_reason": "do_not_honor",
-        "gap_seconds": 3,
-        "ip_suffix": "ip1",
-        "session_suffix": "session1"
-      },
-      {
-        "amount": 5.0,
-        "attempt": 4,
-        "authorization_result": "declined",
-        "campaign_active": false,
-        "card_suffix": "card4",
-        "decline_reason": "do_not_honor",
-        "gap_seconds": 4,
-        "ip_suffix": "ip2",
-        "session_suffix": "session1"
-      },
-      {
-        "amount": 2.0,
-        "attempt": 5,
-        "authorization_result": "declined",
-        "campaign_active": false,
-        "card_suffix": "card5",
-        "decline_reason": "do_not_honor",
-        "gap_seconds": 3,
-        "ip_suffix": "ip2",
-        "session_suffix": "session1"
-      },
-      {
-        "amount": 4.0,
-        "attempt": 6,
-        "authorization_result": "declined",
-        "campaign_active": false,
-        "card_suffix": "card6",
-        "decline_reason": "do_not_honor",
-        "gap_seconds": 4,
-        "ip_suffix": "ip2",
-        "session_suffix": "session1"
-      },
-      {
-        "amount": 2.0,
-        "attempt": 7,
-        "authorization_result": "declined",
-        "campaign_active": false,
-        "card_suffix": "card7",
-        "decline_reason": "do_not_honor",
-        "gap_seconds": 3,
-        "ip_suffix": "ip3",
-        "session_suffix": "session1"
-      },
-      {
-        "amount": 3.0,
-        "attempt": 8,
-        "authorization_result": "declined",
-        "campaign_active": false,
-        "card_suffix": "card8",
-        "decline_reason": "do_not_honor",
-        "gap_seconds": 4,
-        "ip_suffix": "ip3",
-        "session_suffix": "session1"
-      }
-    ],
-    "evasive_attacker": [
-      {
-        "amount": 5.0,
-        "attempt": 1,
-        "authorization_result": "declined",
-        "campaign_active": false,
-        "card_suffix": "card1",
-        "decline_reason": "do_not_honor",
-        "gap_seconds": 0,
-        "ip_suffix": "ip1",
-        "session_suffix": "session1"
-      },
-      {
-        "amount": 8.0,
-        "attempt": 2,
-        "authorization_result": "declined",
-        "campaign_active": false,
-        "card_suffix": "card1",
-        "decline_reason": "do_not_honor",
-        "gap_seconds": 40,
-        "ip_suffix": "ip1",
-        "session_suffix": "session1"
-      },
-      {
-        "amount": 4.0,
-        "attempt": 3,
-        "authorization_result": "declined",
-        "campaign_active": false,
-        "card_suffix": "card1",
-        "decline_reason": "do_not_honor",
-        "gap_seconds": 180,
-        "ip_suffix": "ip1",
-        "session_suffix": "session1"
-      },
-      {
-        "amount": 6.0,
-        "attempt": 4,
-        "authorization_result": "declined",
-        "campaign_active": false,
-        "card_suffix": "card2",
-        "decline_reason": "do_not_honor",
-        "gap_seconds": 45,
-        "ip_suffix": "ip2",
-        "session_suffix": "session2"
-      },
-      {
-        "amount": 9.0,
-        "attempt": 5,
-        "authorization_result": "declined",
-        "campaign_active": false,
-        "card_suffix": "card2",
-        "decline_reason": "do_not_honor",
-        "gap_seconds": 35,
-        "ip_suffix": "ip2",
-        "session_suffix": "session2"
-      },
-      {
-        "amount": 5.0,
-        "attempt": 6,
-        "authorization_result": "declined",
-        "campaign_active": false,
-        "card_suffix": "card2",
-        "decline_reason": "do_not_honor",
-        "gap_seconds": 190,
-        "ip_suffix": "ip2",
-        "session_suffix": "session2"
-      },
-      {
-        "amount": 7.0,
-        "attempt": 7,
-        "authorization_result": "declined",
-        "campaign_active": false,
-        "card_suffix": "card3",
-        "decline_reason": "do_not_honor",
-        "gap_seconds": 50,
-        "ip_suffix": "ip3",
-        "session_suffix": "session3"
-      },
-      {
-        "amount": 4.0,
-        "attempt": 8,
-        "authorization_result": "declined",
-        "campaign_active": false,
-        "card_suffix": "card3",
-        "decline_reason": "do_not_honor",
-        "gap_seconds": 40,
-        "ip_suffix": "ip3",
-        "session_suffix": "session3"
-      },
-      {
-        "amount": 6.0,
-        "attempt": 9,
-        "authorization_result": "declined",
-        "campaign_active": false,
-        "card_suffix": "card3",
-        "decline_reason": "do_not_honor",
-        "gap_seconds": 185,
-        "ip_suffix": "ip3",
-        "session_suffix": "session3"
-      }
-    ],
-    "flash_hard_retry": [
-      {
-        "amount": 1499.0,
-        "attempt": 1,
-        "authorization_result": "declined",
-        "campaign_active": true,
-        "card_suffix": "card1",
-        "decline_reason": "generic_decline",
-        "gap_seconds": 0,
-        "ip_suffix": "ip1",
-        "session_suffix": "session1"
-      },
-      {
-        "amount": 1499.0,
-        "attempt": 2,
-        "authorization_result": "declined",
-        "campaign_active": true,
-        "card_suffix": "card1",
-        "decline_reason": "generic_decline",
-        "gap_seconds": 22,
-        "ip_suffix": "ip1",
-        "session_suffix": "session1"
-      },
-      {
-        "amount": 1499.0,
-        "attempt": 3,
-        "authorization_result": "declined",
-        "campaign_active": true,
-        "card_suffix": "card1",
-        "decline_reason": "generic_decline",
-        "gap_seconds": 20,
-        "ip_suffix": "ip1",
-        "session_suffix": "session1"
-      },
-      {
-        "amount": 1499.0,
-        "attempt": 4,
-        "authorization_result": "declined",
-        "campaign_active": true,
-        "card_suffix": "card1",
-        "decline_reason": "generic_decline",
-        "gap_seconds": 25,
-        "ip_suffix": "ip1",
-        "session_suffix": "session1"
-      },
-      {
-        "amount": 1499.0,
-        "attempt": 5,
         "authorization_result": "approved",
-        "campaign_active": true,
-        "card_suffix": "card2",
-        "decline_reason": null,
-        "gap_seconds": 28,
-        "ip_suffix": "ip1",
-        "session_suffix": "session1"
-      }
-    ],
-    "flash_standard": [
-      {
-        "amount": 999.0,
-        "attempt": 1,
-        "authorization_result": "declined",
-        "campaign_active": true,
-        "card_suffix": "card1",
-        "decline_reason": "generic_decline",
-        "gap_seconds": 0,
-        "ip_suffix": "ip1",
-        "session_suffix": "session1"
-      },
-      {
-        "amount": 999.0,
-        "attempt": 2,
-        "authorization_result": "declined",
-        "campaign_active": true,
-        "card_suffix": "card1",
-        "decline_reason": "generic_decline",
-        "gap_seconds": 32,
-        "ip_suffix": "ip1",
-        "session_suffix": "session1"
-      },
-      {
-        "amount": 999.0,
-        "attempt": 3,
-        "authorization_result": "approved",
-        "campaign_active": true,
-        "card_suffix": "card1",
-        "decline_reason": null,
-        "gap_seconds": 30,
-        "ip_suffix": "ip1",
-        "session_suffix": "session1"
+        "failure_reason": null,
+        "outcome_card_last4": "4242",
+        "outcome_card_network": "visa"
       }
     ],
     "normal_bad_luck": [
       {
-        "amount": 1899.0,
         "attempt": 1,
-        "authorization_result": "declined",
-        "campaign_active": false,
-        "card_suffix": "card1",
-        "decline_reason": "do_not_honor",
         "gap_seconds": 0,
+        "session_suffix": "session1",
         "ip_suffix": "ip1",
-        "session_suffix": "session1"
+        "amount": 1899.0,
+        "campaign_active": false,
+        "authorization_result": "declined",
+        "failure_reason": "do_not_honor",
+        "outcome_card_last4": "4242",
+        "outcome_card_network": "visa"
       },
       {
-        "amount": 1899.0,
         "attempt": 2,
-        "authorization_result": "declined",
-        "campaign_active": false,
-        "card_suffix": "card1",
-        "decline_reason": "insufficient_funds",
         "gap_seconds": 55,
+        "session_suffix": "session1",
         "ip_suffix": "ip1",
-        "session_suffix": "session1"
-      },
-      {
         "amount": 1899.0,
-        "attempt": 3,
+        "campaign_active": false,
         "authorization_result": "declined",
-        "campaign_active": false,
-        "card_suffix": "card2",
-        "decline_reason": "generic_decline",
-        "gap_seconds": 60,
-        "ip_suffix": "ip2",
-        "session_suffix": "session1"
+        "failure_reason": "insufficient_funds",
+        "outcome_card_last4": "4242",
+        "outcome_card_network": "visa"
       },
       {
-        "amount": 1899.0,
-        "attempt": 4,
-        "authorization_result": "approved",
-        "campaign_active": false,
-        "card_suffix": "card2",
-        "decline_reason": null,
-        "gap_seconds": 50,
+        "attempt": 3,
+        "gap_seconds": 60,
+        "session_suffix": "session1",
         "ip_suffix": "ip2",
-        "session_suffix": "session1"
+        "amount": 1899.0,
+        "campaign_active": false,
+        "authorization_result": "declined",
+        "failure_reason": "generic_decline",
+        "outcome_card_last4": "8210",
+        "outcome_card_network": "visa"
+      },
+      {
+        "attempt": 4,
+        "gap_seconds": 50,
+        "session_suffix": "session1",
+        "ip_suffix": "ip2",
+        "amount": 1899.0,
+        "campaign_active": false,
+        "authorization_result": "approved",
+        "failure_reason": null,
+        "outcome_card_last4": "8210",
+        "outcome_card_network": "visa"
       }
     ],
-    "normal_customer": [
+    "flash_standard": [
       {
-        "amount": 2400.0,
         "attempt": 1,
-        "authorization_result": "declined",
-        "campaign_active": false,
-        "card_suffix": "card1",
-        "decline_reason": "generic_decline",
         "gap_seconds": 0,
+        "session_suffix": "session1",
         "ip_suffix": "ip1",
-        "session_suffix": "session1"
+        "amount": 999.0,
+        "campaign_active": true,
+        "authorization_result": "declined",
+        "failure_reason": "generic_decline",
+        "outcome_card_last4": "4242",
+        "outcome_card_network": "visa"
       },
       {
-        "amount": 2400.0,
         "attempt": 2,
-        "authorization_result": "approved",
-        "campaign_active": false,
-        "card_suffix": "card1",
-        "decline_reason": null,
-        "gap_seconds": 95,
+        "gap_seconds": 32,
+        "session_suffix": "session1",
         "ip_suffix": "ip1",
-        "session_suffix": "session1"
+        "amount": 999.0,
+        "campaign_active": true,
+        "authorization_result": "declined",
+        "failure_reason": "generic_decline",
+        "outcome_card_last4": "4242",
+        "outcome_card_network": "visa"
+      },
+      {
+        "attempt": 3,
+        "gap_seconds": 30,
+        "session_suffix": "session1",
+        "ip_suffix": "ip1",
+        "amount": 999.0,
+        "campaign_active": true,
+        "authorization_result": "approved",
+        "failure_reason": null,
+        "outcome_card_last4": "4242",
+        "outcome_card_network": "visa"
+      }
+    ],
+    "flash_hard_retry": [
+      {
+        "attempt": 1,
+        "gap_seconds": 0,
+        "session_suffix": "session1",
+        "ip_suffix": "ip1",
+        "amount": 1499.0,
+        "campaign_active": true,
+        "authorization_result": "declined",
+        "failure_reason": "generic_decline",
+        "outcome_card_last4": "4242",
+        "outcome_card_network": "visa"
+      },
+      {
+        "attempt": 2,
+        "gap_seconds": 22,
+        "session_suffix": "session1",
+        "ip_suffix": "ip1",
+        "amount": 1499.0,
+        "campaign_active": true,
+        "authorization_result": "declined",
+        "failure_reason": "generic_decline",
+        "outcome_card_last4": "4242",
+        "outcome_card_network": "visa"
+      },
+      {
+        "attempt": 3,
+        "gap_seconds": 20,
+        "session_suffix": "session1",
+        "ip_suffix": "ip1",
+        "amount": 1499.0,
+        "campaign_active": true,
+        "authorization_result": "declined",
+        "failure_reason": "generic_decline",
+        "outcome_card_last4": "4242",
+        "outcome_card_network": "visa"
+      },
+      {
+        "attempt": 4,
+        "gap_seconds": 25,
+        "session_suffix": "session1",
+        "ip_suffix": "ip1",
+        "amount": 1499.0,
+        "campaign_active": true,
+        "authorization_result": "declined",
+        "failure_reason": "generic_decline",
+        "outcome_card_last4": "4242",
+        "outcome_card_network": "visa"
+      },
+      {
+        "attempt": 5,
+        "gap_seconds": 28,
+        "session_suffix": "session1",
+        "ip_suffix": "ip1",
+        "amount": 1499.0,
+        "campaign_active": true,
+        "authorization_result": "approved",
+        "failure_reason": null,
+        "outcome_card_last4": "8777",
+        "outcome_card_network": "visa"
+      }
+    ],
+    "burst_attacker": [
+      {
+        "attempt": 1,
+        "gap_seconds": 0,
+        "session_suffix": "session1",
+        "ip_suffix": "ip1",
+        "amount": 2.0,
+        "campaign_active": false,
+        "authorization_result": "declined",
+        "failure_reason": "do_not_honor",
+        "outcome_card_last4": "1001",
+        "outcome_card_network": "visa"
+      },
+      {
+        "attempt": 2,
+        "gap_seconds": 4,
+        "session_suffix": "session1",
+        "ip_suffix": "ip1",
+        "amount": 3.0,
+        "campaign_active": false,
+        "authorization_result": "declined",
+        "failure_reason": "do_not_honor",
+        "outcome_card_last4": "1002",
+        "outcome_card_network": "mastercard"
+      },
+      {
+        "attempt": 3,
+        "gap_seconds": 3,
+        "session_suffix": "session2",
+        "ip_suffix": "ip1",
+        "amount": 2.0,
+        "campaign_active": false,
+        "authorization_result": "declined",
+        "failure_reason": "do_not_honor",
+        "outcome_card_last4": "1003",
+        "outcome_card_network": "visa"
+      },
+      {
+        "attempt": 4,
+        "gap_seconds": 4,
+        "session_suffix": "session2",
+        "ip_suffix": "ip2",
+        "amount": 5.0,
+        "campaign_active": false,
+        "authorization_result": "declined",
+        "failure_reason": "do_not_honor",
+        "outcome_card_last4": "1004",
+        "outcome_card_network": "rupay"
+      },
+      {
+        "attempt": 5,
+        "gap_seconds": 3,
+        "session_suffix": "session3",
+        "ip_suffix": "ip2",
+        "amount": 2.0,
+        "campaign_active": false,
+        "authorization_result": "declined",
+        "failure_reason": "do_not_honor",
+        "outcome_card_last4": "1005",
+        "outcome_card_network": "amex"
+      },
+      {
+        "attempt": 6,
+        "gap_seconds": 4,
+        "session_suffix": "session3",
+        "ip_suffix": "ip2",
+        "amount": 4.0,
+        "campaign_active": false,
+        "authorization_result": "declined",
+        "failure_reason": "do_not_honor",
+        "outcome_card_last4": "1006",
+        "outcome_card_network": "visa"
+      },
+      {
+        "attempt": 7,
+        "gap_seconds": 3,
+        "session_suffix": "session4",
+        "ip_suffix": "ip3",
+        "amount": 2.0,
+        "campaign_active": false,
+        "authorization_result": "declined",
+        "failure_reason": "do_not_honor",
+        "outcome_card_last4": "1007",
+        "outcome_card_network": "mastercard"
+      },
+      {
+        "attempt": 8,
+        "gap_seconds": 4,
+        "session_suffix": "session4",
+        "ip_suffix": "ip3",
+        "amount": 3.0,
+        "campaign_active": false,
+        "authorization_result": "declined",
+        "failure_reason": "do_not_honor",
+        "outcome_card_last4": "1008",
+        "outcome_card_network": "visa"
+      },
+      {
+        "attempt": 9,
+        "gap_seconds": 3,
+        "session_suffix": "session5",
+        "ip_suffix": "ip3",
+        "amount": 2.0,
+        "campaign_active": false,
+        "authorization_result": "declined",
+        "failure_reason": "do_not_honor",
+        "outcome_card_last4": "1009",
+        "outcome_card_network": "rupay"
+      },
+      {
+        "attempt": 10,
+        "gap_seconds": 4,
+        "session_suffix": "session5",
+        "ip_suffix": "ip4",
+        "amount": 4.0,
+        "campaign_active": false,
+        "authorization_result": "declined",
+        "failure_reason": "do_not_honor",
+        "outcome_card_last4": "1010",
+        "outcome_card_network": "amex"
+      }
+    ],
+    "evasive_attacker": [
+      {
+        "attempt": 1,
+        "gap_seconds": 0,
+        "session_suffix": "session1",
+        "ip_suffix": "ip1",
+        "amount": 5.0,
+        "campaign_active": false,
+        "authorization_result": "declined",
+        "failure_reason": "do_not_honor",
+        "outcome_card_last4": "2001",
+        "outcome_card_network": "visa"
+      },
+      {
+        "attempt": 2,
+        "gap_seconds": 40,
+        "session_suffix": "session1",
+        "ip_suffix": "ip1",
+        "amount": 8.0,
+        "campaign_active": false,
+        "authorization_result": "declined",
+        "failure_reason": "do_not_honor",
+        "outcome_card_last4": "2001",
+        "outcome_card_network": "visa"
+      },
+      {
+        "attempt": 3,
+        "gap_seconds": 180,
+        "session_suffix": "session1",
+        "ip_suffix": "ip1",
+        "amount": 4.0,
+        "campaign_active": false,
+        "authorization_result": "declined",
+        "failure_reason": "do_not_honor",
+        "outcome_card_last4": "2001",
+        "outcome_card_network": "visa"
+      },
+      {
+        "attempt": 4,
+        "gap_seconds": 45,
+        "session_suffix": "session2",
+        "ip_suffix": "ip2",
+        "amount": 6.0,
+        "campaign_active": false,
+        "authorization_result": "declined",
+        "failure_reason": "do_not_honor",
+        "outcome_card_last4": "2002",
+        "outcome_card_network": "mastercard"
+      },
+      {
+        "attempt": 5,
+        "gap_seconds": 35,
+        "session_suffix": "session2",
+        "ip_suffix": "ip2",
+        "amount": 9.0,
+        "campaign_active": false,
+        "authorization_result": "declined",
+        "failure_reason": "do_not_honor",
+        "outcome_card_last4": "2002",
+        "outcome_card_network": "mastercard"
+      },
+      {
+        "attempt": 6,
+        "gap_seconds": 190,
+        "session_suffix": "session2",
+        "ip_suffix": "ip2",
+        "amount": 5.0,
+        "campaign_active": false,
+        "authorization_result": "declined",
+        "failure_reason": "do_not_honor",
+        "outcome_card_last4": "2002",
+        "outcome_card_network": "mastercard"
+      },
+      {
+        "attempt": 7,
+        "gap_seconds": 50,
+        "session_suffix": "session3",
+        "ip_suffix": "ip3",
+        "amount": 7.0,
+        "campaign_active": false,
+        "authorization_result": "declined",
+        "failure_reason": "do_not_honor",
+        "outcome_card_last4": "2003",
+        "outcome_card_network": "visa"
+      },
+      {
+        "attempt": 8,
+        "gap_seconds": 40,
+        "session_suffix": "session3",
+        "ip_suffix": "ip3",
+        "amount": 4.0,
+        "campaign_active": false,
+        "authorization_result": "declined",
+        "failure_reason": "do_not_honor",
+        "outcome_card_last4": "2003",
+        "outcome_card_network": "visa"
+      },
+      {
+        "attempt": 9,
+        "gap_seconds": 185,
+        "session_suffix": "session3",
+        "ip_suffix": "ip3",
+        "amount": 6.0,
+        "campaign_active": false,
+        "authorization_result": "declined",
+        "failure_reason": "do_not_honor",
+        "outcome_card_last4": "2003",
+        "outcome_card_network": "visa"
       }
     ],
     "patient_attacker": [
       {
-        "amount": 3.0,
         "attempt": 1,
-        "authorization_result": "declined",
-        "campaign_active": false,
-        "card_suffix": "card1",
-        "decline_reason": "do_not_honor",
         "gap_seconds": 0,
+        "session_suffix": "session1",
         "ip_suffix": "ip1",
-        "session_suffix": "session1"
+        "amount": 3.0,
+        "campaign_active": false,
+        "authorization_result": "declined",
+        "failure_reason": "do_not_honor",
+        "outcome_card_last4": "3001",
+        "outcome_card_network": "visa"
       },
       {
-        "amount": 6.0,
         "attempt": 2,
-        "authorization_result": "declined",
-        "campaign_active": false,
-        "card_suffix": "card1",
-        "decline_reason": "do_not_honor",
         "gap_seconds": 21600,
+        "session_suffix": "session2",
         "ip_suffix": "ip1",
-        "session_suffix": "session2"
-      },
-      {
-        "amount": 4.0,
-        "attempt": 3,
-        "authorization_result": "declined",
-        "campaign_active": false,
-        "card_suffix": "card2",
-        "decline_reason": "do_not_honor",
-        "gap_seconds": 18000,
-        "ip_suffix": "ip2",
-        "session_suffix": "session3"
-      },
-      {
-        "amount": 7.0,
-        "attempt": 4,
-        "authorization_result": "declined",
-        "campaign_active": false,
-        "card_suffix": "card2",
-        "decline_reason": "do_not_honor",
-        "gap_seconds": 25200,
-        "ip_suffix": "ip2",
-        "session_suffix": "session4"
-      },
-      {
-        "amount": 3.0,
-        "attempt": 5,
-        "authorization_result": "declined",
-        "campaign_active": false,
-        "card_suffix": "card3",
-        "decline_reason": "do_not_honor",
-        "gap_seconds": 21600,
-        "ip_suffix": "ip3",
-        "session_suffix": "session5"
-      },
-      {
-        "amount": 5.0,
-        "attempt": 6,
-        "authorization_result": "declined",
-        "campaign_active": false,
-        "card_suffix": "card3",
-        "decline_reason": "do_not_honor",
-        "gap_seconds": 28800,
-        "ip_suffix": "ip3",
-        "session_suffix": "session6"
-      },
-      {
-        "amount": 4.0,
-        "attempt": 7,
-        "authorization_result": "declined",
-        "campaign_active": false,
-        "card_suffix": "card4",
-        "decline_reason": "do_not_honor",
-        "gap_seconds": 18000,
-        "ip_suffix": "ip4",
-        "session_suffix": "session7"
-      },
-      {
         "amount": 6.0,
-        "attempt": 8,
-        "authorization_result": "declined",
         "campaign_active": false,
-        "card_suffix": "card4",
-        "decline_reason": "do_not_honor",
-        "gap_seconds": 32400,
-        "ip_suffix": "ip4",
-        "session_suffix": "session8"
+        "authorization_result": "declined",
+        "failure_reason": "do_not_honor",
+        "outcome_card_last4": "3001",
+        "outcome_card_network": "visa"
       },
       {
-        "amount": 3.0,
-        "attempt": 9,
-        "authorization_result": "declined",
+        "attempt": 3,
+        "gap_seconds": 18000,
+        "session_suffix": "session3",
+        "ip_suffix": "ip2",
+        "amount": 4.0,
         "campaign_active": false,
-        "card_suffix": "card5",
-        "decline_reason": "do_not_honor",
+        "authorization_result": "declined",
+        "failure_reason": "do_not_honor",
+        "outcome_card_last4": "3002",
+        "outcome_card_network": "visa"
+      },
+      {
+        "attempt": 4,
+        "gap_seconds": 25200,
+        "session_suffix": "session4",
+        "ip_suffix": "ip2",
+        "amount": 7.0,
+        "campaign_active": false,
+        "authorization_result": "declined",
+        "failure_reason": "do_not_honor",
+        "outcome_card_last4": "3002",
+        "outcome_card_network": "visa"
+      },
+      {
+        "attempt": 5,
         "gap_seconds": 21600,
+        "session_suffix": "session5",
+        "ip_suffix": "ip3",
+        "amount": 3.0,
+        "campaign_active": false,
+        "authorization_result": "declined",
+        "failure_reason": "do_not_honor",
+        "outcome_card_last4": "3003",
+        "outcome_card_network": "visa"
+      },
+      {
+        "attempt": 6,
+        "gap_seconds": 28800,
+        "session_suffix": "session6",
+        "ip_suffix": "ip3",
+        "amount": 5.0,
+        "campaign_active": false,
+        "authorization_result": "declined",
+        "failure_reason": "do_not_honor",
+        "outcome_card_last4": "3003",
+        "outcome_card_network": "visa"
+      },
+      {
+        "attempt": 7,
+        "gap_seconds": 18000,
+        "session_suffix": "session7",
+        "ip_suffix": "ip4",
+        "amount": 4.0,
+        "campaign_active": false,
+        "authorization_result": "declined",
+        "failure_reason": "do_not_honor",
+        "outcome_card_last4": "3004",
+        "outcome_card_network": "visa"
+      },
+      {
+        "attempt": 8,
+        "gap_seconds": 32400,
+        "session_suffix": "session8",
+        "ip_suffix": "ip4",
+        "amount": 6.0,
+        "campaign_active": false,
+        "authorization_result": "declined",
+        "failure_reason": "do_not_honor",
+        "outcome_card_last4": "3004",
+        "outcome_card_network": "visa"
+      },
+      {
+        "attempt": 9,
+        "gap_seconds": 21600,
+        "session_suffix": "session9",
         "ip_suffix": "ip5",
-        "session_suffix": "session9"
+        "amount": 3.0,
+        "campaign_active": false,
+        "authorization_result": "declined",
+        "failure_reason": "do_not_honor",
+        "outcome_card_last4": "3005",
+        "outcome_card_network": "visa"
       }
     ]
+  },
+  "catalog": {
+    "normal_customer": {
+      "label": "Everyday Checkout",
+      "attempts": 2
+    },
+    "normal_bad_luck": {
+      "label": "Bad-Luck Retry",
+      "attempts": 4
+    },
+    "flash_standard": {
+      "label": "Flash Sale",
+      "attempts": 3
+    },
+    "flash_hard_retry": {
+      "label": "Flash-Sale Hard Retry",
+      "attempts": 5
+    },
+    "burst_attacker": {
+      "label": "Burst Card Testing",
+      "attempts": 10
+    },
+    "evasive_attacker": {
+      "label": "Evasive Card Testing",
+      "attempts": 9
+    },
+    "patient_attacker": {
+      "label": "Patient Card Testing",
+      "attempts": 9
+    }
   }
 }

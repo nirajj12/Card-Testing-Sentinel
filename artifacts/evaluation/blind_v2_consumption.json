@@ -1,0 +1,21 @@
+{
+  "blind_features_v2_sha256": "b661517f5dac5eda5e772e30ccd765dfa084d980e107957f055bda89e22d388f",
+  "blind_labels_sha256": "3a838bb77ee9137324f72ba544bc5edb5af3a3e3c5e46029304ff146135b4db7",
+  "blind_raw_sha256": "bfdc709863c89a6f496a95dd56cb86fd63290a7669817918bebe1165f79bf16d",
+  "blind_version": "v2",
+  "consumed": true,
+  "evaluated": true,
+  "evaluation_module_sha256": "4b39bf139be61201d5e4f4900a8ebffb50f7cb6d1269f2f875694711911a8c44",
+  "evaluation_pipeline_sha256": "5238c301b23c727088bff8d9e996a8ed7b0e426eac4da2187b9f0d91c8be8f9a",
+  "feature_contract_v2_artifact_sha256": "db9bbfdd78b315fd902e4a9f2ef05204ca5222522b921edbd3b2a64b077c1928",
+  "feature_contract_v2_source_sha256": "29819cc2ff6f2d4ae2eac112ed1d239633bf48ef0931d344149692ac5cd5dd52",
+  "feature_engine_v2_sha256": "6aa29b5953bb4f6d875bd51848e81dbeece6d0a1939816cd8bc031b59b6901c0",
+  "first_successful_score_utc": "2026-08-31T18:11:07.909388+00:00",
+  "freeze_manifest_pre_evaluation_sha256": "4eaf9a000ef3c0752c2d7b64c53dd7d0d5e9530c4d2affa530244da68f7f0a73",
+  "model_v2_sha256": "0317cef5d310bc5d5d2ed55e755d995a34c54ad28df5ea780a36cb1e6fea2e3c",
+  "policy_v2_artifact_sha256": "8e874ef83085b9bac063c3b0ac3044bb3c171071d00bf2db44c0390d944fe74c",
+  "policy_v2_config_sha256": "92b0173e0ba073a9a20b7f09e5d0d82c9d40a52598cb9140ede36714a03c0052",
+  "post_blind_tuning": false,
+  "scoring_started_utc": "2026-08-31T18:11:07.900670+00:00",
+  "status": "results_in_progress"
+}

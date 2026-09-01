@@ -1,0 +1,107 @@
+{
+  "blind_evaluated": false,
+  "calibration_bins": [
+    {
+      "bin_high": 0.1,
+      "bin_low": 0.0,
+      "mean_predicted": 0.0395,
+      "observed_rate": 0.034,
+      "weight": 1732.4347
+    },
+    {
+      "bin_high": 0.2,
+      "bin_low": 0.1,
+      "mean_predicted": 0.1464,
+      "observed_rate": 0.1353,
+      "weight": 207.5454
+    },
+    {
+      "bin_high": 0.3,
+      "bin_low": 0.2,
+      "mean_predicted": 0.249,
+      "observed_rate": 0.2165,
+      "weight": 119.5677
+    },
+    {
+      "bin_high": 0.4,
+      "bin_low": 0.3,
+      "mean_predicted": 0.346,
+      "observed_rate": 0.2721,
+      "weight": 75.8878
+    },
+    {
+      "bin_high": 0.5,
+      "bin_low": 0.4,
+      "mean_predicted": 0.4492,
+      "observed_rate": 0.3847,
+      "weight": 59.3322
+    },
+    {
+      "bin_high": 0.6,
+      "bin_low": 0.5,
+      "mean_predicted": 0.5516,
+      "observed_rate": 0.4167,
+      "weight": 44.5968
+    },
+    {
+      "bin_high": 0.7,
+      "bin_low": 0.6,
+      "mean_predicted": 0.6509,
+      "observed_rate": 0.6434,
+      "weight": 51.9006
+    },
+    {
+      "bin_high": 0.8,
+      "bin_low": 0.7,
+      "mean_predicted": 0.7522,
+      "observed_rate": 0.667,
+      "weight": 60.2601
+    },
+    {
+      "bin_high": 0.9,
+      "bin_low": 0.8,
+      "mean_predicted": 0.8612,
+      "observed_rate": 0.823,
+      "weight": 143.1215
+    },
+    {
+      "bin_high": 1.0,
+      "bin_low": 0.9,
+      "mean_predicted": 0.9106,
+      "observed_rate": 0.9565,
+      "weight": 106.3532
+    }
+  ],
+  "evaluated_utc": "2026-08-31T16:07:45.632023+00:00",
+  "feature_contract_sha256": "51bfa6604ed0486447ee16a43270f2092f0cac96b3ab0c2f0bad2748e8c28a38",
+  "features_sha256": "000c52aebbd0e2dbc58207289d6cba3db47ae4d771db3be251207dbb0365d51e",
+  "model_scores": {
+    "brier": 0.074302,
+    "ece": 0.018121,
+    "log_loss": 0.258584,
+    "positive_rate": 0.179931,
+    "pr_auc": 0.778253,
+    "roc_auc": 0.904141
+  },
+  "model_sha256": "0317cef5d310bc5d5d2ed55e755d995a34c54ad28df5ea780a36cb1e6fea2e3c",
+  "model_version": "model-v2",
+  "policy_selected": false,
+  "prevalence_note": "benchmark prevalence is enriched; precision figures are labelled benchmark_precision and are not production estimates",
+  "reporting_threshold": 0.6,
+  "reporting_threshold_note": "provisional, only to make the per-group tables comparable; the operating point is chosen in the policy phase",
+  "selected_calibration": "sigmoid",
+  "selected_candidate": "logistic_C10.0",
+  "status": "development_validation_only",
+  "training_config_sha256": "1bb21be77d6d39bc052ae2e21b6b9cd745d4faed453acf692f1d0213f828c3fa",
+  "v1_equivalent_scores": {
+    "brier": 0.147618,
+    "ece": 0.238796,
+    "log_loss": 0.467695,
+    "positive_rate": 0.179931,
+    "pr_auc": 0.740736,
+    "roc_auc": 0.877596
+  },
+  "validation_attack_devices": 468,
+  "validation_devices": 2601,
+  "validation_rows": 12420
+}

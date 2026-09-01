@@ -60,6 +60,9 @@ export const api = {
   readiness: () => get("/health/ready"),
   system: () => get("/api/system"),
   blindMetrics: () => get("/api/metrics/blind"),
+  razorpayStatus: () => get("/api/razorpay/status"),
+  razorpayOrder: (body) => post("/api/razorpay/orders", body),
+  verifyRazorpayPayment: (body) => post("/api/razorpay/payments/verify", body),
   replayDevices: (filters) => get(query("/api/replay/devices", filters)),
   replayTimeline: (id) => get(`/api/replay/devices/${encodeURIComponent(id)}/timeline`),
 

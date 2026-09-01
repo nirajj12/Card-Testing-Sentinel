@@ -1,123 +1,130 @@
 {
-  "calibration_isolation": [
+  "blind_evaluated": false,
+  "calibration_comparison": [
     {
-      "all_pairwise_device_overlaps": 0,
-      "base_fit_devices": 4800,
-      "calibrator_fit_devices": 1600,
-      "evaluation_devices": 1600,
-      "outer_fold": 0
+      "brier": 0.13941479186623448,
+      "ece": 0.23246022481016992,
+      "log_loss": 0.4555403209201918,
+      "method": "none",
+      "positive_rate": 0.15027923506515484,
+      "pr_auc": 0.6568989570355841,
+      "roc_auc": 0.83373858683548
     },
     {
-      "all_pairwise_device_overlaps": 0,
-      "base_fit_devices": 4800,
-      "calibrator_fit_devices": 1600,
-      "evaluation_devices": 1600,
-      "outer_fold": 1
+      "brier": 0.0820373440780589,
+      "ece": 0.01977929955522369,
+      "log_loss": 0.2885521906237689,
+      "method": "sigmoid",
+      "positive_rate": 0.15027923506515484,
+      "pr_auc": 0.6568989570355841,
+      "roc_auc": 0.83373858683548
     },
     {
-      "all_pairwise_device_overlaps": 0,
-      "base_fit_devices": 4800,
-      "calibrator_fit_devices": 1600,
-      "evaluation_devices": 1600,
-      "outer_fold": 2
-    },
-    {
-      "all_pairwise_device_overlaps": 0,
-      "base_fit_devices": 4800,
-      "calibrator_fit_devices": 1600,
-      "evaluation_devices": 1600,
-      "outer_fold": 3
-    },
-    {
-      "all_pairwise_device_overlaps": 0,
-      "base_fit_devices": 4800,
-      "calibrator_fit_devices": 1600,
-      "evaluation_devices": 1600,
-      "outer_fold": 4
+      "brier": 0.08010308118342926,
+      "ece": 1.54358624153125e-11,
+      "log_loss": 0.28134932782124256,
+      "method": "isotonic",
+      "positive_rate": 0.15027923506515484,
+      "pr_auc": 0.6410887748388656,
+      "roc_auc": 0.8390934914487127
     }
   ],
-  "calibration_objective": [
-    "lowest_device_weighted_brier",
-    "lowest_expected_calibration_error",
-    "lowest_log_loss",
-    "no_material_pr_auc_degradation",
-    "simpler_method"
+  "calibration_rule": "adopted only if it improves device-weighted Brier without losing more than 0.005 PR-AUC",
+  "created_utc": "2026-08-31T02:50:54.916101+00:00",
+  "cross_validation": [
+    {
+      "brier": 0.13941479186623448,
+      "candidate": "logistic_C10.0",
+      "ece": 0.23246022481016992,
+      "family": "logistic_regression",
+      "log_loss": 0.4555403209201918,
+      "parameters": "{\"C\": 10.0, \"max_iter\": 1000}",
+      "positive_rate": 0.15027923506515484,
+      "pr_auc": 0.6568989570355841,
+      "roc_auc": 0.83373858683548
+    },
+    {
+      "brier": 0.17036111608605217,
+      "candidate": "logistic_C1.0",
+      "ece": 0.2845470339132908,
+      "family": "logistic_regression",
+      "log_loss": 0.5280615685566812,
+      "parameters": "{\"C\": 1.0, \"max_iter\": 1000}",
+      "positive_rate": 0.15027923506515484,
+      "pr_auc": 0.6293103205763517,
+      "roc_auc": 0.8260115006739784
+    },
+    {
+      "brier": 0.22647236765229806,
+      "candidate": "logistic_C0.1",
+      "ece": 0.3404851769837981,
+      "family": "logistic_regression",
+      "log_loss": 0.6459436144707672,
+      "parameters": "{\"C\": 0.1, \"max_iter\": 1000}",
+      "positive_rate": 0.15027923506515484,
+      "pr_auc": 0.62123543322438,
+      "roc_auc": 0.8242160779126039
+    },
+    {
+      "brier": 0.1621318874657854,
+      "candidate": "hist_gb_1",
+      "ece": 0.2584354435829543,
+      "family": "hist_gradient_boosting",
+      "log_loss": 0.511225794230857,
+      "parameters": "{\"l2_regularization\": 1.0, \"learning_rate\": 0.05, \"max_iter\": 200, \"max_leaf_nodes\": 15}",
+      "positive_rate": 0.15027923506515484,
+      "pr_auc": 0.5870178613493722,
+      "roc_auc": 0.8276399838902717
+    },
+    {
+      "brier": 0.1768210664646121,
+      "candidate": "hist_gb_2",
+      "ece": 0.2772741380686746,
+      "family": "hist_gradient_boosting",
+      "log_loss": 0.5436386430211265,
+      "parameters": "{\"l2_regularization\": 2.0, \"learning_rate\": 0.08, \"max_iter\": 160, \"max_leaf_nodes\": 31}",
+      "positive_rate": 0.15027923506515484,
+      "pr_auc": 0.4537532314453191,
+      "roc_auc": 0.8104085024363062
+    },
+    {
+      "brier": 0.20820312890185738,
+      "candidate": "hist_gb_3",
+      "ece": 0.31094468503972794,
+      "family": "hist_gradient_boosting",
+      "log_loss": 0.609071406057258,
+      "parameters": "{\"l2_regularization\": 5.0, \"learning_rate\": 0.05, \"max_iter\": 250, \"max_leaf_nodes\": 31}",
+      "positive_rate": 0.15027923506515484,
+      "pr_auc": 0.44595910857494997,
+      "roc_auc": 0.8039514030028424
+    }
   ],
-  "candidate_count": 6,
-  "evaluation_weight_audit": {
-    "by_class": {
-      "0": 6800.0,
-      "1": 1200.0
-    },
-    "by_scenario": {
-      "attack_burst": 480.0,
-      "attack_evasive": 360.0,
-      "attack_patient": 360.0,
-      "flash_hard_retry": 400.0,
-      "flash_standard": 1200.0,
-      "normal_bad_luck": 400.0,
-      "normal_standard": 4800.0
-    },
-    "total": 8000.0
+  "dataset_config_sha256": "2f015ee8a09b2d1faf12f35ad793c1b05b9121d5ea964cc4970f82c3ec93b59a",
+  "dataset_generator_version": "dataset-v2-1",
+  "family": "logistic_regression",
+  "feature_contract_sha256": "8406075180276565f1684bdd0ff7fa004addb919e7a295712581aac3ee8bc4e7",
+  "feature_contract_version": "merchant-visible-causal-1",
+  "feature_count": 28,
+  "final": false,
+  "folds": 5,
+  "parameters": {
+    "C": 10.0,
+    "max_iter": 1000
   },
-  "feature_contract_sha256": "5de17dbf8abc06c835ba948e8cbc68706079973721cd25b081bb55e808bf57c6",
-  "fold_device_overlap": 0,
-  "model_artifact_sha256": "6c638fc05ca321e98c8b5417c477a58e2649bdd7e056bcd56e0d119d3eb80f88",
-  "model_feature_count": 44,
-  "oof_complete": true,
-  "oof_rows": 21338,
-  "ranking_objective": [
-    "passes_integrity_gates",
-    "worst_subtype_review_or_higher_coverage_at_primary_budget",
-    "macro_subtype_review_or_higher_coverage_at_primary_budget",
-    "device_weighted_pr_auc",
-    "negative_brier_score",
-    "lower_inference_cost_then_simpler_family"
-  ],
   "runtime": {
     "joblib": "1.4.2",
     "numpy": "1.26.4",
-    "pandas": "2.2.3",
-    "platform": "macOS-26.5.2-arm64-arm-64bit",
-    "python": "3.11.15 (main, Jun 11 2026, 15:14:57) [Clang 20.1.8 ]",
-    "scikit_learn": "1.6.1",
-    "scipy": "1.14.1"
+    "platform": "Darwin",
+    "python": "3.11.13",
+    "scikit_learn": "1.6.1"
   },
-  "selected_calibration": "isotonic",
-  "selected_candidate": "logistic_regression__02",
-  "selected_family": "logistic_regression",
-  "selected_parameters": {
-    "C": 10.0,
-    "max_iter": 500
-  },
-  "serialization_parity": {
-    "maximum_absolute_difference": 0.0,
-    "rows": 128,
-    "tolerance": 1e-12
-  },
-  "training_weight_audit": {
-    "by_class": {
-      "0": 0.49999999999999994,
-      "1": 0.5
-    },
-    "by_scenario": {
-      "attack_burst": 0.2,
-      "attack_evasive": 0.15000000000000002,
-      "attack_patient": 0.15000000000000002,
-      "flash_hard_retry": 0.029411764705882353,
-      "flash_standard": 0.08823529411764705,
-      "normal_bad_luck": 0.029411764705882353,
-      "normal_standard": 0.3529411764705882
-    },
-    "total": 1.0
-  },
-  "why_selected": [
-    1.0,
-    1.0,
-    0.8723286037605,
-    -0.07266242086498763,
-    0,
-    1,
-    "logistic_regression__02"
-  ]
+  "seed": 20260401,
+  "selected_calibration": "sigmoid",
+  "selected_candidate": "logistic_C10.0",
+  "selection_metric": "device-weighted PR-AUC on train out-of-fold",
+  "status": "development_frozen_candidate",
+  "training_config_sha256": "68098d33b6a53f5c9ec6f6c2c60b8912ae139be0ed10c59212aa98f3fa2cfe06",
+  "training_devices": 5909,
+  "training_rows": 13979,
+  "validation_devices": 2166
 }

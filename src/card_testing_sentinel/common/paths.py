@@ -22,10 +22,10 @@ def project_root() -> Path:
         if (
             (candidate / "configs/app.yaml").is_file()
             and (candidate / "configs/features.yaml").is_file()
-            and (candidate / "artifacts/release_manifest.json").is_file()
+            and (candidate / "configs/policy.yaml").is_file()
         ):
             return candidate
     raise FileNotFoundError(
-        "PreAuth Sentinel project root was not found; run from the project "
-        "directory or set CTS_PROJECT_ROOT"
+        "Card-Testing Sentinel project root was not found; run from the "
+        "project directory or set CTS_PROJECT_ROOT"
     )

@@ -1,0 +1,5 @@
+feature_set,features,pr_auc,roc_auc,brier,log_loss,ece,positive_rate,matched_flag_rate,matched_threshold,attack_device_recall,legitimate_device_fpr
+all_features,28,0.7156,0.8422,0.1427,0.4597,0.2199,0.1833,0.267,0.8014,0.8212,0.0464
+minus_card_history,25,0.7036,0.8493,0.1447,0.4665,0.2217,0.1833,0.267,0.7983,0.8111,0.0492
+velocity_only,13,0.6746,0.8328,0.1561,0.4903,0.2341,0.1833,0.267,0.754,0.7632,0.0554
+history_only,8,0.6398,0.8288,0.1595,0.5054,0.2425,0.1833,0.267,0.7849,0.7632,0.0769

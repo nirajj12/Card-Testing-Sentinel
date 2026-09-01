@@ -1,0 +1,1006 @@
+{
+  "attack_scenario_detection": {
+    "cross_device_campaign": {
+      "block_rate": 0.4695,
+      "devices": 164,
+      "median_first_review": 2.0,
+      "review_or_higher_rate": 0.8232
+    },
+    "fast_burst": {
+      "block_rate": 0.6786,
+      "devices": 28,
+      "median_first_review": 5.0,
+      "review_or_higher_rate": 0.8571
+    },
+    "flash_sale_camouflage": {
+      "block_rate": 0.6471,
+      "devices": 34,
+      "median_first_review": 4.0,
+      "review_or_higher_rate": 0.8824
+    },
+    "merchant_typical_amounts": {
+      "block_rate": 0.8462,
+      "devices": 26,
+      "median_first_review": 4.0,
+      "review_or_higher_rate": 1.0
+    },
+    "patient_tester_weeks": {
+      "block_rate": 0.4595,
+      "devices": 37,
+      "median_first_review": 5.0,
+      "review_or_higher_rate": 0.8919
+    },
+    "session_churn": {
+      "block_rate": 0.7879,
+      "devices": 33,
+      "median_first_review": 4.0,
+      "review_or_higher_rate": 0.9091
+    },
+    "slow_drip": {
+      "block_rate": 0.66,
+      "devices": 50,
+      "median_first_review": 4.0,
+      "review_or_higher_rate": 0.92
+    },
+    "sparse_multiday_tester": {
+      "block_rate": 0.6667,
+      "devices": 42,
+      "median_first_review": 5.0,
+      "review_or_higher_rate": 0.9286
+    },
+    "successful_card_camouflage": {
+      "block_rate": 0.7333,
+      "devices": 30,
+      "median_first_review": 5.0,
+      "review_or_higher_rate": 0.9
+    },
+    "warm_up_then_test": {
+      "block_rate": 0.4583,
+      "devices": 24,
+      "median_first_review": 14.0,
+      "review_or_higher_rate": 0.7917
+    }
+  },
+  "blind_evaluated": false,
+  "blind_v2_generated": false,
+  "block_evidence": 2,
+  "block_meaning": "temporary. No Razorpay order is created for this attempt; after block_expires_at a later request is scored from current history. Nothing is permanently labelled fraudulent.",
+  "block_threshold": 0.9,
+  "block_threshold_sweep": [
+    {
+      "attack_block_recall": 0.8611,
+      "attack_devices": 468,
+      "attack_never_detected": 59,
+      "attack_review_or_higher_recall": 0.8739,
+      "attacks_no_longer_blocked": 6,
+      "attempts_at_or_above_block_threshold": 3334,
+      "attempts_withheld_low_evidence": 36,
+      "attempts_withheld_trusted": 0,
+      "benchmark_attempt_precision": 0.8608,
+      "block_attempts_suppressed_by_gate": 36,
+      "block_threshold": 0.75,
+      "cumulative_attack_detection": {
+        "1": {
+          "block_rate": 0.0385,
+          "review_or_higher_rate": 0.0449
+        },
+        "2": {
+          "block_rate": 0.1667,
+          "review_or_higher_rate": 0.1987
+        },
+        "3": {
+          "block_rate": 0.2671,
+          "review_or_higher_rate": 0.2927
+        },
+        "5": {
+          "block_rate": 0.7009,
+          "review_or_higher_rate": 0.7244
+        }
+      },
+      "devices_blocked_with_gate": 515,
+      "devices_blocked_without_gate": 522,
+      "devices_suppressed_by_gate": 7,
+      "evidence_qualified_block_attempts": 3298,
+      "legitimate_block_rate": 0.0525,
+      "legitimate_blocked_devices": 112,
+      "legitimate_blocks_prevented": 1,
+      "legitimate_devices": 2133,
+      "legitimate_review_or_higher_rate": 0.053,
+      "legitimate_reviewed_devices": 113,
+      "median_first_block_attempt": 4.0,
+      "median_first_review_attempt": 4.0,
+      "p90_first_block_attempt": 7.0,
+      "p90_first_review_attempt": 6.2,
+      "review_or_higher_attempt_rate": 0.2684,
+      "review_or_higher_attempts": 3334,
+      "score_only_block_candidate_attempts": 3334,
+      "withheld_attack_scenarios": {
+        "cross_device_campaign": 6
+      },
+      "withheld_legitimate_scenarios": {
+        "household_shared_device": 1
+      }
+    },
+    {
+      "attack_block_recall": 0.8269,
+      "attack_devices": 468,
+      "attack_never_detected": 59,
+      "attack_review_or_higher_recall": 0.8739,
+      "attacks_no_longer_blocked": 4,
+      "attempts_at_or_above_block_threshold": 2999,
+      "attempts_withheld_low_evidence": 23,
+      "attempts_withheld_trusted": 0,
+      "benchmark_attempt_precision": 0.8608,
+      "block_attempts_suppressed_by_gate": 23,
+      "block_threshold": 0.8,
+      "cumulative_attack_detection": {
+        "1": {
+          "block_rate": 0.0342,
+          "review_or_higher_rate": 0.0449
+        },
+        "2": {
+          "block_rate": 0.1432,
+          "review_or_higher_rate": 0.1987
+        },
+        "3": {
+          "block_rate": 0.235,
+          "review_or_higher_rate": 0.2927
+        },
+        "5": {
+          "block_rate": 0.5897,
+          "review_or_higher_rate": 0.7244
+        }
+      },
+      "devices_blocked_with_gate": 478,
+      "devices_blocked_without_gate": 483,
+      "devices_suppressed_by_gate": 5,
+      "evidence_qualified_block_attempts": 2976,
+      "legitimate_block_rate": 0.0427,
+      "legitimate_blocked_devices": 91,
+      "legitimate_blocks_prevented": 1,
+      "legitimate_devices": 2133,
+      "legitimate_review_or_higher_rate": 0.053,
+      "legitimate_reviewed_devices": 113,
+      "median_first_block_attempt": 5.0,
+      "median_first_review_attempt": 4.0,
+      "p90_first_block_attempt": 8.0,
+      "p90_first_review_attempt": 6.2,
+      "review_or_higher_attempt_rate": 0.2684,
+      "review_or_higher_attempts": 3334,
+      "score_only_block_candidate_attempts": 2999,
+      "withheld_attack_scenarios": {
+        "cross_device_campaign": 4
+      },
+      "withheld_legitimate_scenarios": {
+        "household_shared_device": 1
+      }
+    },
+    {
+      "attack_block_recall": 0.7799,
+      "attack_devices": 468,
+      "attack_never_detected": 59,
+      "attack_review_or_higher_recall": 0.8739,
+      "attacks_no_longer_blocked": 2,
+      "attempts_at_or_above_block_threshold": 2471,
+      "attempts_withheld_low_evidence": 8,
+      "attempts_withheld_trusted": 0,
+      "benchmark_attempt_precision": 0.8608,
+      "block_attempts_suppressed_by_gate": 8,
+      "block_threshold": 0.85,
+      "cumulative_attack_detection": {
+        "1": {
+          "block_rate": 0.0171,
+          "review_or_higher_rate": 0.0449
+        },
+        "2": {
+          "block_rate": 0.1068,
+          "review_or_higher_rate": 0.1987
+        },
+        "3": {
+          "block_rate": 0.188,
+          "review_or_higher_rate": 0.2927
+        },
+        "5": {
+          "block_rate": 0.4338,
+          "review_or_higher_rate": 0.7244
+        }
+      },
+      "devices_blocked_with_gate": 420,
+      "devices_blocked_without_gate": 423,
+      "devices_suppressed_by_gate": 3,
+      "evidence_qualified_block_attempts": 2463,
+      "legitimate_block_rate": 0.0258,
+      "legitimate_blocked_devices": 55,
+      "legitimate_blocks_prevented": 1,
+      "legitimate_devices": 2133,
+      "legitimate_review_or_higher_rate": 0.053,
+      "legitimate_reviewed_devices": 113,
+      "median_first_block_attempt": 5.0,
+      "median_first_review_attempt": 4.0,
+      "p90_first_block_attempt": 9.0,
+      "p90_first_review_attempt": 6.2,
+      "review_or_higher_attempt_rate": 0.2684,
+      "review_or_higher_attempts": 3334,
+      "score_only_block_candidate_attempts": 2471,
+      "withheld_attack_scenarios": {
+        "cross_device_campaign": 2
+      },
+      "withheld_legitimate_scenarios": {
+        "household_shared_device": 1
+      }
+    },
+    {
+      "attack_block_recall": 0.5919,
+      "attack_devices": 468,
+      "attack_never_detected": 59,
+      "attack_review_or_higher_recall": 0.8739,
+      "attacks_no_longer_blocked": 0,
+      "attempts_at_or_above_block_threshold": 1409,
+      "attempts_withheld_low_evidence": 0,
+      "attempts_withheld_trusted": 0,
+      "benchmark_attempt_precision": 0.8608,
+      "block_attempts_suppressed_by_gate": 0,
+      "block_threshold": 0.9,
+      "cumulative_attack_detection": {
+        "1": {
+          "block_rate": 0.0064,
+          "review_or_higher_rate": 0.0449
+        },
+        "2": {
+          "block_rate": 0.047,
+          "review_or_higher_rate": 0.1987
+        },
+        "3": {
+          "block_rate": 0.0962,
+          "review_or_higher_rate": 0.2927
+        },
+        "5": {
+          "block_rate": 0.1603,
+          "review_or_higher_rate": 0.7244
+        }
+      },
+      "devices_blocked_with_gate": 296,
+      "devices_blocked_without_gate": 296,
+      "devices_suppressed_by_gate": 0,
+      "evidence_qualified_block_attempts": 1409,
+      "legitimate_block_rate": 0.0089,
+      "legitimate_blocked_devices": 19,
+      "legitimate_blocks_prevented": 0,
+      "legitimate_devices": 2133,
+      "legitimate_review_or_higher_rate": 0.053,
+      "legitimate_reviewed_devices": 113,
+      "median_first_block_attempt": 7.0,
+      "median_first_review_attempt": 4.0,
+      "p90_first_block_attempt": 12.0,
+      "p90_first_review_attempt": 6.2,
+      "review_or_higher_attempt_rate": 0.2684,
+      "review_or_higher_attempts": 3334,
+      "score_only_block_candidate_attempts": 1409,
+      "withheld_attack_scenarios": {},
+      "withheld_legitimate_scenarios": {}
+    }
+  ],
+  "block_ttl_seconds": 3600,
+  "campaign_adjustment_comparison": {
+    "no_adjustment": {
+      "attack_block_recall": 0.5919,
+      "attack_devices": 468,
+      "attack_never_detected": 59,
+      "attack_review_or_higher_recall": 0.8739,
+      "benchmark_attempt_precision": 0.8608,
+      "cumulative_attack_detection": {
+        "1": {
+          "block_rate": 0.0064,
+          "review_or_higher_rate": 0.0449
+        },
+        "2": {
+          "block_rate": 0.047,
+          "review_or_higher_rate": 0.1987
+        },
+        "3": {
+          "block_rate": 0.0962,
+          "review_or_higher_rate": 0.2927
+        },
+        "5": {
+          "block_rate": 0.1603,
+          "review_or_higher_rate": 0.7244
+        }
+      },
+      "legitimate_block_rate": 0.0089,
+      "legitimate_blocked_devices": 19,
+      "legitimate_devices": 2133,
+      "legitimate_review_or_higher_rate": 0.053,
+      "legitimate_reviewed_devices": 113,
+      "median_first_block_attempt": 7.0,
+      "median_first_review_attempt": 4.0,
+      "p90_first_block_attempt": 12.0,
+      "p90_first_review_attempt": 6.199999999999989,
+      "review_or_higher_attempt_rate": 0.2684,
+      "review_or_higher_attempts": 3334
+    },
+    "small_adjustment": {
+      "attack_block_recall": 0.5278,
+      "attack_devices": 468,
+      "attack_never_detected": 65,
+      "attack_review_or_higher_recall": 0.8611,
+      "benchmark_attempt_precision": 0.8633,
+      "cumulative_attack_detection": {
+        "1": {
+          "block_rate": 0.0043,
+          "review_or_higher_rate": 0.0449
+        },
+        "2": {
+          "block_rate": 0.0385,
+          "review_or_higher_rate": 0.1838
+        },
+        "3": {
+          "block_rate": 0.0769,
+          "review_or_higher_rate": 0.2863
+        },
+        "5": {
+          "block_rate": 0.1496,
+          "review_or_higher_rate": 0.6987
+        }
+      },
+      "legitimate_block_rate": 0.0089,
+      "legitimate_blocked_devices": 19,
+      "legitimate_devices": 2133,
+      "legitimate_review_or_higher_rate": 0.0516,
+      "legitimate_reviewed_devices": 110,
+      "median_first_block_attempt": 7.0,
+      "median_first_review_attempt": 4.0,
+      "p90_first_block_attempt": 13.0,
+      "p90_first_review_attempt": 6.800000000000011,
+      "review_or_higher_attempt_rate": 0.2634,
+      "review_or_higher_attempts": 3271
+    }
+  },
+  "campaign_adjustment_decision": "not retained: the small tolerance does not dominate the campaign-free candidate across attack recall, attack blocking, legitimate review friction, and legitimate blocking",
+  "campaign_block_increment": 0.0,
+  "campaign_review_increment": 0.0,
+  "candidates_eligible": 36,
+  "candidates_evaluated": 864,
+  "constraints": {
+    "max_legitimate_block_rate": 0.01,
+    "max_legitimate_review_or_higher_rate": 0.06,
+    "min_attack_review_or_higher_recall": 0.7,
+    "min_review_to_block_ratio": 5.0,
+    "scenario_caps": {
+      "block_multiple": 6.0,
+      "minimum_devices_allowance": 2,
+      "review_multiple": 5.0
+    }
+  },
+  "cost_table": {
+    "counts": {
+      "attack_allow": 59,
+      "attack_block": 277,
+      "attack_review": 132,
+      "legitimate_allow": 2020,
+      "legitimate_block": 19,
+      "legitimate_review": 94
+    },
+    "total": 1673.0,
+    "units": "illustrative prototype units, not Razorpay economics"
+  },
+  "created_utc": "2026-08-31T16:49:54.308061+00:00",
+  "customer_id_segments": [
+    {
+      "attack_block_recall": 0.5238,
+      "attack_devices": 105,
+      "attack_review_or_higher_recall": 0.819,
+      "devices": 764,
+      "legitimate_block_rate": 0.0,
+      "legitimate_blocked_devices": 0,
+      "legitimate_devices": 659,
+      "legitimate_review_or_higher_rate": 0.0121,
+      "segment": "customer_absent"
+    },
+    {
+      "attack_block_recall": 0.6116,
+      "attack_devices": 363,
+      "attack_review_or_higher_recall": 0.8898,
+      "devices": 1837,
+      "legitimate_block_rate": 0.0129,
+      "legitimate_blocked_devices": 19,
+      "legitimate_devices": 1474,
+      "legitimate_review_or_higher_rate": 0.0712,
+      "segment": "customer_present"
+    }
+  ],
+  "degraded_block_rule_score": 6,
+  "degraded_review_rule_score": 4,
+  "evidence_comparison": {
+    "cross_device_campaign": {
+      "block_rate_change": 0.3902,
+      "v1_like_block_rate": 0.0793,
+      "v2_full_block_rate": 0.4695
+    },
+    "patient_tester_weeks": {
+      "block_rate_change": 0.0,
+      "v1_like_block_rate": 0.4595,
+      "v2_full_block_rate": 0.4595
+    },
+    "sparse_multiday_tester": {
+      "block_rate_change": 0.0477,
+      "v1_like_block_rate": 0.619,
+      "v2_full_block_rate": 0.6667
+    }
+  },
+  "evidence_gate_diagnosis": "Dataset v3 validation does not exercise the selected gate: every attempt at score >= 0.90 already has at least two v2_full evidence signals. This demonstrates zero incremental protection here; it does not establish that the architecture has no value under shift.",
+  "evidence_gate_value": {
+    "attacks_no_longer_blocked": 0,
+    "attempts_at_or_above_block_threshold": 1409,
+    "attempts_withheld_low_evidence": 0,
+    "attempts_withheld_trusted": 0,
+    "block_attempts_suppressed_by_gate": 0,
+    "devices_blocked_with_gate": 296,
+    "devices_blocked_without_gate": 296,
+    "devices_suppressed_by_gate": 0,
+    "evidence_qualified_block_attempts": 1409,
+    "legitimate_blocks_prevented": 0,
+    "score_only_block_candidate_attempts": 1409,
+    "withheld_attack_scenarios": {},
+    "withheld_legitimate_scenarios": {}
+  },
+  "evidence_set": "v2_full",
+  "family": "evidence_gated_v2",
+  "feature_contract_sha256": "51bfa6604ed0486447ee16a43270f2092f0cac96b3ab0c2f0bad2748e8c28a38",
+  "features_sha256": "000c52aebbd0e2dbc58207289d6cba3db47ae4d771db3be251207dbb0365d51e",
+  "legitimate_scenario_friction": {
+    "cold_start_guest": {
+      "block_rate": 0.0,
+      "devices": 402,
+      "review_or_higher_rate": 0.0
+    },
+    "flash_sale_customer": {
+      "block_rate": 0.0,
+      "devices": 83,
+      "review_or_higher_rate": 0.0361
+    },
+    "household_shared_device": {
+      "block_rate": 0.0,
+      "devices": 107,
+      "review_or_higher_rate": 0.0841
+    },
+    "logged_in_new_customer": {
+      "block_rate": 0.0,
+      "devices": 154,
+      "review_or_higher_rate": 0.039
+    },
+    "long_dormant_returner": {
+      "block_rate": 0.0,
+      "devices": 96,
+      "review_or_higher_rate": 0.0
+    },
+    "micro_payment_customer": {
+      "block_rate": 0.03,
+      "devices": 100,
+      "review_or_higher_rate": 0.1
+    },
+    "mobile_network_churn": {
+      "block_rate": 0.0,
+      "devices": 93,
+      "review_or_higher_rate": 0.0645
+    },
+    "multi_device_customer": {
+      "block_rate": 0.0057,
+      "devices": 353,
+      "review_or_higher_rate": 0.0397
+    },
+    "network_retry_storm": {
+      "block_rate": 0.0476,
+      "devices": 63,
+      "review_or_higher_rate": 0.1587
+    },
+    "persistent_card_problem_customer": {
+      "block_rate": 0.0533,
+      "devices": 75,
+      "review_or_higher_rate": 0.12
+    },
+    "returning_customer_multi_episode": {
+      "block_rate": 0.0027,
+      "devices": 370,
+      "review_or_higher_rate": 0.0486
+    },
+    "shared_network_customer": {
+      "block_rate": 0.0181,
+      "devices": 166,
+      "review_or_higher_rate": 0.0422
+    },
+    "subscription_dunning": {
+      "block_rate": 0.0423,
+      "devices": 71,
+      "review_or_higher_rate": 0.2958
+    }
+  },
+  "merchant_friction": [
+    {
+      "attack_block_recall": 0.7143,
+      "attack_devices": 21,
+      "attack_review_or_higher_recall": 1.0,
+      "devices": 143,
+      "legitimate_block_rate": 0.0164,
+      "legitimate_devices": 122,
+      "legitimate_review_or_higher_rate": 0.0656,
+      "merchant_kind": "education"
+    },
+    {
+      "attack_block_recall": 0.5926,
+      "attack_devices": 54,
+      "attack_review_or_higher_recall": 0.8704,
+      "devices": 322,
+      "legitimate_block_rate": 0.0112,
+      "legitimate_devices": 268,
+      "legitimate_review_or_higher_rate": 0.0485,
+      "merchant_kind": "subscription"
+    },
+    {
+      "attack_block_recall": 0.5903,
+      "attack_devices": 144,
+      "attack_review_or_higher_recall": 0.8472,
+      "devices": 923,
+      "legitimate_block_rate": 0.0103,
+      "legitimate_devices": 779,
+      "legitimate_review_or_higher_rate": 0.0719,
+      "merchant_kind": "digital_goods"
+    },
+    {
+      "attack_block_recall": 0.6731,
+      "attack_devices": 52,
+      "attack_review_or_higher_recall": 0.9038,
+      "devices": 247,
+      "legitimate_block_rate": 0.0103,
+      "legitimate_devices": 195,
+      "legitimate_review_or_higher_rate": 0.0359,
+      "merchant_kind": "electronics"
+    },
+    {
+      "attack_block_recall": 0.7037,
+      "attack_devices": 27,
+      "attack_review_or_higher_recall": 0.8889,
+      "devices": 184,
+      "legitimate_block_rate": 0.0064,
+      "legitimate_devices": 157,
+      "legitimate_review_or_higher_rate": 0.0318,
+      "merchant_kind": "small_ecommerce"
+    },
+    {
+      "attack_block_recall": 0.4945,
+      "attack_devices": 91,
+      "attack_review_or_higher_recall": 0.8352,
+      "devices": 415,
+      "legitimate_block_rate": 0.0062,
+      "legitimate_devices": 324,
+      "legitimate_review_or_higher_rate": 0.0309,
+      "merchant_kind": "travel"
+    },
+    {
+      "attack_block_recall": 0.5823,
+      "attack_devices": 79,
+      "attack_review_or_higher_recall": 0.9114,
+      "devices": 367,
+      "legitimate_block_rate": 0.0035,
+      "legitimate_devices": 288,
+      "legitimate_review_or_higher_rate": 0.0486,
+      "merchant_kind": "flash_sale"
+    }
+  ],
+  "model_metadata_sha256": "ebd146a7d9387b7f6eff3b0260a71b68cbad87ba4410a2fd6f424a74fc3c9c71",
+  "model_only_at_same_thresholds": [
+    {
+      "attack_device_recall": 0.8739,
+      "attack_devices_detected": 409,
+      "attack_never_detected": 59,
+      "attempt_flag_rate": 0.2684,
+      "benchmark_precision": 0.8608,
+      "legitimate_device_fpr": 0.053,
+      "legitimate_devices_flagged": 113,
+      "median_first_detection_attempt": 4.0,
+      "threshold": 0.75
+    },
+    {
+      "attack_device_recall": 0.5919,
+      "attack_devices_detected": 277,
+      "attack_never_detected": 191,
+      "attempt_flag_rate": 0.1134,
+      "benchmark_precision": 0.9411,
+      "legitimate_device_fpr": 0.0089,
+      "legitimate_devices_flagged": 19,
+      "median_first_detection_attempt": 7.0,
+      "threshold": 0.9
+    }
+  ],
+  "model_sha256": "0317cef5d310bc5d5d2ed55e755d995a34c54ad28df5ea780a36cb1e6fea2e3c",
+  "model_version": "model-v2",
+  "policy_config_sha256": "92b0173e0ba073a9a20b7f09e5d0d82c9d40a52598cb9140ede36714a03c0052",
+  "policy_stage": "validation_selected",
+  "ranking": "constraint-first, then: attack review+ recall, attack block recall, earlier detection, lower legitimate review friction, broader evidence vocabulary, stronger evidence requirement",
+  "review_meaning": "a decision state in this prototype; a merchant could map it to step-up verification, rate limiting, a delayed retry or a manual queue. Sentinel issues no OTP, 3DS or issuer action.",
+  "review_threshold": 0.75,
+  "review_threshold_sweep": [
+    {
+      "attack_block_recall": 0.5919,
+      "attack_devices": 468,
+      "attack_never_detected": 21,
+      "attack_review_or_higher_recall": 0.9551,
+      "benchmark_attempt_precision": 0.7827,
+      "cumulative_attack_detection": {
+        "1": {
+          "block_rate": 0.0064,
+          "review_or_higher_rate": 0.141
+        },
+        "2": {
+          "block_rate": 0.047,
+          "review_or_higher_rate": 0.3611
+        },
+        "3": {
+          "block_rate": 0.0962,
+          "review_or_higher_rate": 0.7842
+        },
+        "5": {
+          "block_rate": 0.1603,
+          "review_or_higher_rate": 0.9274
+        }
+      },
+      "legitimate_block_rate": 0.0089,
+      "legitimate_blocked_devices": 19,
+      "legitimate_devices": 2133,
+      "legitimate_review_or_higher_rate": 0.1458,
+      "legitimate_reviewed_devices": 311,
+      "median_first_block_attempt": 7.0,
+      "median_first_review_attempt": 3.0,
+      "p90_first_block_attempt": 12.0,
+      "p90_first_review_attempt": 4.0,
+      "review_or_higher_attempt_rate": 0.3857,
+      "review_or_higher_attempts": 4790,
+      "review_threshold": 0.4
+    },
+    {
+      "attack_block_recall": 0.5919,
+      "attack_devices": 468,
+      "attack_never_detected": 22,
+      "attack_review_or_higher_recall": 0.953,
+      "benchmark_attempt_precision": 0.7966,
+      "cumulative_attack_detection": {
+        "1": {
+          "block_rate": 0.0064,
+          "review_or_higher_rate": 0.1368
+        },
+        "2": {
+          "block_rate": 0.047,
+          "review_or_higher_rate": 0.3291
+        },
+        "3": {
+          "block_rate": 0.0962,
+          "review_or_higher_rate": 0.7158
+        },
+        "5": {
+          "block_rate": 0.1603,
+          "review_or_higher_rate": 0.9209
+        }
+      },
+      "legitimate_block_rate": 0.0089,
+      "legitimate_blocked_devices": 19,
+      "legitimate_devices": 2133,
+      "legitimate_review_or_higher_rate": 0.1252,
+      "legitimate_reviewed_devices": 267,
+      "median_first_block_attempt": 7.0,
+      "median_first_review_attempt": 3.0,
+      "p90_first_block_attempt": 12.0,
+      "p90_first_review_attempt": 4.0,
+      "review_or_higher_attempt_rate": 0.3688,
+      "review_or_higher_attempts": 4581,
+      "review_threshold": 0.45
+    },
+    {
+      "attack_block_recall": 0.5919,
+      "attack_devices": 468,
+      "attack_never_detected": 27,
+      "attack_review_or_higher_recall": 0.9423,
+      "benchmark_attempt_precision": 0.8098,
+      "cumulative_attack_detection": {
+        "1": {
+          "block_rate": 0.0064,
+          "review_or_higher_rate": 0.1132
+        },
+        "2": {
+          "block_rate": 0.047,
+          "review_or_higher_rate": 0.2949
+        },
+        "3": {
+          "block_rate": 0.0962,
+          "review_or_higher_rate": 0.6474
+        },
+        "5": {
+          "block_rate": 0.1603,
+          "review_or_higher_rate": 0.8974
+        }
+      },
+      "legitimate_block_rate": 0.0089,
+      "legitimate_blocked_devices": 19,
+      "legitimate_devices": 2133,
+      "legitimate_review_or_higher_rate": 0.1092,
+      "legitimate_reviewed_devices": 233,
+      "median_first_block_attempt": 7.0,
+      "median_first_review_attempt": 3.0,
+      "p90_first_block_attempt": 12.0,
+      "p90_first_review_attempt": 4.0,
+      "review_or_higher_attempt_rate": 0.3522,
+      "review_or_higher_attempts": 4374,
+      "review_threshold": 0.5
+    },
+    {
+      "attack_block_recall": 0.5919,
+      "attack_devices": 468,
+      "attack_never_detected": 27,
+      "attack_review_or_higher_recall": 0.9423,
+      "benchmark_attempt_precision": 0.8232,
+      "cumulative_attack_detection": {
+        "1": {
+          "block_rate": 0.0064,
+          "review_or_higher_rate": 0.109
+        },
+        "2": {
+          "block_rate": 0.047,
+          "review_or_higher_rate": 0.2821
+        },
+        "3": {
+          "block_rate": 0.0962,
+          "review_or_higher_rate": 0.5855
+        },
+        "5": {
+          "block_rate": 0.1603,
+          "review_or_higher_rate": 0.8825
+        }
+      },
+      "legitimate_block_rate": 0.0089,
+      "legitimate_blocked_devices": 19,
+      "legitimate_devices": 2133,
+      "legitimate_review_or_higher_rate": 0.0933,
+      "legitimate_reviewed_devices": 199,
+      "median_first_block_attempt": 7.0,
+      "median_first_review_attempt": 3.0,
+      "p90_first_block_attempt": 12.0,
+      "p90_first_review_attempt": 5.0,
+      "review_or_higher_attempt_rate": 0.3374,
+      "review_or_higher_attempts": 4190,
+      "review_threshold": 0.55
+    },
+    {
+      "attack_block_recall": 0.5919,
+      "attack_devices": 468,
+      "attack_never_detected": 31,
+      "attack_review_or_higher_recall": 0.9338,
+      "benchmark_attempt_precision": 0.832,
+      "cumulative_attack_detection": {
+        "1": {
+          "block_rate": 0.0064,
+          "review_or_higher_rate": 0.0983
+        },
+        "2": {
+          "block_rate": 0.047,
+          "review_or_higher_rate": 0.2692
+        },
+        "3": {
+          "block_rate": 0.0962,
+          "review_or_higher_rate": 0.5256
+        },
+        "5": {
+          "block_rate": 0.1603,
+          "review_or_higher_rate": 0.8611
+        }
+      },
+      "legitimate_block_rate": 0.0089,
+      "legitimate_blocked_devices": 19,
+      "legitimate_devices": 2133,
+      "legitimate_review_or_higher_rate": 0.0816,
+      "legitimate_reviewed_devices": 174,
+      "median_first_block_attempt": 7.0,
+      "median_first_review_attempt": 3.0,
+      "p90_first_block_attempt": 12.0,
+      "p90_first_review_attempt": 5.0,
+      "review_or_higher_attempt_rate": 0.3245,
+      "review_or_higher_attempts": 4030,
+      "review_threshold": 0.6
+    },
+    {
+      "attack_block_recall": 0.5919,
+      "attack_devices": 468,
+      "attack_never_detected": 39,
+      "attack_review_or_higher_recall": 0.9167,
+      "benchmark_attempt_precision": 0.8389,
+      "cumulative_attack_detection": {
+        "1": {
+          "block_rate": 0.0064,
+          "review_or_higher_rate": 0.062
+        },
+        "2": {
+          "block_rate": 0.047,
+          "review_or_higher_rate": 0.2286
+        },
+        "3": {
+          "block_rate": 0.0962,
+          "review_or_higher_rate": 0.4316
+        },
+        "5": {
+          "block_rate": 0.1603,
+          "review_or_higher_rate": 0.8226
+        }
+      },
+      "legitimate_block_rate": 0.0089,
+      "legitimate_blocked_devices": 19,
+      "legitimate_devices": 2133,
+      "legitimate_review_or_higher_rate": 0.0727,
+      "legitimate_reviewed_devices": 155,
+      "median_first_block_attempt": 7.0,
+      "median_first_review_attempt": 4.0,
+      "p90_first_block_attempt": 12.0,
+      "p90_first_review_attempt": 6.0,
+      "review_or_higher_attempt_rate": 0.3079,
+      "review_or_higher_attempts": 3824,
+      "review_threshold": 0.65
+    },
+    {
+      "attack_block_recall": 0.5919,
+      "attack_devices": 468,
+      "attack_never_detected": 47,
+      "attack_review_or_higher_recall": 0.8996,
+      "benchmark_attempt_precision": 0.8493,
+      "cumulative_attack_detection": {
+        "1": {
+          "block_rate": 0.0064,
+          "review_or_higher_rate": 0.0534
+        },
+        "2": {
+          "block_rate": 0.047,
+          "review_or_higher_rate": 0.2179
+        },
+        "3": {
+          "block_rate": 0.0962,
+          "review_or_higher_rate": 0.3483
+        },
+        "5": {
+          "block_rate": 0.1603,
+          "review_or_higher_rate": 0.7799
+        }
+      },
+      "legitimate_block_rate": 0.0089,
+      "legitimate_blocked_devices": 19,
+      "legitimate_devices": 2133,
+      "legitimate_review_or_higher_rate": 0.0614,
+      "legitimate_reviewed_devices": 131,
+      "median_first_block_attempt": 7.0,
+      "median_first_review_attempt": 4.0,
+      "p90_first_block_attempt": 12.0,
+      "p90_first_review_attempt": 6.0,
+      "review_or_higher_attempt_rate": 0.2885,
+      "review_or_higher_attempts": 3583,
+      "review_threshold": 0.7
+    },
+    {
+      "attack_block_recall": 0.5919,
+      "attack_devices": 468,
+      "attack_never_detected": 59,
+      "attack_review_or_higher_recall": 0.8739,
+      "benchmark_attempt_precision": 0.8608,
+      "cumulative_attack_detection": {
+        "1": {
+          "block_rate": 0.0064,
+          "review_or_higher_rate": 0.0449
+        },
+        "2": {
+          "block_rate": 0.047,
+          "review_or_higher_rate": 0.1987
+        },
+        "3": {
+          "block_rate": 0.0962,
+          "review_or_higher_rate": 0.2927
+        },
+        "5": {
+          "block_rate": 0.1603,
+          "review_or_higher_rate": 0.7244
+        }
+      },
+      "legitimate_block_rate": 0.0089,
+      "legitimate_blocked_devices": 19,
+      "legitimate_devices": 2133,
+      "legitimate_review_or_higher_rate": 0.053,
+      "legitimate_reviewed_devices": 113,
+      "median_first_block_attempt": 7.0,
+      "median_first_review_attempt": 4.0,
+      "p90_first_block_attempt": 12.0,
+      "p90_first_review_attempt": 6.2,
+      "review_or_higher_attempt_rate": 0.2684,
+      "review_or_higher_attempts": 3334,
+      "review_threshold": 0.75
+    },
+    {
+      "attack_block_recall": 0.5919,
+      "attack_devices": 468,
+      "attack_never_detected": 77,
+      "attack_review_or_higher_recall": 0.8355,
+      "benchmark_attempt_precision": 0.8776,
+      "cumulative_attack_detection": {
+        "1": {
+          "block_rate": 0.0064,
+          "review_or_higher_rate": 0.0406
+        },
+        "2": {
+          "block_rate": 0.047,
+          "review_or_higher_rate": 0.1667
+        },
+        "3": {
+          "block_rate": 0.0962,
+          "review_or_higher_rate": 0.2543
+        },
+        "5": {
+          "block_rate": 0.1603,
+          "review_or_higher_rate": 0.6047
+        }
+      },
+      "legitimate_block_rate": 0.0089,
+      "legitimate_blocked_devices": 19,
+      "legitimate_devices": 2133,
+      "legitimate_review_or_higher_rate": 0.0431,
+      "legitimate_reviewed_devices": 92,
+      "median_first_block_attempt": 7.0,
+      "median_first_review_attempt": 4.0,
+      "p90_first_block_attempt": 12.0,
+      "p90_first_review_attempt": 8.0,
+      "review_or_higher_attempt_rate": 0.2415,
+      "review_or_higher_attempts": 2999,
+      "review_threshold": 0.8
+    }
+  ],
+  "scenario_budget_revision": {
+    "interpretation": "scenario ceilings are catastrophic-concentration guardrails, not statistical confidence bounds or family safety claims",
+    "original": "nine hand-authored family caps, including shared_network_customer block <= 0.01",
+    "problem": "small enriched cohorts made those rates resolve to one or two devices and treated sampling granularity as a safety result",
+    "replacement": "uniform 6x aggregate block and 5x aggregate review stress ceilings, each floored at two devices; aggregate caps unchanged",
+    "timing": "after the first zero-eligible search and before policy freeze"
+  },
+  "selected_on": "Dataset v3 validation split only",
+  "status": "validation_selected_v2",
+  "trust_suppression": "none",
+  "ttl_candidates": [
+    900,
+    1800,
+    3600
+  ],
+  "ttl_note": "A block never suppresses a later attempt in this measurement, so TTL changes no replay metric. It is chosen for explainability: long enough to break an automated run's cadence, short enough that a wrongly blocked customer can retry inside one shopping session. A prototype choice, not a Razorpay recommendation.",
+  "validation_metrics": {
+    "attack_block_recall": 0.5919,
+    "attack_devices": 468,
+    "attack_never_detected": 59,
+    "attack_review_or_higher_recall": 0.8739,
+    "cumulative_attack_detection": {
+      "1": {
+        "block_rate": 0.0064,
+        "review_or_higher_rate": 0.0449
+      },
+      "2": {
+        "block_rate": 0.047,
+        "review_or_higher_rate": 0.1987
+      },
+      "3": {
+        "block_rate": 0.0962,
+        "review_or_higher_rate": 0.2927
+      },
+      "5": {
+        "block_rate": 0.1603,
+        "review_or_higher_rate": 0.7244
+      }
+    },
+    "legitimate_block_rate": 0.0089,
+    "legitimate_blocked_devices": 19,
+    "legitimate_devices": 2133,
+    "legitimate_review_or_higher_rate": 0.053,
+    "legitimate_reviewed_devices": 113,
+    "median_first_block_attempt": 7.0,
+    "median_first_review_attempt": 4.0,
+    "p90_first_block_attempt": 12.0,
+    "p90_first_review_attempt": 6.199999999999989
+  },
+  "version": "validation-selected-v2"
+}

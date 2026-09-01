@@ -92,50 +92,40 @@ def test_scenario_label_never_appears_inside_any_planned_attempt_field():
             assert label not in encoded
 
 
-def test_legitimate_scenarios_retain_identity_far_more_than_attacker_scenarios():
-    def distinct_cards(name: str) -> int:
-        return len({a.card_suffix for a in SCENARIO_PLANS[name]})
+def test_verified_card_metadata_churns_far_more_for_attackers_than_legit():
+    """Post-hoc card metadata (last4 the merchant only learns from a
+    verified outcome) rotates far more in attacker plans. It is a weak
+    supporting signal, not a per-request card identity."""
+
+    def distinct_last4(name: str) -> int:
+        return len({a.outcome_card_last4 for a in SCENARIO_PLANS[name]})
 
     def distinct_sessions(name: str) -> int:
         return len({a.session_suffix for a in SCENARIO_PLANS[name]})
 
-    assert distinct_cards("normal_customer") == 1
+    assert distinct_last4("normal_customer") == 1
     assert distinct_sessions("normal_customer") == 1
-
-    # normal_bad_luck has *limited* diversity: exactly one card switch, not
-    # mechanical per-attempt rotation, and the session never changes.
-    assert distinct_cards("normal_bad_luck") == 2
+    assert distinct_last4("normal_bad_luck") == 2
     assert distinct_sessions("normal_bad_luck") == 1
+    assert distinct_last4("flash_standard") == 1
 
-    assert distinct_cards("flash_standard") == 1
+    hard_retry = [a.outcome_card_last4 for a in SCENARIO_PLANS["flash_hard_retry"]]
+    assert len(set(hard_retry[:-1])) == 1 and hard_retry[-1] != hard_retry[0]
 
-    # flash_hard_retry mainly retries the same card -- only the very last
-    # attempt introduces a second card.
-    hard_retry_cards = [a.card_suffix for a in SCENARIO_PLANS["flash_hard_retry"]]
-    assert hard_retry_cards[:-1] == ["card1"] * (len(hard_retry_cards) - 1)
-    assert hard_retry_cards[-1] == "card2"
-
-    # Attacker scenarios rotate cards far more than any legitimate scenario.
-    assert distinct_cards("burst_attacker") == len(SCENARIO_PLANS["burst_attacker"])
-    assert distinct_cards("evasive_attacker") > distinct_cards("normal_bad_luck")
-    assert distinct_cards("patient_attacker") > distinct_cards("normal_bad_luck")
+    assert distinct_last4("burst_attacker") == len(SCENARIO_PLANS["burst_attacker"])
+    assert distinct_last4("evasive_attacker") > distinct_last4("normal_bad_luck")
+    assert distinct_last4("patient_attacker") > distinct_last4("normal_bad_luck")
 
 
-def test_burst_attacker_switches_cards_essentially_every_attempt():
-    cards = [a.card_suffix for a in SCENARIO_PLANS["burst_attacker"]]
-    assert len(set(cards)) == len(cards)  # every attempt uses a new card
+def test_burst_attacker_shows_a_new_verified_card_essentially_every_attempt():
+    last4 = [a.outcome_card_last4 for a in SCENARIO_PLANS["burst_attacker"]]
+    assert len(set(last4)) == len(last4)
 
 
-def test_evasive_attacker_rotates_selectively_not_every_attempt():
-    """Selective rotation: identity changes in blocks, not on every single
-    attempt the way burst_attacker does."""
-    plan = SCENARIO_PLANS["evasive_attacker"]
-    cards = [a.card_suffix for a in plan]
-    # at least one immediate repeat (attempt N and N+1 share a card)
-    assert any(cards[i] == cards[i + 1] for i in range(len(cards) - 1))
-    # but still rotates overall
-    assert len(set(cards)) > 1
-    assert len(set(cards)) < len(cards)
+def test_evasive_attacker_rotates_verified_cards_selectively_not_every_attempt():
+    last4 = [a.outcome_card_last4 for a in SCENARIO_PLANS["evasive_attacker"]]
+    assert any(last4[i] == last4[i + 1] for i in range(len(last4) - 1))
+    assert 1 < len(set(last4)) < len(last4)
 
 
 def test_evasive_attacker_gaps_mix_short_and_long_pauses():

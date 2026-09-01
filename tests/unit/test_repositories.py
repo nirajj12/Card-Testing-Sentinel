@@ -4,7 +4,13 @@ import sqlite3
 import pytest
 
 from card_testing_sentinel.domain.exceptions import DuplicateConflictError
-from card_testing_sentinel.persistence.models import StoredEvent, StoredRequest
+from card_testing_sentinel.persistence.models import (
+    StoredEvent,
+    StoredGatewayOrder,
+    StoredGatewayPayment,
+    StoredRequest,
+    StoredWebhookDelivery,
+)
 from card_testing_sentinel.persistence.sqlite_repository import (
     SQLiteStateRepository,
 )
@@ -14,17 +20,17 @@ def _request() -> StoredRequest:
     return StoredRequest(
         request_id="request-1",
         event_id="event-1",
+        merchant_hash="hmac_merchant_a",
+        customer_hash=None,
         device_hash="hmac_device_a",
         session_hash="hmac_session_a",
         ip_hash="hmac_ip_a",
-        card_hash="hmac_card_a",
         timestamp="2030-01-01T00:00:00+00:00",
         event_sequence=1,
         payload_digest="digest",
         payload_json=json.dumps({"safe": True}),
         decision="allow",
-        raw_score=0.1,
-        risk_score=0.2,
+        risk_score=None,
         rule_score=0,
         reason_codes_json="[]",
         state_version=1,
@@ -66,4 +72,38 @@ def test_sqlite_event_foreign_key_and_unique_transition(tmp_path):
     with pytest.raises(DuplicateConflictError):
         repository.save_event(StoredEvent(**{**event.__dict__, "event_id": "other"}))
     assert repository.get_event("outcome-1") == event
-    assert repository.latest_order() == (event.timestamp, 2)
+
+
+def test_sqlite_persists_multiple_payments_and_webhook_delivery_ids(tmp_path):
+    repository = SQLiteStateRepository(tmp_path / "gateway.sqlite3")
+    repository.initialize()
+    repository.save_request(_request())
+    order = StoredGatewayOrder(
+        sentinel_request_id="request-1",
+        razorpay_order_id="order_test_1",
+        amount_minor=200,
+        currency="INR",
+        receipt="receipt-1",
+        status="created",
+    )
+    repository.save_gateway_order(order)
+    repository.save_gateway_payment(
+        StoredGatewayPayment(
+            "pay_failed", "order_test_1", "request-1", "failed", False, True
+        )
+    )
+    repository.save_gateway_payment(
+        StoredGatewayPayment(
+            "pay_captured",
+            "order_test_1",
+            "request-1",
+            "captured",
+            True,
+            True,
+            "recorded_approved",
+        )
+    )
+    delivery = StoredWebhookDelivery("evt-1", "digest-1", "payment.captured")
+    repository.save_webhook_delivery(delivery)
+    assert len(repository.gateway_payments_for_order("order_test_1")) == 2
+    assert repository.get_webhook_delivery("evt-1") == delivery

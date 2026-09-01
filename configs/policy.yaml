@@ -1,22 +1,108 @@
-operational_policy_artifact: artifacts/policy/operational_policy.json
+# Risk policy configuration.
+#
+# The model estimates behaviour; this file decides what friction the merchant
+# is willing to impose. `policy` below is the VALIDATION-SELECTED operating
+# point written by `pipelines/select_policy.py` -- it is not hand-tuned, and
+# the authoritative record with its metrics lives in
+# artifacts/policy/operational_policy.json.
+#
+# `review` is a decision state in this prototype. A production merchant could
+# map it to step-up verification, rate limiting, a delayed retry or a manual
+# queue. None of those are implemented here and none are claimed.
+#
+# `block` is always temporary and carries an expiry. Nothing is permanently
+# labelled fraudulent: after the TTL a later request is scored from current
+# history, so a device whose behaviour changes returns to allow on its own.
+
 actions: [allow, review, block]
 scoring_moment: pre_authorization_before_current_outcome
-reason_codes:
-  - persistent_high_model_risk
-  - consecutive_high_model_risk
-  - accumulated_model_risk
-  - high_risk_with_card_switching
-  - cross_session_card_diversity
-  - high_risk_with_ip_rotation
-  - high_risk_with_card_diversity
-  - successful_checkout_risk_reduction
-  - stable_retry_risk_reduction
-  - campaign_threshold_adjustment
-  - rule_corroborated_review
-  - rule_corroborated_block
-safety_rates:
-  overall_legitimate: {review_or_higher_rate: 0.03, block_rate: 0.01}
-  normal_standard: {review_or_higher_rate: 0.02, block_rate: 0.005}
-  normal_bad_luck: {review_or_higher_rate: 0.05, block_rate: 0.02}
-  flash_standard: {review_or_higher_rate: 0.05, block_rate: 0.03}
-  flash_hard_retry: {review_or_higher_rate: 0.10, block_rate: 0.05}
+
+policy:
+  version: validation-selected-1
+  family: evidence_gated
+  review_threshold: 0.60
+  block_threshold: 0.78
+  block_evidence: 2
+  block_elevated_count: 1
+  persistence_window_hours: 24
+  history_cap: 16
+  # 1 hour. Long enough to break an automated testing run's cadence, short
+  # enough that a genuine customer who was wrongly blocked can retry within a
+  # single shopping session. A prototype choice, not a Razorpay recommendation.
+  block_ttl_seconds: 3600
+  # Campaign tolerance earned its place on validation: it cut flash-sale
+  # false blocks 3x and total legitimate blocks 18%, at ~1 point of attack
+  # block recall and no cost to review recall.
+  campaign_review_increment: 0.05
+  campaign_block_increment: 0.02
+  # Failover only, when no model artifact can be loaded. Never uses the
+  # validation-selected ML thresholds.
+  degraded_review_rule_score: 4
+  degraded_block_rule_score: 6
+
+# ── operating-point search (validation only) ─────────────────────────────
+# Declared BEFORE any candidate is scored. Constraints first: a candidate is
+# eligible only if it stays inside this friction budget. Among eligible
+# candidates the ranking below is applied in order.
+policy_search:
+  review_thresholds: [0.45, 0.50, 0.55, 0.60, 0.65]
+  block_thresholds: [0.70, 0.74, 0.76, 0.78, 0.80, 0.82]
+  block_evidence_counts: [2, 3]
+  block_elevated_counts: [2, 3]
+  persistent_block_evidence_counts: [1, 2]
+  # [review_increment, block_increment] applied only while the merchant is
+  # running a campaign. The first entry is the campaign-agnostic control.
+  campaign_increments:
+    - [0.00, 0.00]
+    - [0.05, 0.02]
+    - [0.10, 0.05]
+
+  ranking:
+    - maximise attack review-or-higher recall
+    - maximise attack block recall
+    - minimise median first review attempt
+    - minimise legitimate review-or-higher rate
+
+# ── false-friction budget ────────────────────────────────────────────────
+# Prototype operating assumptions for a synthetic benchmark, not an industry
+# standard and not Razorpay policy. A block prevents a payment; a review does
+# not. The block caps are therefore far tighter than the review caps, and the
+# hard legitimate scenarios carry their own caps so a policy cannot look calm
+# in aggregate while punishing unlucky genuine customers.
+policy_constraints:
+  max_legitimate_block_rate: 0.006
+  max_legitimate_review_or_higher_rate: 0.06
+  # block false positives must be at least this many times rarer than reviews
+  min_review_to_block_ratio: 5.0
+  min_attack_review_or_higher_recall: 0.70
+
+  max_scenario_block_rate:
+    repeated_genuine_failures: 0.10
+    network_retry_storm: 0.08
+    flash_sale_customer: 0.04
+    failure_then_retry: 0.03
+    subscription_retry: 0.05
+    shared_network_customer: 0.01
+    cold_start_customer: 0.01
+    returning_customer: 0.005
+
+  # Generous by design: being reviewed more often is an acceptable outcome
+  # for a genuinely unlucky shopper. These only stop absurdity.
+  max_scenario_review_rate:
+    repeated_genuine_failures: 0.60
+    network_retry_storm: 0.35
+    flash_sale_customer: 0.25
+    cold_start_customer: 0.04
+    returning_customer: 0.015
+
+# ── illustrative cost weights ────────────────────────────────────────────
+# Prototype units invented only to order the options. NOT money, NOT Razorpay
+# economics. Reported alongside the raw counts, never instead of them, and
+# never used to fit the model or choose the thresholds.
+policy_costs:
+  legitimate_allow: 0
+  legitimate_review: 5
+  legitimate_block: 100
+  attack_allow: 25
+  attack_review: 8
+  attack_block: 0

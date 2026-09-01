@@ -1,47 +1,52 @@
-version: causal-features-1
+version: merchant-visible-causal-1
+
+# Every feature below is computable from information a merchant genuinely has
+# at the moment it calls Sentinel -- before it creates a Razorpay order:
+#   * the raw facts on the current request (device/session/ip/amount/campaign)
+#   * this device's OWN earlier requests (timestamps, ip, amount)
+#   * this device's earlier VERIFIED payment outcomes (approved/declined +
+#     the card/method metadata Razorpay reports afterwards)
+# Nothing here uses the current attempt's card, method, or outcome.
+#
+# Card metadata features are deliberately weak and few: `last4`/`network`
+# collide, and are only known post-hoc, so they are supporting signals --
+# never the dominant one.
+
 maximum_history_days: 7
-one_feature_max_f1: 0.85
-sanity_baseline_min_roc_auc: 0.60
-sanity_baseline_max_roc_auc: 0.97
 shuffled_label_max_roc_auc: 0.60
-high_correlation_threshold: 0.95
+one_feature_max_f1: 0.85
+
 features:
-  - prior_attempts_10s
-  - prior_attempts_60s
-  - prior_attempts_5m
-  - prior_attempts_1h
-  - prior_attempts_24h
-  - prior_attempts_7d
-  - prospective_requests_10s
-  - prospective_requests_60s
-  - distinct_cards_5m
-  - distinct_cards_1h
-  - distinct_cards_24h
-  - distinct_cards_7d
-  - distinct_bins_5m
-  - distinct_bins_24h
-  - cross_session_cards_24h
-  - cross_session_cards_7d
-  - prior_decline_streak
-  - prior_decline_ratio_5m
-  - prior_decline_ratio_24h
-  - attempts_before_first_approval
-  - attempts_after_first_approval
-  - seconds_since_previous_authorization
-  - device_age_seconds
-  - session_age_seconds
-  - seconds_since_previous_session
-  - sessions_24h
-  - sessions_7d
-  - ip_changes_24h
-  - devices_per_ip_5m
+  # request velocity -- from this device's prior committed requests
+  - requests_10s
+  - requests_60s
+  - requests_5m
+  - requests_24h
   - requests_per_ip_5m
-  - same_card_retry_ratio_24h
-  - card_switches_after_decline_24h
+  - devices_per_ip_24h
+  - seconds_since_last_request
+  - ip_changes_24h
+  # device / session shape
+  - device_age_seconds
+  - is_new_device
+  - session_age_seconds
+  - sessions_24h
+  - ip_rotation_ratio_24h
+  # verified historical outcomes -- prior attempts only
+  - prior_payments_24h
+  - recent_failures_24h
+  - failure_ratio_24h
+  - decline_streak
+  - successful_checkouts
+  - seconds_since_last_payment
+  - seconds_since_last_success
+  - retry_after_decline_ratio_24h
+  # amount behaviour -- merchant-visible request amounts
   - current_amount
-  - amount_delta_from_previous
+  - amount_delta
   - amount_variation_24h
-  - near_minimum_ratio_24h
-  - prior_successful_checkouts
-  - seconds_since_successful_checkout
-  - campaign_active
+  - low_amount_ratio_24h
+  # weak historical payment metadata -- from verified outcomes only
+  - distinct_card_last4_7d
+  - distinct_card_networks_7d
+  - card_change_after_decline_7d

@@ -1,0 +1,109 @@
+# Policy v2 configuration.
+#
+# The model estimates behaviour; this file decides what friction the merchant
+# is willing to impose. `policy` below is the VALIDATION-SELECTED operating
+# point written by pipelines/select_policy_v2.py -- it is not hand-tuned, and
+# the authoritative record with its metrics lives in
+# artifacts/policy_v2/operational_policy_v2.json.
+#
+# Policy v1 (configs/policy.yaml) is unchanged and still serves Model v1.
+#
+# `review` is a decision state in this prototype. A merchant could map it to
+# step-up verification, rate limiting, a delayed retry or a manual queue.
+# None of those are implemented here, and Sentinel does not issue OTP, 3DS or
+# any issuer action.
+#
+# `block` means no Razorpay order is created for that attempt. It is always
+# temporary and carries an expiry: after it, a later request is scored from
+# current history, so a device whose behaviour changes returns to allow.
+
+actions: [allow, review, block]
+scoring_moment: pre_authorization_before_current_outcome
+
+policy:
+  version: "validation-selected-v2"
+  family: "evidence_gated_v2"
+  # written by the selection pipeline
+  review_threshold: 0.75
+  block_threshold: 0.9
+  block_evidence: 2
+  evidence_set: "v2_full"
+  trust_suppression: "none"
+  block_ttl_seconds: 3600
+  campaign_review_increment: 0.0
+  campaign_block_increment: 0.0
+  # Failover only, when no model artifact can be loaded.
+  degraded_review_rule_score: 4
+  degraded_block_rule_score: 6
+
+# ── operating-point search (validation only) ─────────────────────────────
+# Compact and predefined. A brute-force sweep over thousands of arbitrary
+# combinations would mostly be fitting the search.
+policy_search:
+  review_thresholds: [0.50, 0.55, 0.60, 0.65, 0.70, 0.75]
+  block_thresholds: [0.75, 0.80, 0.85, 0.90]
+  block_evidence_counts: [1, 2, 3]
+  evidence_sets: [v1_like, v2_long_horizon, v2_full]
+  trust_suppression: [none, moderate]
+  # Policy v1's campaign tolerance degraded on Blind v1.1 -- it cost 9.8pp of
+  # attack block recall inside campaigns and did NOT reduce legitimate
+  # friction. It is re-offered as a candidate, never inherited.
+  campaign_increments:
+    - [0.0, 0.0]
+    - [0.05, 0.02]
+  # TTL does not change any replay metric (a block never suppresses a later
+  # attempt in the measurement), so it is compared separately on
+  # explainability rather than searched.
+  block_ttl_candidates: [900, 1800, 3600]
+  # Reporting-only cuts. They do not add candidates or alter selection.
+  reporting_review_thresholds: [0.40, 0.45, 0.50, 0.55, 0.60, 0.65, 0.70, 0.75, 0.80]
+
+# ── false-friction budget, declared BEFORE any candidate is scored ───────
+# Carried over from Phase 5 as development targets, with the two families
+# Model v2 flags hardest added explicitly. These are targets for this
+# synthetic benchmark, not guarantees.
+policy_constraints:
+  # Aggregate budget: unchanged from Phase 5, and satisfiable -- 216 of the
+  # 864 candidates meet both aggregate caps.
+  max_legitimate_block_rate: 0.010
+  max_legitimate_review_or_higher_rate: 0.060
+  min_review_to_block_ratio: 5.0
+  min_attack_review_or_higher_recall: 0.70
+
+  # REVISION (recorded, not hidden). The first version of this budget listed
+  # nine hand-picked per-family caps chosen by analogy to Phase 5's v1
+  # families. Every one of the 864 candidates failed, and the reason was not
+  # the policy: several caps were below the arithmetic granularity of the
+  # family. `shared_network_customer <= 0.010` on 166 devices permits at most
+  # ONE blocked device; `cold_start_guest <= 0.005` on 402 permits two. Caps
+  # that small measure sampling noise, not friction.
+  #
+  # They are replaced, before policy freeze, by one uniform size-aware stress
+  # guardrail rather than nine family-specific numbers:
+  #
+  #   block cap  = max(block_multiple  * aggregate_block_cap,
+  #                    minimum_devices_allowance / family_devices)
+  #   review cap = max(review_multiple * aggregate_review_cap,
+  #                    minimum_devices_allowance / family_devices)
+  #
+  # These scenario cohorts are deliberately enriched failure-mode stress
+  # tests, not random draws from the aggregate legitimate population, so a
+  # binomial confidence bound around the aggregate rate would be invalid.
+  # The uniform 6% block / 30% review ceilings are catastrophic-concentration
+  # guardrails, not claimed statistical guarantees. The aggregate 1% / 6%
+  # budget above remains the constraint that bounds overall merchant friction.
+  # Family metrics are still reported in full and must be judged explicitly.
+  scenario_caps:
+    block_multiple: 6.0
+    review_multiple: 5.0
+    minimum_devices_allowance: 2
+
+# Illustrative only: prototype units invented for ordering options, not
+# Razorpay economics and not money.
+costs:
+  legitimate_allow: 0.0
+  legitimate_review: 1.0
+  legitimate_block: 25.0
+  attack_allow: 12.0
+  attack_review: 3.0
+  attack_block: 0.0

@@ -1,8 +1,8 @@
-"""Demo orchestration driving the real production FraudDetectionService.
+"""Demo orchestration driving the real production RiskService.
 
 This intentionally does not construct a second scoring path, a second
 feature engine, a second policy, or a second (in-memory) repository. It is
-handed the *same* FraudDetectionService instance -- backed by the same
+handed the *same* RiskService instance -- backed by the same
 SQLite repository -- that live `/api/precheck` traffic uses, and drives it
 through real precheck/outcome/checkout transitions with uniquely
 namespaced synthetic identifiers per run.
@@ -42,8 +42,8 @@ from card_testing_sentinel.api.contracts import (
     PrecheckRequest,
 )
 from card_testing_sentinel.security.identifiers import IdentifierProtector
-from card_testing_sentinel.services.fraud_detection import FraudDetectionService
 from card_testing_sentinel.services.operations_projection import build_projection
+from card_testing_sentinel.services.risk_service import RiskService
 from card_testing_sentinel.services.scenario_generation import (
     SCENARIO_CATALOG,
     SCENARIO_PLANS,
@@ -59,19 +59,7 @@ from card_testing_sentinel.services.traffic_simulation import (
 _OUTCOME_LAG_SECONDS = 1
 _CHECKOUT_LAG_SECONDS = 30
 _DEMO_CURRENCY = "INR"
-_DEMO_CARD_BIN = "410000"
-
-
-def card_label(card_suffix: str) -> str:
-    """An honest display label for a synthetic card.
-
-    The backend holds an HMAC fingerprint, never a PAN, so there is no real
-    last-four to show. Fabricating one (``•••• 4512``) would invent data the
-    system does not have. ``Card #02`` says exactly what is true: this device
-    is on its second distinct card.
-    """
-    digits = "".join(character for character in card_suffix if character.isdigit())
-    return f"Card #{int(digits):02d}" if digits else f"Card {card_suffix}"
+_DEMO_MERCHANT = "demo-merchant"
 
 
 @dataclass
@@ -127,7 +115,7 @@ class TrafficRun:
 
 
 class DemoManager:
-    def __init__(self, service: FraudDetectionService, protector: IdentifierProtector):
+    def __init__(self, service: RiskService, protector: IdentifierProtector):
         self.service = service
         self.protector = protector
         self.runs: dict[str, DemoRun] = {}
@@ -140,19 +128,10 @@ class DemoManager:
         ]
 
     def _clock_anchor(self) -> datetime:
-        """The demo clock must begin strictly after the latest persisted
-        (timestamp, event_sequence) in the shared repository -- global
-        ordering, the same tuple `FraudDetectionService._assert_not_late`
-        compares against -- so any future-dated row already committed
-        (from a previous demo run, or live traffic) can never make a fresh
-        run's first attempt look late. With no persisted rows yet, the
-        current wall-clock time is used instead; there is nothing to be
-        strictly after."""
-        latest = self.service.repository.latest_order()
-        if latest is None:
-            return datetime.now(UTC)
-        latest_timestamp = datetime.fromisoformat(latest[0])
-        return latest_timestamp + timedelta(seconds=1)
+        # Ordering is per device, and every run uses a fresh namespace (so a
+        # fresh device hash). A run's devices are therefore independent of
+        # anything already persisted and cannot be "late" against it.
+        return datetime.now(UTC)
 
     # ------------------------------------------------------------------
     # Shared drive path
@@ -182,7 +161,6 @@ class DemoManager:
         """
         device_id = f"{namespace}_device"
         session_id = f"{namespace}_{spec.session_suffix}"
-        card_reference = f"{namespace}_{spec.card_suffix}"
         ip_reference = f"{namespace}_{spec.ip_suffix}"
         request_id = f"{namespace}_request_{attempt}"
 
@@ -190,10 +168,9 @@ class DemoManager:
         precheck_request = PrecheckRequest(
             request_id=request_id,
             event_id=f"{namespace}_precheck_{attempt}",
+            merchant_id=_DEMO_MERCHANT,
             device_id=device_id,
             session_id=session_id,
-            card_reference=card_reference,
-            card_bin=_DEMO_CARD_BIN,
             ip_reference=ip_reference,
             amount=spec.amount,
             currency=_DEMO_CURRENCY,
@@ -218,7 +195,9 @@ class DemoManager:
                         "session_id": session_id,
                         "attempt": attempt,
                         "authorization_result": spec.authorization_result,
-                        "decline_reason": spec.decline_reason,
+                        "failure_reason": spec.failure_reason,
+                        "card_last4": spec.outcome_card_last4,
+                        "card_network": spec.outcome_card_network,
                     },
                 )
             )
@@ -276,7 +255,10 @@ class DemoManager:
                     timestamp=timestamp,
                     event_sequence=next_sequence(),
                     authorization_result=payload["authorization_result"],
-                    decline_reason=payload["decline_reason"],
+                    failure_reason=payload["failure_reason"],
+                    payment_method="card",
+                    card_last4=payload["card_last4"],
+                    card_network=payload["card_network"],
                 )
             )
             return payload["authorization_result"]
@@ -366,7 +348,6 @@ class DemoManager:
                 "amount": spec.amount,
                 "currency": _DEMO_CURRENCY,
                 "campaign_active": spec.campaign_active,
-                "card_alias": card_label(spec.card_suffix),
                 "timestamp": result["timestamp"].isoformat(),
                 "elapsed_seconds": run.elapsed_seconds,
             },
@@ -461,7 +442,6 @@ class DemoManager:
             "attempt": scheduled.attempt,
             "amount": scheduled.spec.amount,
             "currency": _DEMO_CURRENCY,
-            "card_alias": card_label(scheduled.spec.card_suffix),
             "campaign_active": scheduled.spec.campaign_active,
             "virtual_timestamp": result["timestamp"].isoformat(),
             "virtual_offset_seconds": scheduled.offset_seconds,

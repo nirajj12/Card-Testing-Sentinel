@@ -1,0 +1,8 @@
+baseline,baseline_fpr,baseline_recall,model,model_fpr,model_recall,recall_gain
+count_requests_5m_ge_3,0.0366,0.1645,model_ge_0.8,0.0431,0.8355,0.671
+failures_7d_ge_4,0.038,0.6068,model_ge_0.8,0.0431,0.8355,0.2287
+rules_ge_2,0.0441,0.688,model_ge_0.8,0.0431,0.8355,0.1475
+customer_devices_7d_ge_2,0.0534,0.3034,model_ge_0.7,0.0614,0.8996,0.5962
+failures_7d_ge_3,0.0736,0.7073,model_ge_0.6,0.0816,0.9338,0.2265
+count_requests_24h_ge_4,0.0806,0.5513,model_ge_0.6,0.0816,0.9338,0.3825
+count_requests_24h_ge_3,0.1946,0.641,model_ge_0.3,0.1946,0.9615,0.3205

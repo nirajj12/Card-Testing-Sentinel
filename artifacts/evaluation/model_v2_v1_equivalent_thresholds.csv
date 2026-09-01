@@ -1,0 +1,7 @@
+threshold,attack_device_recall,legitimate_device_fpr,attack_devices_detected,attack_never_detected,legitimate_devices_flagged,benchmark_precision,attempt_flag_rate,median_first_detection_attempt
+0.3,0.985,0.6723,461,7,1434,0.5289,0.6878,2.0
+0.4,0.985,0.5659,461,7,1207,0.5914,0.5971,2.0
+0.5,0.9744,0.376,456,12,802,0.666,0.4999,2.0
+0.6,0.9487,0.2227,444,24,475,0.7446,0.4063,2.0
+0.7,0.9167,0.1144,429,39,244,0.824,0.3184,3.0
+0.8,0.8333,0.0474,390,78,101,0.8942,0.2389,4.0

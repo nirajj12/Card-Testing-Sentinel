@@ -1,0 +1,117 @@
+{
+  "blind_evaluated": false,
+  "calibration_bins": [
+    {
+      "bin_high": 0.1,
+      "bin_low": 0.0,
+      "mean_predicted": 0.0387,
+      "observed_rate": 0.0384,
+      "weight": 4955.7132
+    },
+    {
+      "bin_high": 0.2,
+      "bin_low": 0.1,
+      "mean_predicted": 0.1458,
+      "observed_rate": 0.1616,
+      "weight": 580.3162
+    },
+    {
+      "bin_high": 0.3,
+      "bin_low": 0.2,
+      "mean_predicted": 0.2462,
+      "observed_rate": 0.2539,
+      "weight": 343.1359
+    },
+    {
+      "bin_high": 0.4,
+      "bin_low": 0.3,
+      "mean_predicted": 0.3474,
+      "observed_rate": 0.3943,
+      "weight": 147.3706
+    },
+    {
+      "bin_high": 0.5,
+      "bin_low": 0.4,
+      "mean_predicted": 0.4511,
+      "observed_rate": 0.4047,
+      "weight": 141.9445
+    },
+    {
+      "bin_high": 0.6,
+      "bin_low": 0.5,
+      "mean_predicted": 0.5527,
+      "observed_rate": 0.5172,
+      "weight": 120.0556
+    },
+    {
+      "bin_high": 0.7,
+      "bin_low": 0.6,
+      "mean_predicted": 0.6485,
+      "observed_rate": 0.595,
+      "weight": 126.8598
+    },
+    {
+      "bin_high": 0.8,
+      "bin_low": 0.7,
+      "mean_predicted": 0.7529,
+      "observed_rate": 0.6976,
+      "weight": 144.5425
+    },
+    {
+      "bin_high": 0.9,
+      "bin_low": 0.8,
+      "mean_predicted": 0.8597,
+      "observed_rate": 0.864,
+      "weight": 295.0702
+    },
+    {
+      "bin_high": 1.0,
+      "bin_low": 0.9,
+      "mean_predicted": 0.9099,
+      "observed_rate": 0.9651,
+      "weight": 144.9914
+    }
+  ],
+  "calibration_rule": "adopted only if it improves Brier without costing more than 0.005 device-weighted PR-AUC",
+  "created_utc": "2026-08-31T16:06:15.112285+00:00",
+  "environment": {
+    "numpy": "1.26.4",
+    "pandas": "2.2.3",
+    "platform": "macOS-26.5.2-arm64-arm-64bit",
+    "python": "3.11.13",
+    "sklearn": "1.6.1"
+  },
+  "feature_contract_sha256": "51bfa6604ed0486447ee16a43270f2092f0cac96b3ab0c2f0bad2748e8c28a38",
+  "feature_contract_version": "merchant-visible-causal-2",
+  "feature_count": 39,
+  "features_sha256": "000c52aebbd0e2dbc58207289d6cba3db47ae4d771db3be251207dbb0365d51e",
+  "folds": 5,
+  "group_by": "customer_then_device",
+  "interactions": [],
+  "model_sha256": "0317cef5d310bc5d5d2ed55e755d995a34c54ad28df5ea780a36cb1e6fea2e3c",
+  "model_version": "model-v2",
+  "note": "Selected on TRAIN out-of-fold predictions only. The validation split was not read during selection or calibration.",
+  "out_of_fold_scores": {
+    "brier": 0.074918,
+    "ece": 0.007896,
+    "log_loss": 0.259664,
+    "positive_rate": 0.16,
+    "pr_auc": 0.727634,
+    "roc_auc": 0.889815
+  },
+  "reference_flag_rate": 0.241,
+  "selected_calibration": "sigmoid",
+  "selected_candidate": "logistic_C10.0",
+  "selected_family": "logistic_regression",
+  "selected_parameters": {
+    "C": 10.0,
+    "max_iter": 2000
+  },
+  "status": "development_candidate_v2",
+  "training_config_sha256": "1bb21be77d6d39bc052ae2e21b6b9cd745d4faed453acf692f1d0213f828c3fa",
+  "training_devices": 7000,
+  "training_groups": 6096,
+  "training_rows": 28097,
+  "training_seed": 90210443,
+  "validation_scored": false
+}

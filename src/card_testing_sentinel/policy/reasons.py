@@ -1,16 +1,25 @@
-"""Stable, non-sensitive policy explanation contract."""
+"""Stable, non-sensitive policy explanation contract.
+
+Anything the policy emits must be in this tuple; an unlisted code fails
+closed rather than reaching a caller.
+"""
 
 REASON_CODES = (
-    "persistent_high_model_risk",
-    "consecutive_high_model_risk",
-    "accumulated_model_risk",
-    "high_risk_with_card_switching",
-    "cross_session_card_diversity",
-    "high_risk_with_ip_rotation",
-    "high_risk_with_card_diversity",
-    "successful_checkout_risk_reduction",
-    "stable_retry_risk_reduction",
-    "campaign_threshold_adjustment",
-    "rule_corroborated_review",
-    "rule_corroborated_block",
+    # model / policy state
+    "elevated_model_risk",
+    "persistent_elevated_risk",
+    "campaign_tolerance_applied",
+    "degraded_rules_only",
+    # corroborating evidence supporting a block
+    "repeated_verified_failures",
+    "verified_decline_streak",
+    "multi_session_persistence",
+    "ip_rotation_evidence",
+    "sustained_request_burst",
+    "rapid_retry_after_decline",
+    # deterministic rule layer (degraded mode and audit)
+    "rapid_request_velocity",
+    "shared_ip_intensity",
+    "low_amount_velocity",
+    "historical_card_churn",
 )

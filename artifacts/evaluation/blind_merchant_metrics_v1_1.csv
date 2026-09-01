@@ -1,0 +1,11 @@
+merchant_kind,devices,legitimate_devices,attack_devices,legitimate_review_or_higher_rate,legitimate_block_rate,attack_review_or_higher_recall,attack_block_recall,requests,category
+digital_goods,226,187,39,0.0695,0.0267,0.641,0.4615,570,A_seen_in_development
+electronics,203,168,35,0.119,0.0238,0.7714,0.5714,590,A_seen_in_development
+subscription,222,183,39,0.0492,0.0164,0.6923,0.4103,610,A_seen_in_development
+food_delivery,521,424,97,0.0755,0.0142,0.5876,0.3608,1286,C_new_blind_only_kind
+travel,219,164,55,0.061,0.0122,0.6182,0.4364,632,B_declared_but_unrealized_in_development
+education,297,259,38,0.0618,0.0116,0.5526,0.4211,623,A_seen_in_development
+flash_sale,382,310,72,0.0548,0.0097,0.6389,0.4167,975,A_seen_in_development
+ticketing_events,371,320,51,0.0594,0.0094,0.7843,0.5098,956,C_new_blind_only_kind
+small_ecommerce,183,154,29,0.0455,0.0065,0.6207,0.3448,456,A_seen_in_development
+gaming_topups,267,231,36,0.0519,0.0043,0.8333,0.5833,673,C_new_blind_only_kind

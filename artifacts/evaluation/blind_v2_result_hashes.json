@@ -1,0 +1,32 @@
+{
+  "blind_version": "v2",
+  "consumed": true,
+  "created_utc": "2026-08-31T18:11:09.679462+00:00",
+  "evaluated": true,
+  "files": {
+    "baseline_report": "artifacts/evaluation/blind_v2_baselines.csv",
+    "calibration": "artifacts/evaluation/blind_v2_calibration.csv",
+    "consumption_record": "artifacts/evaluation/blind_v2_consumption.json",
+    "detection_delay": "artifacts/evaluation/blind_v2_detection_delay.json",
+    "evaluation_module": "src/card_testing_sentinel/ml/blind_v2_evaluation.py",
+    "evaluation_pipeline": "pipelines/evaluate_blind_v2_once.py",
+    "family_metrics": "artifacts/evaluation/blind_v2_family_metrics.csv",
+    "metrics": "artifacts/evaluation/blind_v2_metrics.json",
+    "phase_13_report": "reports/phase_13_blind_v2_evaluation_report.md",
+    "threshold_table": "artifacts/evaluation/blind_v2_threshold_table.csv"
+  },
+  "hashes": {
+    "baseline_report": "efc07a047039c5eba1073582fcc49e93f46638f8014b4c4a0fc23199f4ba40b5",
+    "calibration": "4a433e60951b2095198eeaeed865c2fa2d2659c6e480dcd39ddea5fe4f8e7629",
+    "consumption_record": "96b6265657c9c2273d2b25938a0377a47a36a2f0487174c01f514b439aae8903",
+    "detection_delay": "d1e9e02c7f38c01049f1db3e212fe57e1d00cd2eaf12b2be786df2bc664281df",
+    "evaluation_module": "4b39bf139be61201d5e4f4900a8ebffb50f7cb6d1269f2f875694711911a8c44",
+    "evaluation_pipeline": "5238c301b23c727088bff8d9e996a8ed7b0e426eac4da2187b9f0d91c8be8f9a",
+    "family_metrics": "c0c4238aa15e9a06f92bdb5f0585c9d05bc751099c6ac8208430dea2ef152e23",
+    "metrics": "8624f6f3f1755b26bfc7e732857ced4b8d8ee33e9cf217d79ad6fba63f4331b1",
+    "phase_13_report": "04fb06381ac642a04f3ebfcb5bf7f622d7d93b7ff328b224e612a2d42470e4cc",
+    "threshold_table": "94aabaf86308b0e72fd68a180082bd1376bbd845ec5a26b44691f1ca330c4815"
+  },
+  "note": "The report hash is external to the report to avoid self-hash recursion.",
+  "post_blind_tuning": false
+}

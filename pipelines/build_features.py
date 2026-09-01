@@ -1,23 +1,29 @@
+"""Replay generated raw events through the live FeatureEngine.
+
+    python pipelines/build_features.py
+
+Produces data/generated/development/features.csv. Feature values come only
+from the runtime engine; labels are joined afterwards on device_id.
+"""
+
 from pathlib import Path
 
 import pandas as pd
 
-from card_testing_sentinel.features.batch import replay_training_events
+from card_testing_sentinel.features.batch import build_feature_table, read_raw_events
 
 ROOT = Path(__file__).resolve().parents[1]
+DATA = ROOT / "data/generated/development"
 
 if __name__ == "__main__":
-    data_dir = ROOT / "data/development"
-    raw = pd.read_csv(data_dir / "raw_events.csv")
-    devices = pd.read_csv(data_dir / "device_splits.csv")
-    split_map = devices.set_index("device_id")["split"]
-    parts = []
-    for split, events in raw.assign(split=raw.device_id.map(split_map)).groupby(
-        "split", sort=True
-    ):
-        features, _latencies = replay_training_events(events.drop(columns="split"))
-        features["split"] = split
-        parts.append(features)
-    pd.concat(parts, ignore_index=True).to_csv(
-        data_dir / "events_with_features.csv", index=False, float_format="%.12g"
+    raw = read_raw_events(DATA / "raw_events.csv")
+    labels = pd.read_csv(DATA / "labels.csv")
+    features = build_feature_table(raw, labels)
+    features.to_csv(DATA / "features.csv", index=False, lineterminator="\n")
+    print(
+        {
+            "rows": len(features),
+            "splits": features.groupby("split").size().to_dict(),
+            "label_rows": features.groupby("label").size().to_dict(),
+        }
     )

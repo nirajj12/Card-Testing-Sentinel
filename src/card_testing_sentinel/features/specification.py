@@ -1,4 +1,10 @@
-"""Authoritative ordered causal-feature contracts."""
+"""The ordered causal-feature contract.
+
+Every feature is derivable from what a merchant knows when it calls Sentinel
+(raw request facts + this device's own earlier requests + this device's
+earlier *verified* payment outcomes). No feature uses the current attempt's
+card, payment method, or outcome -- see ``configs/features.yaml``.
+"""
 
 from __future__ import annotations
 
@@ -8,53 +14,41 @@ import yaml
 
 from card_testing_sentinel.common.paths import project_root
 
-PROJECT_ROOT = project_root()
+_CONTRACT = yaml.safe_load((project_root() / "configs/features.yaml").read_text())
 
-BASE_FEATURES = tuple(
-    yaml.safe_load((PROJECT_ROOT / "configs/features.yaml").read_text())["features"]
-)
-
-REMOVED_CORRELATED_FEATURES = {
-    "prior_attempts_10s",
-    "prior_attempts_60s",
-}
-
-EXTENDED_FEATURES = (
-    "prior_attempts_14d",
-    "distinct_cards_14d",
-    "amount_continuity_score_30d",
-    "amount_continuity_history_available",
-    "ip_rotation_ratio_24h",
-    "checkout_completion_lag_seconds",
-    "checkout_completion_lag_available",
-)
-
-MODEL_FEATURES = (
-    tuple(name for name in BASE_FEATURES if name not in REMOVED_CORRELATED_FEATURES)
-    + EXTENDED_FEATURES
-)
+MODEL_FEATURES: tuple[str, ...] = tuple(_CONTRACT["features"])
 MODEL_FEATURES_SHA256 = hashlib.sha256("\n".join(MODEL_FEATURES).encode()).hexdigest()
+FEATURE_CONTRACT_VERSION = str(_CONTRACT["version"])
 
+# Substrings that must never appear in a feature name: labels, dataset
+# bookkeeping, raw identifiers, and current-card / current-outcome fields.
 FORBIDDEN_TERMS = (
     "label",
     "population",
     "attack_subtype",
-    "scenario_tag",
+    "scenario",
     "split",
-    "result",
-    "outcome",
     "device_id",
     "session_id",
+    "merchant_id",
+    "customer_id",
     "fingerprint",
     "card_token",
+    "card_reference",
+    "card_bin",
+    "pan",
+    "cvv",
+    "authorization_result",
 )
 
 
 def validate_feature_contract() -> None:
-    if len(MODEL_FEATURES) != 44 or len(MODEL_FEATURES) != len(set(MODEL_FEATURES)):
-        raise ValueError("model feature contract must contain 44 unique features")
+    if len(MODEL_FEATURES) != len(set(MODEL_FEATURES)):
+        raise ValueError("feature contract contains duplicates")
+    if not MODEL_FEATURES:
+        raise ValueError("feature contract is empty")
     unsafe = [
         name for name in MODEL_FEATURES if any(term in name for term in FORBIDDEN_TERMS)
     ]
     if unsafe:
-        raise ValueError(f"unsafe model features: {unsafe}")
+        raise ValueError(f"unsafe feature names: {unsafe}")

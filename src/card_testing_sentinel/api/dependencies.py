@@ -6,18 +6,18 @@ from typing import Annotated, Any
 from fastapi import Depends, Request
 
 from card_testing_sentinel.modeling.registry import ArtifactRegistry
-from card_testing_sentinel.services.fraud_detection import FraudDetectionService
+from card_testing_sentinel.services.risk_service import RiskService
 
 
 @dataclass
 class ApplicationRuntime:
     config: dict
     registry: ArtifactRegistry | None = None
-    service: FraudDetectionService | None = None
+    service: RiskService | None = None
     demo: Any = None
+    razorpay: Any = None
     ready: bool = False
     startup_error: str | None = None
-    compatibility_report: dict | None = None
     recent_api_latencies_ms: list[float] = field(default_factory=list)
 
 

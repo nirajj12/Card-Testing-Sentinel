@@ -1,0 +1,7 @@
+merchant_kind,devices,attack_devices,legitimate_devices,attack_recall,legitimate_fpr,requests
+digital_goods,427,78,349,0.7692,0.0201,1080
+education,430,61,369,0.8361,0.0569,1150
+electronics,289,49,240,0.7959,0.0583,779
+flash_sale,254,58,196,0.8621,0.0969,807
+small_ecommerce,337,60,277,0.85,0.0469,990
+subscription,429,91,338,0.8242,0.0237,1236

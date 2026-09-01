@@ -37,6 +37,7 @@ mlruns/
 # Generated runtime and model outputs
 data/runtime/
 data/development/
+data/generated/
 artifacts/development/
 *.db
 *.db-wal

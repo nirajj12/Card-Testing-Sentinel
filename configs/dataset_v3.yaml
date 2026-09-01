@@ -1,0 +1,587 @@
+# Dataset v3 -- the final development dataset.
+#
+# See docs/dataset_v3_spec.md for the reasoning behind every number here.
+#
+# v3 replaces Dataset V2 as the training/validation corpus. It does NOT edit
+# Dataset V2, Model v1, Policy v1 or Blind v1.1, and it does not touch any
+# file inside the Blind v1.1 freeze bundle.
+#
+# Behaviour is declared as LATENT PARAMETER RANGES, never as a label or a
+# feature value. Ranges overlap between populations on purpose.
+
+dataset_name: development-v3
+generator_version: dataset-v3-1
+spec_version: v3
+currency: INR
+
+# --------------------------------------------------------------------------
+# merchants
+# --------------------------------------------------------------------------
+# `login_affinity` scales how likely a shopper at this merchant is signed in.
+# A subscription service is nearly always an account; a flash sale is not.
+# It is a property of the business, never of the actor, and merchant kind is
+# still not a model feature.
+#
+# v3 fix (M5): every declared kind gets at least one instance. Dataset V2 and
+# Blind v1.0 sampled kinds WITH REPLACEMENT and silently lost `travel`.
+merchants:
+  seed: 60700411
+  count: 16
+  campaign_calendar:
+    start: 2026-01-01T00:00:00+00:00
+    days: 420
+    window_days: [1.5, 5.0]
+  kinds:
+    small_ecommerce:
+      weight: 4
+      login_affinity: 0.85
+      typical_amount: [700, 2600]
+      amount_spread: [0.55, 0.85]
+      base_success_rate: [0.94, 0.98]
+      campaign_share: [0.03, 0.10]
+      returning_customer_rate: [0.25, 0.45]
+      shared_ip_pressure: [0.05, 0.15]
+    digital_goods:
+      weight: 3
+      login_affinity: 1.00
+      typical_amount: [60, 340]
+      amount_spread: [0.90, 1.35]
+      base_success_rate: [0.94, 0.98]
+      campaign_share: [0.05, 0.15]
+      returning_customer_rate: [0.35, 0.60]
+      shared_ip_pressure: [0.08, 0.20]
+    subscription:
+      weight: 2
+      login_affinity: 1.15            # an account is required to subscribe
+      typical_amount: [199, 899]
+      amount_spread: [0.30, 0.50]
+      base_success_rate: [0.92, 0.97]
+      campaign_share: [0.0, 0.02]
+      returning_customer_rate: [0.55, 0.80]
+      shared_ip_pressure: [0.05, 0.12]
+    electronics:
+      weight: 2
+      login_affinity: 0.75
+      typical_amount: [6000, 42000]
+      amount_spread: [0.70, 1.05]
+      base_success_rate: [0.90, 0.96]
+      campaign_share: [0.06, 0.18]
+      returning_customer_rate: [0.10, 0.25]
+      shared_ip_pressure: [0.04, 0.12]
+    education:
+      weight: 2
+      login_affinity: 1.05
+      typical_amount: [900, 14000]
+      amount_spread: [0.80, 1.20]
+      base_success_rate: [0.92, 0.97]
+      campaign_share: [0.02, 0.08]
+      returning_customer_rate: [0.15, 0.35]
+      shared_ip_pressure: [0.25, 0.55]   # campus / institutional networks
+    flash_sale:
+      weight: 2
+      login_affinity: 0.60            # guest checkout dominates a drop
+      typical_amount: [400, 2200]
+      amount_spread: [0.60, 0.95]
+      base_success_rate: [0.87, 0.94]
+      campaign_share: [0.30, 0.55]
+      returning_customer_rate: [0.20, 0.40]
+      shared_ip_pressure: [0.20, 0.45]
+    travel:
+      weight: 1
+      login_affinity: 0.70
+      typical_amount: [3500, 28000]
+      amount_spread: [0.75, 1.10]
+      base_success_rate: [0.89, 0.95]
+      campaign_share: [0.04, 0.12]
+      returning_customer_rate: [0.08, 0.20]
+      shared_ip_pressure: [0.05, 0.15]
+
+# --------------------------------------------------------------------------
+# customers -- persistent identities (v3 fix M1)
+# --------------------------------------------------------------------------
+# A customer joins once and persists for the rest of the window. Tenure and
+# history EMERGE from the episodes actually generated after `joined_at`;
+# nothing is injected as a prior count.
+customers:
+  # Customers join in the first fraction of the window, so an early joiner
+  # accumulates real history before its later episodes.
+  join_window_fraction: 0.62
+  # Per-customer propensity to be signed in. Combined multiplicatively with
+  # the scenario multiplier and the merchant affinity, then clipped.
+  login_propensity: [0.35, 1.00]
+  home_ips: [1, 3]
+  # Chance a customer's traffic egresses through the shared pool regardless
+  # of scenario (household behind CGNAT, office worker, campus).
+  shared_ip_probability: 0.16
+
+# --------------------------------------------------------------------------
+# latent behaviour defaults
+# --------------------------------------------------------------------------
+scenario_defaults:
+  episodes: [1, 1]
+  episode_gap_days: [0.5, 3.0]
+  attempts: [1, 4]                    # per EPISODE
+  gap_seconds: [40, 900]
+  gap_spread: [0.5, 1.1]
+  method_validity: [0.75, 0.95]
+  network_instability: [0.01, 0.05]
+  session_rotation: [0.02, 0.12]
+  ip_rotation: [0.02, 0.10]
+  instrument_reuse: [0.75, 0.95]
+  checkout_completion: [0.70, 0.95]
+  continue_after_success: [0.05, 0.25]
+  devices: [1, 1]                     # devices this actor uses
+  device_mode: sticky                 # sticky | spread
+  customers_on_device: [1, 1]
+  ip_pool: private                    # private | shared | mobile
+  login_multiplier: [0.8, 1.2]
+  guest: false
+  prefers_campaign: false
+  amount_style_weights:
+    merchant_typical: 0.80
+    repeat: 0.14
+    low: 0.03
+    varied: 0.03
+  phases: []
+
+# --------------------------------------------------------------------------
+# legitimate families (13)
+# --------------------------------------------------------------------------
+scenarios:
+
+  returning_customer_multi_episode:
+    population: legitimate
+    weight: 25
+    episodes: [2, 6]
+    episode_gap_days: [1.5, 14.0]
+    attempts: [1, 3]
+    method_validity: [0.86, 0.98]
+    instrument_reuse: [0.82, 0.97]
+    checkout_completion: [0.82, 0.97]
+    login_multiplier: [1.10, 1.35]
+
+  cold_start_guest:
+    population: legitimate
+    weight: 28
+    episodes: [1, 1]
+    attempts: [1, 2]
+    method_validity: [0.82, 0.96]
+    checkout_completion: [0.62, 0.92]
+    guest: true                       # never carries customer_id
+
+  logged_in_new_customer:
+    population: legitimate
+    weight: 11
+    episodes: [1, 2]
+    episode_gap_days: [0.5, 6.0]
+    attempts: [1, 3]
+    method_validity: [0.82, 0.96]
+    checkout_completion: [0.70, 0.94]
+    login_multiplier: [1.15, 1.40]
+
+  # THE anti-leakage family: one person, several devices.
+  multi_device_customer:
+    population: legitimate
+    weight: 11
+    episodes: [2, 5]
+    episode_gap_days: [0.5, 10.0]
+    attempts: [1, 3]
+    devices: [2, 3]
+    device_mode: sticky               # a device per visit, sometimes switching
+    method_validity: [0.84, 0.97]
+    instrument_reuse: [0.75, 0.95]
+    checkout_completion: [0.80, 0.96]
+    login_multiplier: [1.15, 1.40]
+
+  household_shared_device:
+    population: legitimate
+    weight: 8
+    episodes: [2, 5]
+    episode_gap_days: [0.5, 8.0]
+    attempts: [1, 4]
+    customers_on_device: [2, 4]
+    method_validity: [0.80, 0.95]
+    instrument_reuse: [0.45, 0.75]    # different people, different cards
+    checkout_completion: [0.72, 0.94]
+    login_multiplier: [0.9, 1.25]
+
+  # The friction case: a real shopper whose card has genuinely died, WITH
+  # earlier successful visits in their own history.
+  persistent_card_problem_customer:
+    population: legitimate
+    weight: 6
+    episodes: [3, 6]
+    episode_gap_days: [0.3, 4.0]
+    attempts: [2, 5]
+    gap_seconds: [90, 3600]
+    gap_spread: [0.7, 1.4]
+    method_validity: [0.80, 0.95]     # healthy at first ...
+    instrument_reuse: [0.70, 0.95]
+    session_rotation: [0.08, 0.30]
+    ip_rotation: [0.05, 0.25]
+    checkout_completion: [0.75, 0.95]
+    login_multiplier: [1.05, 1.35]
+    phases:
+      - after_fraction: 0.35          # ... then the card dies
+        method_validity: [0.10, 0.40]
+        instrument_reuse: [0.55, 0.90]
+        checkout_completion: [0.70, 0.92]
+
+  network_retry_storm:
+    population: legitimate
+    weight: 5
+    episodes: [1, 2]
+    attempts: [3, 8]
+    gap_seconds: [4, 60]
+    gap_spread: [0.4, 0.9]
+    method_validity: [0.82, 0.96]
+    network_instability: [0.22, 0.45]
+    instrument_reuse: [0.88, 0.99]
+    session_rotation: [0.15, 0.45]
+    login_multiplier: [0.8, 1.2]
+
+  shared_network_customer:
+    population: legitimate
+    weight: 11
+    episodes: [1, 3]
+    episode_gap_days: [0.5, 9.0]
+    attempts: [1, 4]
+    ip_pool: shared                   # campus / office egress
+    method_validity: [0.82, 0.96]
+    merchant_kinds: [education, small_ecommerce, digital_goods, flash_sale]
+    login_multiplier: [0.95, 1.25]
+
+  flash_sale_customer:
+    population: legitimate
+    weight: 6
+    episodes: [1, 2]
+    episode_gap_days: [1.0, 12.0]
+    attempts: [2, 6]
+    gap_seconds: [5, 90]
+    gap_spread: [0.3, 0.9]
+    method_validity: [0.78, 0.94]
+    network_instability: [0.10, 0.28]
+    ip_pool: shared
+    prefers_campaign: true
+    merchant_kinds: [flash_sale, small_ecommerce]
+    checkout_completion: [0.68, 0.92]
+    login_multiplier: [0.55, 0.90]
+    amount_style_weights:
+      merchant_typical: 0.60
+      repeat: 0.32
+      low: 0.04
+      varied: 0.04
+
+  mobile_network_churn:
+    population: legitimate
+    weight: 7
+    episodes: [1, 4]
+    episode_gap_days: [0.5, 9.0]
+    attempts: [2, 5]
+    gap_seconds: [30, 600]
+    ip_pool: mobile                   # a fresh IP most attempts
+    ip_rotation: [0.55, 0.90]
+    network_instability: [0.08, 0.24]
+    method_validity: [0.82, 0.96]
+    login_multiplier: [0.9, 1.25]
+
+  subscription_dunning:
+    population: legitimate
+    weight: 5
+    episodes: [2, 5]
+    episode_gap_days: [1.0, 4.0]      # the retry schedule, days apart
+    attempts: [1, 2]
+    method_validity: [0.42, 0.78]
+    instrument_reuse: [0.85, 0.99]
+    continue_after_success: [0.02, 0.12]
+    checkout_completion: [0.86, 0.98]
+    merchant_kinds: [subscription, digital_goods]
+    login_multiplier: [1.15, 1.40]
+
+  long_dormant_returner:
+    population: legitimate
+    weight: 6
+    episodes: [2, 3]
+    episode_gap_days: [25.0, 70.0]    # real device age, no recent history
+    attempts: [1, 3]
+    method_validity: [0.80, 0.96]
+    instrument_reuse: [0.50, 0.85]    # the old card may have expired
+    checkout_completion: [0.80, 0.97]
+    login_multiplier: [1.05, 1.35]
+
+  micro_payment_customer:
+    population: legitimate
+    weight: 7
+    episodes: [2, 5]
+    episode_gap_days: [0.4, 6.0]
+    attempts: [1, 4]
+    gap_seconds: [20, 400]
+    method_validity: [0.84, 0.97]
+    instrument_reuse: [0.85, 0.98]
+    checkout_completion: [0.80, 0.96]
+    continue_after_success: [0.30, 0.65]
+    merchant_kinds: [digital_goods, subscription]
+    login_multiplier: [1.05, 1.35]
+    amount_style_weights:
+      merchant_typical: 0.30
+      repeat: 0.22
+      low: 0.44
+      varied: 0.04
+
+  # ------------------------------------------------------------------------
+  # attack families (10)
+  # ------------------------------------------------------------------------
+
+  fast_burst:
+    population: attack
+    weight: 4
+    episodes: [1, 2]
+    attempts: [6, 14]
+    gap_seconds: [2, 25]
+    gap_spread: [0.3, 0.8]
+    method_validity: [0.04, 0.24]
+    instrument_reuse: [0.05, 0.30]
+    session_rotation: [0.10, 0.40]
+    ip_rotation: [0.10, 0.35]
+    continue_after_success: [0.72, 0.95]
+    checkout_completion: [0.02, 0.18]
+    login_multiplier: [0.30, 0.75]    # least likely of the attack families
+    amount_style_weights:
+      merchant_typical: 0.45
+      repeat: 0.18
+      low: 0.33
+      varied: 0.04
+
+  slow_drip:
+    population: attack
+    weight: 5
+    episodes: [1, 3]
+    episode_gap_days: [0.3, 2.5]
+    attempts: [3, 8]
+    gap_seconds: [240, 3000]
+    method_validity: [0.06, 0.28]
+    instrument_reuse: [0.15, 0.45]
+    session_rotation: [0.15, 0.45]
+    continue_after_success: [0.65, 0.92]
+    checkout_completion: [0.04, 0.26]
+    login_multiplier: [0.60, 1.10]
+
+  # Long-horizon analogue: a few attempts per visit, visits days apart.
+  patient_tester_weeks:
+    population: attack
+    weight: 5
+    episodes: [3, 7]
+    episode_gap_days: [2.0, 9.0]
+    attempts: [2, 4]
+    gap_seconds: [600, 7200]
+    gap_spread: [0.5, 1.2]
+    method_validity: [0.05, 0.28]
+    instrument_reuse: [0.20, 0.55]
+    session_rotation: [0.45, 0.85]
+    ip_rotation: [0.20, 0.55]
+    continue_after_success: [0.62, 0.92]
+    checkout_completion: [0.04, 0.28]
+    login_multiplier: [0.75, 1.25]    # a real campaign reuses a login
+
+  sparse_multiday_tester:
+    population: attack
+    weight: 5
+    episodes: [4, 9]
+    episode_gap_days: [0.6, 2.2]
+    attempts: [1, 2]
+    gap_seconds: [900, 14400]
+    gap_spread: [0.5, 1.1]
+    method_validity: [0.07, 0.30]
+    instrument_reuse: [0.25, 0.58]
+    session_rotation: [0.40, 0.85]
+    ip_rotation: [0.25, 0.60]
+    continue_after_success: [0.60, 0.90]
+    checkout_completion: [0.05, 0.30]
+    login_multiplier: [0.80, 1.25]
+
+  # Linkable by construction (spec section 6): one account or one IP behind
+  # several devices. A campaign that shares nothing is undetectable by any
+  # merchant-side system, and a benchmark full of them measures nothing.
+  cross_device_campaign:
+    population: attack
+    weight: 5
+    episodes: [3, 6]
+    episode_gap_days: [0.4, 3.5]
+    attempts: [2, 5]
+    devices: [3, 6]
+    device_mode: spread               # every device is actually used
+    gap_seconds: [45, 1800]
+    method_validity: [0.05, 0.28]
+    instrument_reuse: [0.08, 0.35]
+    session_rotation: [0.30, 0.70]
+    ip_rotation: [0.20, 0.55]
+    continue_after_success: [0.75, 0.95]
+    checkout_completion: [0.02, 0.18]
+    login_multiplier: [0.85, 1.30]
+
+  session_churn:
+    population: attack
+    weight: 4
+    episodes: [1, 2]
+    attempts: [5, 12]
+    gap_seconds: [20, 600]
+    method_validity: [0.05, 0.26]
+    instrument_reuse: [0.10, 0.38]
+    session_rotation: [0.70, 0.98]
+    ip_rotation: [0.10, 0.40]
+    continue_after_success: [0.70, 0.94]
+    checkout_completion: [0.03, 0.22]
+    login_multiplier: [0.35, 0.80]
+
+  merchant_typical_amounts:
+    population: attack
+    weight: 4
+    episodes: [1, 3]
+    episode_gap_days: [0.3, 3.0]
+    attempts: [3, 8]
+    gap_seconds: [120, 2400]
+    method_validity: [0.08, 0.32]
+    instrument_reuse: [0.18, 0.50]
+    session_rotation: [0.18, 0.50]
+    continue_after_success: [0.62, 0.90]
+    checkout_completion: [0.06, 0.32]
+    login_multiplier: [0.65, 1.15]
+    amount_style_weights:             # no near-minimum tendency at all
+      merchant_typical: 0.86
+      repeat: 0.10
+      low: 0.0
+      varied: 0.04
+
+  warm_up_then_test:
+    population: attack
+    weight: 4
+    episodes: [2, 4]
+    episode_gap_days: [0.4, 4.0]
+    attempts: [3, 6]
+    gap_seconds: [300, 5400]
+    method_validity: [0.84, 0.97]
+    instrument_reuse: [0.84, 0.97]
+    checkout_completion: [0.75, 0.95]
+    continue_after_success: [0.88, 0.99]
+    login_multiplier: [0.7, 1.2]
+    phases:
+      - after_fraction: 0.45
+        method_validity: [0.05, 0.26]
+        instrument_reuse: [0.05, 0.30]
+        gap_seconds: [30, 900]
+        session_rotation: [0.30, 0.70]
+        checkout_completion: [0.02, 0.20]
+        amount_style_weights:
+          merchant_typical: 0.52
+          repeat: 0.16
+          low: 0.28
+          varied: 0.04
+
+  flash_sale_camouflage:
+    population: attack
+    weight: 4
+    episodes: [1, 3]
+    episode_gap_days: [0.5, 6.0]
+    attempts: [3, 9]
+    gap_seconds: [6, 200]
+    gap_spread: [0.3, 0.9]
+    method_validity: [0.08, 0.32]
+    network_instability: [0.08, 0.26]
+    instrument_reuse: [0.15, 0.48]
+    session_rotation: [0.15, 0.45]
+    ip_pool: shared
+    prefers_campaign: true
+    merchant_kinds: [flash_sale, small_ecommerce]
+    continue_after_success: [0.66, 0.92]
+    checkout_completion: [0.04, 0.26]
+    login_multiplier: [0.60, 1.05]
+
+  successful_card_camouflage:
+    population: attack
+    weight: 4
+    episodes: [2, 4]
+    episode_gap_days: [0.3, 3.0]
+    attempts: [3, 7]
+    gap_seconds: [120, 2400]
+    method_validity: [0.34, 0.60]     # deliberately mixes working cards in
+    instrument_reuse: [0.20, 0.50]
+    session_rotation: [0.18, 0.50]
+    continue_after_success: [0.80, 0.97]
+    checkout_completion: [0.42, 0.78]
+    login_multiplier: [0.75, 1.20]
+
+# --------------------------------------------------------------------------
+# instruments / identity
+# --------------------------------------------------------------------------
+instruments:
+  last4_pool: 2600
+  networks: [visa, mastercard, rupay, amex, diners, other]
+  network_weights: [0.38, 0.27, 0.25, 0.05, 0.02, 0.03]
+  types: [credit, debit, prepaid, unknown]
+  type_weights: [0.30, 0.54, 0.12, 0.04]
+  issuers: 30
+  international_rate: 0.08
+  methods: [card, upi, netbanking, wallet]
+  method_weights: [0.55, 0.30, 0.07, 0.08]
+
+identity:
+  shared_ip_pool: 110
+  mobile_ip_pool: 900                 # carrier NAT churn: many, rarely reused
+  outcome_lag_seconds: [1, 6]
+  checkout_lag_seconds: [8, 240]
+
+# --------------------------------------------------------------------------
+# splits -- disjoint devices, customers, IPs AND time
+# --------------------------------------------------------------------------
+splits:
+  train:
+    seed: 31415926
+    devices: 7000
+    benchmark_attack_device_fraction: 0.16
+    start: 2026-01-05T00:00:00+00:00
+    days: 120                         # long enough for real 30d history
+  validation:
+    seed: 27182818
+    devices: 2600
+    benchmark_attack_device_fraction: 0.18
+    starts_after_train_gap_days: 4
+    days: 60
+    shift:
+      gap_multiplier: 1.20
+      amount_multiplier: 1.12
+      attempts_bonus: 1
+
+# --------------------------------------------------------------------------
+# gates
+# --------------------------------------------------------------------------
+gates:
+  max_univariate_f1: 0.85
+  max_shuffled_label_roc_auc: 0.60
+  min_overlap_coefficient: 0.25
+  min_scenario_devices: 20
+  min_scenario_requests: 40
+  max_scenario_request_share: 0.30
+  legitimate_decline_rate:
+    fail_below: 0.05
+    warn_below: 0.10
+    warn_above: 0.28
+    fail_above: 0.35
+  ordinary_legitimate_scenarios:
+    - returning_customer_multi_episode
+    - cold_start_guest
+    - logged_in_new_customer
+    - multi_device_customer
+    - shared_network_customer
+    - micro_payment_customer
+  # v3-specific gates
+  customer_id_presence:
+    overall_min: 0.55
+    overall_max: 0.75
+    max_population_gap: 0.15
+    max_single_feature_f1: 0.65
+  multi_device_customers:
+    min_per_population: 25
+    max_population_share: 0.85
+  long_horizon:
+    min_span_days: 3.0
+    min_device_share_per_population: 0.15
