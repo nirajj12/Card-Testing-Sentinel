@@ -1,0 +1,14 @@
+import type { BlindMetrics } from "../types";
+
+const pct = (value:number) => `${(value*100).toFixed(2)}%`;
+export function EvaluationCharts({ metrics }: { metrics: BlindMetrics }) {
+  const points=Object.entries(metrics.detection_by_attempt).sort((a,b)=>Number(a[0])-Number(b[0]));
+  const line=points.map(([,value],index)=>`${30+(index*(240/Math.max(points.length-1,1)))},${170-value*140}`).join(" ");
+  const bars=[
+    ["Risky identified",metrics.headline.attack_intervention_rate,"helpful"],
+    ["Risky blocked",metrics.headline.attack_block_rate,"helpful"],
+    ["Genuine interrupted",metrics.headline.legitimate_intervention_rate,"harmful"],
+    ["Genuine blocked incorrectly",metrics.headline.legitimate_block_rate,"harmful"],
+  ] as const;
+  return <section className="evaluation-charts page-width" aria-labelledby="charts-title"><header><span>Evaluation visualized</span><h2 id="charts-title">Behaviour becomes clearer as evidence accumulates.</h2></header><div className="chart-grid"><figure><figcaption><strong>Detection as behaviour accumulates</strong><span>Risky test profiles identified</span></figcaption><svg viewBox="0 0 300 210" role="img" aria-labelledby="detection-title detection-desc"><title id="detection-title">Risky profiles identified by attempt number</title><desc id="detection-desc">{points.map(([a,v])=>`By attempt ${a}, ${pct(v)} identified`).join(". ")}</desc><path className="chart-axis" d="M30 20V170H280"/><polyline className="detection-line" points={line}/>{points.map(([attempt,value],index)=><g key={attempt}><circle cx={30+(index*(240/Math.max(points.length-1,1)))} cy={170-value*140} r="5"/><text x={30+(index*(240/Math.max(points.length-1,1)))} y="193" textAnchor="middle">{attempt}</text><text x={30+(index*(240/Math.max(points.length-1,1)))} y={160-value*140} textAnchor="middle">{Math.round(value*100)}%</text></g>)}<text className="axis-label" x="155" y="208" textAnchor="middle">Attempt number</text><text className="axis-label" transform="translate(10 110) rotate(-90)" textAnchor="middle">Profiles identified</text></svg><p>Repeated behaviour adds context. This chart uses only the API’s detection-by-attempt values.</p></figure><figure><figcaption><strong>Detection and customer-friction trade-off</strong><span>Profile-level evaluation rates</span></figcaption><div className="tradeoff-chart" role="img" aria-label={bars.map(([label,value])=>`${label}: ${pct(value)}`).join(". ")}>{bars.map(([label,value,tone])=><div key={label} className={tone}><span>{label}</span><div><i style={{width:pct(value)}}/></div><strong>{pct(value)}</strong></div>)}</div><div className="chart-legend"><span><i className="helpful"/>Attack intervention</span><span><i className="harmful"/>Genuine-customer friction</span></div><p>Helpful intervention and harmful friction use the same denominator: synthetic device profiles.</p></figure></div></section>;
+}

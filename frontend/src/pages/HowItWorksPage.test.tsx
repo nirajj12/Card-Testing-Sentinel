@@ -3,19 +3,19 @@ import { describe, expect, it } from "vitest";
 import { HowItWorksPage } from "./HowItWorksPage";
 
 describe("HowItWorksPage", () => {
-  it("defaults to ALLOW and renders only the selected branch", () => {
+  it("defaults to the normal story and renders only that story", () => {
     render(<HowItWorksPage/>);
-    expect(screen.getByRole("tab", { name: "ALLOW" })).toHaveAttribute("aria-selected", "true");
-    expect(screen.getByText("Continue to Razorpay")).toBeInTheDocument();
-    expect(screen.queryByText("Pause for merchant intervention")).not.toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "Normal purchase" })).toHaveAttribute("aria-selected", "true");
+    expect(screen.getByText("One familiar purchase, one clean path.")).toBeInTheDocument();
+    expect(screen.queryByText("Small attempts become a visible sequence.")).not.toBeInTheDocument();
   });
 
   it("switches branches by click and keyboard", () => {
     render(<HowItWorksPage/>);
-    fireEvent.click(screen.getByRole("tab", { name: "REVIEW" }));
-    expect(screen.getByText("Pause for merchant intervention")).toBeInTheDocument();
-    fireEvent.keyDown(screen.getByRole("tab", { name: "REVIEW" }), { key: "ArrowRight" });
-    expect(screen.getByRole("tab", { name: "TEMPORARY BLOCK" })).toHaveAttribute("aria-selected", "true");
-    expect(screen.getByText("Temporarily stop the payment path")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("tab", { name: "Card-testing burst" }));
+    expect(screen.getByText("Small attempts become a visible sequence.")).toBeInTheDocument();
+    fireEvent.keyDown(screen.getByRole("tab", { name: "Card-testing burst" }), { key: "ArrowRight" });
+    expect(screen.getByRole("tab", { name: "Difficult genuine retry" })).toHaveAttribute("aria-selected", "true");
+    expect(screen.getByText("Genuine failure can resemble abuse.")).toBeInTheDocument();
   });
 });

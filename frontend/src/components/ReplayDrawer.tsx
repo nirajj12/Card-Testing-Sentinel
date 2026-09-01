@@ -22,6 +22,29 @@ export function ReplayDrawer({ open, onClose, onAttempt, system, initialScenario
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("Select a scenario. Outcomes are not preloaded.");
   const playingRef = useRef(false);
+  const closeRef = useRef<HTMLButtonElement>(null);
+  const previousFocus = useRef<HTMLElement | null>(null);
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
+  function closeDialog() {
+    const returnTarget = previousFocus.current;
+    onCloseRef.current();
+    window.setTimeout(() => returnTarget?.focus(), 0);
+  }
+  useEffect(() => {
+    if (!open) return;
+    previousFocus.current = document.activeElement as HTMLElement;
+    const timer = window.setTimeout(() => closeRef.current?.focus(), 50);
+    function escape(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        const returnTarget = previousFocus.current;
+        onCloseRef.current();
+        window.setTimeout(() => returnTarget?.focus(), 0);
+      }
+    }
+    document.addEventListener("keydown", escape);
+    return () => { window.clearTimeout(timer); document.removeEventListener("keydown", escape); };
+  }, [open]);
   useEffect(() => { if (initialScenario && scenarioLabels[initialScenario]) setSelected(initialScenario); }, [initialScenario]);
   useEffect(() => { if (open && !scenarios.length) api.demoScenarios<{ items: Scenario[] }>().then((data) => setScenarios(data.items)).catch((error) => setMessage(friendlyError(error))); }, [open, scenarios.length]);
 
@@ -71,8 +94,8 @@ export function ReplayDrawer({ open, onClose, onAttempt, system, initialScenario
   }
 
   const active = cursor >= 0 ? steps[cursor] : null;
-  return <AnimatePresence>{open && <><motion.button className="drawer-backdrop" onClick={onClose} aria-label="Close Sentinel Demo" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}/><motion.aside className="replay-drawer" initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "100%" }}>
-    <div className="drawer-head"><div><span>Controlled simulation</span><h2>Run a Sentinel Demo</h2></div><button type="button" onClick={onClose}><X/></button></div>
+  return <AnimatePresence>{open && <><motion.button className="drawer-backdrop" onClick={closeDialog} aria-label="Close Sentinel Demo" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}/><motion.aside className="replay-drawer" role="dialog" aria-modal="true" aria-labelledby="replay-title" initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "100%" }}>
+    <div className="drawer-head"><div><span>Controlled simulation</span><h2 id="replay-title">Run a Sentinel Demo</h2></div><button ref={closeRef} type="button" onClick={closeDialog} aria-label="Close replay dialog"><X/></button></div>
     <p className="replay-intro">Synthetic scenarios use the same RiskService and policy path, but never open Razorpay Checkout.</p>
     <div className="scenario-groups"><span>Normal customer behaviour</span><div className="scenario-grid">{Object.entries(scenarioLabels).filter(([id]) => id.startsWith("normal") && scenarios.some((item) => item.id === id)).map(([id, label]) => <button key={id} className={selected === id ? "active" : ""} type="button" onClick={() => setSelected(id)}><FlaskConical size={16}/><span>{label}</span></button>)}</div><span>Suspicious behaviour</span><div className="scenario-grid">{Object.entries(scenarioLabels).filter(([id]) => id.endsWith("attacker") && scenarios.some((item) => item.id === id)).map(([id, label]) => <button key={id} className={selected === id ? "active" : ""} type="button" onClick={() => setSelected(id)}><FlaskConical size={16}/><span>{label}</span></button>)}</div>{system?.model_status === "degraded_rules_only" && <p className="demo-notice">The model is unavailable; this run will use the published fallback rules.</p>}</div>
     <button className="primary-cta full" type="button" onClick={start} disabled={busy}>Start selected scenario <span>→</span></button>

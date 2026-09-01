@@ -7,7 +7,7 @@ import { LifecycleTracker } from "./LifecycleTracker";
 
 export type PaymentPhase = "idle" | "evaluating" | "decision" | "verifying" | "success" | "failure";
 
-export function SentinelPanel({ phase, progress, operation, orderCreated, checkoutOpened, verified, paymentOutcome, historyStatus, amount, error }: { phase: PaymentPhase; progress: number; operation: Operation | null; orderCreated: boolean; checkoutOpened: boolean; verified: VerifiedPayment | null; paymentOutcome: string | null; historyStatus: string; amount: number; error: string }) {
+export function SentinelPanel({ phase, progress, operation, orderCreated, checkoutOpened, verified, paymentOutcome, historyStatus, amount, error, failureContext }: { phase: PaymentPhase; progress: number; operation: Operation | null; orderCreated: boolean; checkoutOpened: boolean; verified: VerifiedPayment | null; paymentOutcome: string | null; historyStatus: string; amount: number; error: string; failureContext?: "precheck" | "order" | "checkout" | "verification" | "processor" | null }) {
   const view = operation ? decisionCopy[operation.decision] : null;
   const score = operation?.risk_score === null || operation?.risk_score === undefined ? null : Math.round(operation.risk_score * 100);
   return <article className={`sentinel-panel ${operation?.decision || "idle"}`}>
@@ -22,6 +22,7 @@ export function SentinelPanel({ phase, progress, operation, orderCreated, checko
         <div className="decision-reasons">{operation.reason_codes.slice(0, 3).map((reason) => <span key={reason}><i/>{safeReason(reason)}</span>)}</div>
         <dl className="gateway-status"><div><dt>Razorpay order created</dt><dd className={orderCreated ? "yes" : "no"}>{orderCreated ? "YES" : "NO"}</dd></div><div><dt>Checkout opened</dt><dd className={checkoutOpened ? "yes" : "no"}>{checkoutOpened ? "YES" : "NO"}</dd></div></dl>
         {phase === "verifying" && <div className="verification-strip"><LoaderCircle/>Verifying the Razorpay signature on the backend…</div>}
+        {phase === "failure" && error && !paymentOutcome && <div className="flow-error" role="alert"><CircleX/><div><strong>{failureContext === "order" ? "Sentinel allowed this attempt, but the Razorpay order could not be created." : failureContext === "checkout" ? "Sentinel allowed this attempt, but Razorpay Checkout could not open." : failureContext === "verification" ? "The payment result could not be verified by the backend." : "The payment path stopped safely."}</strong><p>{error}</p></div></div>}
         {paymentOutcome && <div className={`outcome-separation ${paymentOutcome === "failed" || paymentOutcome === "failed_unverified" ? "failed" : "verified"}`}>
           <div><span>Sentinel decision</span><strong>{operation.decision.toUpperCase()}</strong></div>
           <div><span>Razorpay outcome</span><strong>{paymentOutcome.replaceAll("_", " ").toUpperCase()}</strong></div>

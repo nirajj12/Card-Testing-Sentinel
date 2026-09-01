@@ -43,8 +43,43 @@ function mount() {
 
 describe("CheckoutPage activity hydration", () => {
   beforeEach(() => {
+    vi.clearAllMocks();
+    document.querySelectorAll("script[data-razorpay-checkout]").forEach((node) => node.remove());
+    delete window.Razorpay;
     vi.mocked(api.system).mockResolvedValue({ ready: true, model_status: "ready" });
     vi.mocked(api.recentActivity).mockResolvedValue({ items: [persisted] });
+    vi.mocked(api.checkoutOpened).mockResolvedValue({});
+  });
+
+  function allowPrecheck() {
+    vi.mocked(api.precheck).mockResolvedValue({ decision: "allow", risk_score: .1, reason_codes: [], evidence: {}, protected_reference: "ref" } as never);
+  }
+
+  it("keeps ALLOW visible while showing an order-creation failure", async () => {
+    allowPrecheck(); vi.mocked(api.razorpayOrder).mockRejectedValue(new Error("order failed")); mount();
+    fireEvent.click(screen.getByRole("button", { name: /Pay securely with Razorpay/i }));
+    expect(await screen.findByText("Sentinel allowed this attempt, but the Razorpay order could not be created.")).toBeInTheDocument();
+    expect(screen.getAllByText("ALLOW").length).toBeGreaterThan(0);
+  });
+
+  it("shows a Checkout-loading failure after a successful order", async () => {
+    allowPrecheck(); vi.mocked(api.razorpayOrder).mockResolvedValue({ sentinel_request_id:"req",razorpay_order_id:"order",key_id:"key",amount:2499,currency:"INR",test_mode:true,activity_id:"activity" }); mount();
+    fireEvent.click(screen.getByRole("button", { name: /Pay securely with Razorpay/i }));
+    await waitFor(() => expect(document.querySelector("script[data-razorpay-checkout]")).not.toBeNull());
+    const script = document.querySelector<HTMLScriptElement>("script[data-razorpay-checkout]")!;
+    fireEvent.error(script);
+    expect(await screen.findByText("Sentinel allowed this attempt, but Razorpay Checkout could not open.")).toBeInTheDocument();
+    expect(screen.getByText("Razorpay order created").nextElementSibling).toHaveTextContent("YES");
+  });
+
+  it("shows a backend-verification failure separately", async () => {
+    allowPrecheck(); vi.mocked(api.razorpayOrder).mockResolvedValue({ sentinel_request_id:"req",razorpay_order_id:"order",key_id:"key",amount:2499,currency:"INR",test_mode:true,activity_id:"activity" }); vi.mocked(api.verifyPayment).mockRejectedValue(new Error("verify failed"));
+    let options: { handler: (payment: { razorpay_order_id:string; razorpay_payment_id:string; razorpay_signature:string }) => Promise<void> } | null = null;
+    window.Razorpay = function RazorpayMock(value: typeof options) { options=value; return { open: vi.fn(), on: vi.fn() }; } as never;
+    mount(); fireEvent.click(screen.getByRole("button", { name: /Pay securely with Razorpay/i }));
+    await waitFor(() => expect(options).not.toBeNull());
+    await options!.handler({ razorpay_order_id:"order",razorpay_payment_id:"pay",razorpay_signature:"signature" });
+    expect(await screen.findByText("The payment result could not be verified by the backend.")).toBeVisible();
   });
 
   it("loads persisted activity again after the page is remounted", async () => {

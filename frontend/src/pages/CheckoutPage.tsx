@@ -53,6 +53,7 @@ export function CheckoutPage() {
   const [historyStatus, setHistoryStatus] = useState("not_recorded");
   const [currentActivityId, setCurrentActivityId] = useState<string | null>(null);
   const [error, setError] = useState("");
+  const [failureContext, setFailureContext] = useState<"precheck" | "order" | "checkout" | "verification" | "processor" | null>(null);
   const [activities, setActivities] = useState<ActivityAttempt[]>([]);
   const [selectedAttempt, setSelectedAttempt] = useState<ActivityAttempt | null>(null);
   const [replayOpen, setReplayOpen] = useState(Boolean(searchParams.get("demo")));
@@ -115,11 +116,13 @@ export function CheckoutPage() {
     setHistoryStatus("not_recorded");
     setCurrentActivityId(null);
     setError("");
+    setFailureContext(null);
   }
 
   async function pay() {
     if (!email || !contact || !email.includes("@")) { setError("Enter a valid email and mobile number."); setPhase("failure"); return; }
-    setPhase("evaluating"); setProgress(0); setOperation(null); setOrderCreated(false); setCheckoutOpened(false); setVerified(null); setPaymentOutcome(null); setHistoryStatus("not_recorded"); setCurrentActivityId(null); setError("");
+    setPhase("evaluating"); setProgress(0); setOperation(null); setOrderCreated(false); setCheckoutOpened(false); setVerified(null); setPaymentOutcome(null); setHistoryStatus("not_recorded"); setCurrentActivityId(null); setError(""); setFailureContext(null);
+    let failureStage: "precheck" | "order" | "checkout" = "precheck";
     const timers = [150, 360, 580].map((delay, index) => window.setTimeout(() => setProgress(index + 1), delay));
     try {
       const ids = identity(); const token = randomHex(18); const requestId = `store-request-${token}`; const timestamp = new Date().toISOString();
@@ -128,18 +131,19 @@ export function CheckoutPage() {
       const nextOperation = normalizePrecheck(result); setOperation(nextOperation); setPhase("decision");
       addActivity({ id: requestId, attempt: activities.length + 1, amount, currency: "INR", timestamp, requestId, source: "razorpay_test", operation: nextOperation });
       if (result.decision !== "allow") { refreshActivities().catch(() => undefined); return; }
+      failureStage = "order";
       const order = await api.razorpayOrder<RazorpayOrder>({ sentinel_request_id: requestId, device_id: ids.device, session_id: ids.session });
-      setOrderCreated(true); setCurrentActivityId(order.activity_id); await loadRazorpay();
+      setOrderCreated(true); setCurrentActivityId(order.activity_id); failureStage = "checkout"; await loadRazorpay();
       const checkout = new window.Razorpay!({ key: order.key_id, amount: order.amount, currency: order.currency, name: "Northstar Store", description: `${cart.product.name} · Test purchase`, order_id: order.razorpay_order_id, prefill: { email, contact }, theme: { color: "#2864f0" }, handler: async (payment) => {
         setPhase("verifying");
         try {
           const verification = await api.verifyPayment<VerifiedPayment>({ sentinel_request_id: requestId, device_id: ids.device, session_id: ids.session, razorpay_order_id: payment.razorpay_order_id, razorpay_payment_id: payment.razorpay_payment_id, razorpay_signature: payment.razorpay_signature });
           setVerified(verification); setPaymentOutcome(verification.payment_status); setHistoryStatus(verification.outcome_recorded ? "recorded" : "awaiting_webhook"); setPhase("success"); refreshActivities().catch(() => undefined);
-        } catch (verificationError) { setError(friendlyError(verificationError)); setPhase("failure"); }
-      }, modal: { ondismiss: () => { setError("Checkout was closed before a verified payment completed."); setPhase("failure"); } } });
-      checkout.on("payment.failed", () => { setPaymentOutcome("failed_unverified"); setHistoryStatus("awaiting_webhook"); setError("Razorpay reported a failure. Sentinel is waiting for the signed webhook before adding it to history."); setPhase("failure"); window.setTimeout(() => refreshActivities().catch(() => undefined), 800); });
+        } catch (verificationError) { setFailureContext("verification"); setError(friendlyError(verificationError)); setPhase("failure"); }
+      }, modal: { ondismiss: () => { setFailureContext("checkout"); setError("Checkout was closed before a verified payment completed."); setPhase("failure"); } } });
+      checkout.on("payment.failed", () => { setFailureContext("processor"); setPaymentOutcome("failed_unverified"); setHistoryStatus("awaiting_webhook"); setError("Razorpay reported a failure. Sentinel is waiting for the signed webhook before adding it to history."); setPhase("failure"); window.setTimeout(() => refreshActivities().catch(() => undefined), 800); });
       checkout.open(); setCheckoutOpened(true); api.checkoutOpened({ sentinel_request_id: requestId, device_id: ids.device, session_id: ids.session }).then(() => refreshActivities()).catch(() => undefined);
-    } catch (requestError) { timers.forEach(window.clearTimeout); setError(friendlyError(requestError)); setPhase("failure"); }
+    } catch (requestError) { timers.forEach(window.clearTimeout); setFailureContext(failureStage); setError(friendlyError(requestError)); setPhase("failure"); }
   }
 
   return <main className="checkout-route page-width">
@@ -155,7 +159,7 @@ export function CheckoutPage() {
         {operation && operation.decision !== "allow" && <div className="fresh-test-shopper"><div><strong>This Test Mode shopper has remembered risk.</strong><p>Refreshing keeps the same identity and trusted history. Start fresh to test a new shopper without deleting this evidence.</p></div><button type="button" onClick={startFreshTestShopper}>Start fresh Test Mode shopper</button></div>}
         <div className="checkout-footer"><span><ShieldCheck/>Protected by Sentinel</span><span>Razorpay · Test Mode</span></div>
       </article>
-      <SentinelPanel phase={phase} progress={progress} operation={operation} orderCreated={orderCreated} checkoutOpened={checkoutOpened} verified={verified} paymentOutcome={paymentOutcome} historyStatus={historyStatus} amount={amount} error={error}/>
+      <SentinelPanel phase={phase} progress={progress} operation={operation} orderCreated={orderCreated} checkoutOpened={checkoutOpened} verified={verified} paymentOutcome={paymentOutcome} historyStatus={historyStatus} amount={amount} error={error} failureContext={failureContext}/>
     </section>
     <ActivityFeed attempts={activities} onSelect={setSelectedAttempt}/>
     <AttemptDrawer attempt={selectedAttempt} onClose={() => setSelectedAttempt(null)}/>

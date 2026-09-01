@@ -2,6 +2,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { api } from "../lib/api";
 import { ReplayDrawer } from "./ReplayDrawer";
+import { useState } from "react";
 
 describe("ReplayDrawer", () => {
   afterEach(() => vi.restoreAllMocks());
@@ -20,5 +21,14 @@ describe("ReplayDrawer", () => {
     fireEvent.click(screen.getByRole("button", { name: "Reset demo" }));
     await waitFor(() => expect(reset).toHaveBeenCalled());
     await waitFor(() => expect(screen.getAllByText(/Demo reset/).length).toBeGreaterThan(0));
+  });
+
+  it("behaves as a modal dialog and returns focus after Escape", async () => {
+    vi.spyOn(api, "demoScenarios").mockResolvedValue({ items: [] });
+    function Harness(){const [open,setOpen]=useState(false);return <><button type="button" onClick={()=>setOpen(true)}>Launch replay</button><ReplayDrawer open={open} onClose={()=>setOpen(false)} onAttempt={vi.fn()} system={{ready:true,model_status:"ready"}}/></>}
+    render(<Harness/>); const trigger=screen.getByRole("button",{name:"Launch replay"}); trigger.focus(); fireEvent.click(trigger);
+    const dialog=await screen.findByRole("dialog",{name:"Run a Sentinel Demo"}); expect(dialog).toHaveAttribute("aria-modal","true");
+    await waitFor(()=>expect(screen.getByRole("button",{name:"Close replay dialog"})).toHaveFocus());
+    fireEvent.keyDown(document,{key:"Escape"}); await waitFor(()=>expect(screen.queryByRole("dialog")).not.toBeInTheDocument()); expect(trigger).toHaveFocus();
   });
 });

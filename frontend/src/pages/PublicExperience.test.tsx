@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { describe, expect, it, vi } from "vitest";
 import { Navbar } from "../components/Navbar";
@@ -10,16 +10,21 @@ describe("public navigation and home", () => {
   it("uses Results and routes the primary calls to action", () => {
     render(<MemoryRouter><Navbar/><LandingPage/></MemoryRouter>);
     expect(screen.getByRole("link", { name: "Results" })).toHaveAttribute("href", "/results");
-    expect(screen.getAllByRole("link", { name: "Try the Demo" })).toEqual(expect.arrayContaining([expect.objectContaining({ className: "primary-cta" })]));
-    expect(screen.getAllByRole("link", { name: "Try the Demo" })[1]).toHaveAttribute("href", "/checkout");
-    expect(screen.getByRole("link", { name: "See how it works" })).toHaveAttribute("href", "/how-it-works");
-    expect(screen.getByText(/Prototype in Razorpay Test Mode/)).toBeVisible();
+    expect(screen.getByRole("link", { name: "Try the Demo" })).toHaveAttribute("href", "/checkout");
+    expect(screen.getAllByRole("link", { name: "Try protected checkout" })).toEqual(expect.arrayContaining([expect.objectContaining({ className: "primary-cta" })]));
+    expect(screen.getAllByRole("link", { name: "Try protected checkout" })[0]).toHaveAttribute("href", "/checkout");
+    expect(screen.getAllByRole("link", { name: "Run attack simulation" })[0]).toHaveAttribute("href", "/checkout?demo=burst_attacker");
+    expect(screen.getByText(/Razorpay Test Mode/)).toBeVisible();
+  });
+
+  it("exposes mobile navigation state and closes with Escape", () => {
+    render(<MemoryRouter><Navbar/></MemoryRouter>); const menu=screen.getByRole("button",{name:"Open navigation"}); expect(menu).toHaveAttribute("aria-expanded","false"); fireEvent.click(menu); expect(screen.getByRole("button",{name:"Close navigation"})).toHaveAttribute("aria-expanded","true"); fireEvent.keyDown(document,{key:"Escape"}); expect(screen.getByRole("button",{name:"Open navigation"})).toHaveAttribute("aria-expanded","false");
   });
 
   it("reduces motion without hiding page content", () => {
     vi.stubGlobal("matchMedia", vi.fn().mockReturnValue({ matches: true, addEventListener: vi.fn(), removeEventListener: vi.fn() }));
     render(<MemoryRouter><LandingPage/></MemoryRouter>);
     expect(screen.getByRole("heading", { name: /Stop card testing/ })).toBeVisible();
-    expect(screen.getByText("39 signal categories")).toBeVisible();
+    expect(screen.getByText(/combines 39 behavioural signals/)).toBeVisible();
   });
 });

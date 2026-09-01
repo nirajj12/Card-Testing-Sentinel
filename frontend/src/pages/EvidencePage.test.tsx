@@ -17,7 +17,7 @@ describe("EvidencePage", () => {
   it("renders exact API-backed metrics, disclaimer, and collapsed technical details", async () => {
     vi.spyOn(api, "blindMetrics").mockResolvedValue(fixture);
     render(<EvidencePage/>);
-    await waitFor(() => expect(screen.getByText("71.2%")).toBeInTheDocument());
+    await waitFor(() => expect(screen.getAllByText("71.23%").length).toBeGreaterThan(0));
     expect(screen.getByText("Synthetic evidence only.")).toBeInTheDocument();
     const summary = screen.getByText("Technical details");
     expect(summary.closest("details")).not.toHaveAttribute("open");
