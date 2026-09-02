@@ -161,6 +161,9 @@ def test_blocked_request_cannot_receive_an_outcome_but_later_requests_still_scor
         )
     assert any(d.decision == "block" for d in decisions)
     blocked = next(i for i, d in enumerate(decisions, 1) if d.decision == "block")
+    blocked_decision = decisions[blocked - 1]
+    assert blocked_decision.block_scope == "current_attempt_only"
+    assert blocked_decision.block_expires_at is not None
     with pytest.raises(InvalidLifecycleTransition, match="blocked request"):
         asyncio.run(
             service.outcome(
@@ -171,10 +174,14 @@ def test_blocked_request_cannot_receive_an_outcome_but_later_requests_still_scor
                 ).model_copy(update={"session_id": f"s-burst-{blocked // 3}"})
             )
         )
-    # a later request from the same device is still scored
+    # The policy expiry is metadata, not a persisted ban. A later request
+    # before that timestamp still passes through the scorer.
+    calls_before_later_request = len(model.snapshots)
     later = asyncio.run(
         service.precheck(_precheck(99, START + timedelta(seconds=400), device="burst"))
     )
+    assert START + timedelta(seconds=400) < blocked_decision.block_expires_at
+    assert len(model.snapshots) == calls_before_later_request + 1
     assert later.decision in {"allow", "review", "block"}
     assert later.risk_score == pytest.approx(0.99)
     assert later.model_status == "ready"

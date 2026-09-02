@@ -74,7 +74,7 @@ const evidenceLabels = {
   decline_streak: "Verified decline streak",
   sessions_24h: "Sessions in 24 hours",
   ip_changes_24h: "IP changes in 24 hours",
-  successful_checkouts: "Successful checkouts",
+  successful_checkouts_30d: "Successful checkouts in 30 days",
 };
 
 const reasonLabels = {

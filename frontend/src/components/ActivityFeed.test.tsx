@@ -14,7 +14,7 @@ describe("ActivityFeed", () => {
     expect(screen.getAllByText("Razorpay Test")).toHaveLength(2);
     expect(screen.getAllByText("Replay")).toHaveLength(2);
     fireEvent.click(screen.getByRole("button", { name: "Razorpay Test" }));
-    expect(screen.getByText("FAILED")).toBeInTheDocument();
-    expect(screen.queryByText("SYNTHETIC")).not.toBeInTheDocument();
+    expect(screen.getByText("VERIFIED FAILED PAYMENT")).toBeInTheDocument();
+    expect(screen.queryByText("NO RAZORPAY")).not.toBeInTheDocument();
   });
 });

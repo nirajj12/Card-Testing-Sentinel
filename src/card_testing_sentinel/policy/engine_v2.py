@@ -23,9 +23,10 @@ to step-up verification, rate limiting, a delayed retry or a manual queue.
 None of those are implemented here and none are claimed -- Sentinel does not
 issue OTP, 3DS or issuer actions.
 
-`block` remains temporary. Nothing is permanently labelled fraudulent: after
-the expiry a later request is scored from current history, so a device whose
-behaviour changes returns to allow on its own.
+`block` applies to the current attempt. Nothing is permanently labelled
+fraudulent: every later request is scored again from its then-current history.
+The configured TTL is returned as policy metadata; this runtime does not
+persist or enforce a device ban until that timestamp.
 """
 
 from __future__ import annotations

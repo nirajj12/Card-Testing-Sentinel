@@ -4,7 +4,7 @@ This is backend preparation for the future fraud-operations panel (not
 built yet). Every value returned here is taken verbatim from the exact
 response/snapshot produced for a real decision -- nothing is recomputed,
 and nothing outside the fixed allowlists below is ever included. In
-particular this module never sees, and could not leak, the full 44-feature
+particular this module never sees, and could not leak, the full 39-feature
 vector, raw identifiers, the HMAC secret, scenario labels, or private
 policy thresholds.
 """
@@ -29,7 +29,7 @@ SAFE_EVIDENCE_FEATURES: tuple[str, ...] = (
     "decline_streak",
     "sessions_24h",
     "ip_changes_24h",
-    "successful_checkouts",
+    "successful_checkouts_30d",
 )
 
 

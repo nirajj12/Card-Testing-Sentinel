@@ -16,9 +16,9 @@ class PolicyDecision:
     rule_score: int
     #: null only in the degraded failover, when no model could be loaded.
     risk_score: float | None = None
-    #: set when action == "block". A block is always temporary: after this
-    #: moment a later request is scored from current history, and nothing is
-    #: permanently labelled fraudulent.
+    #: Policy TTL metadata set when action == "block". The runtime blocks the
+    #: current attempt only; it does not persist a device ban until this time.
+    #: Every later request is independently scored from then-current history.
     block_expires_at: datetime | None = None
 
     def to_dict(self) -> dict:

@@ -196,6 +196,9 @@ class RiskService:
             processed_at=datetime.now(UTC),
             latency_ms=latency_ms,
             block_expires_at=decision.block_expires_at,
+            block_scope=(
+                "current_attempt_only" if decision.action == "block" else None
+            ),
         )
         record = StoredRequest(
             request_id=request.request_id,

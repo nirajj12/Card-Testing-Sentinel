@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Response, status
 
 from card_testing_sentinel.api.dependencies import RuntimeDependency
 
@@ -11,7 +11,9 @@ def live() -> dict:
 
 
 @router.get("/health/ready")
-def ready(runtime: RuntimeDependency) -> dict:
+def ready(runtime: RuntimeDependency, response: Response) -> dict:
+    if not runtime.ready:
+        response.status_code = status.HTTP_503_SERVICE_UNAVAILABLE
     return {
         "status": "ready" if runtime.ready else "not_ready",
         "ready": runtime.ready,

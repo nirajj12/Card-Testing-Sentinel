@@ -1,5 +1,24 @@
 export type Decision = "allow" | "review" | "block";
 
+export type PaymentPhase =
+  | "idle"
+  | "sentinel_evaluating"
+  | "sentinel_decision"
+  | "order_creating"
+  | "razorpay_order_created"
+  | "checkout_open"
+  | "signature_verifying"
+  | "awaiting_authoritative_status"
+  | "payment_complete"
+  | "failure";
+
+export type PaymentFailureContext =
+  | "precheck"
+  | "order"
+  | "checkout"
+  | "verification"
+  | "processor";
+
 export type SystemStatus = {
   ready: boolean;
   model_status: string;
@@ -23,6 +42,7 @@ export type PrecheckResponse = {
   model_status: string;
   device_state_version: number;
   latency_ms: number;
+  block_scope?: "current_attempt_only" | null;
 };
 
 export type Operation = {

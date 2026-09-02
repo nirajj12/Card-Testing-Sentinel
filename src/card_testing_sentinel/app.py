@@ -223,7 +223,13 @@ def create_app(
         )
 
     application.add_api_route("/", product_page, methods=["GET"])
-    for product_path in ("/store", "/checkout", "/how-it-works", "/evidence"):
+    for product_path in (
+        "/store",
+        "/checkout",
+        "/how-it-works",
+        "/results",
+        "/evidence",
+    ):
         application.add_api_route(product_path, product_page, methods=["GET"])
 
     return application

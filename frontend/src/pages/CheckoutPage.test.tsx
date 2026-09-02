@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { CartProvider } from "../state/CartContext";
@@ -78,16 +78,63 @@ describe("CheckoutPage activity hydration", () => {
     window.Razorpay = function RazorpayMock(value: typeof options) { options=value; return { open: vi.fn(), on: vi.fn() }; } as never;
     mount(); fireEvent.click(screen.getByRole("button", { name: /Pay securely with Razorpay/i }));
     await waitFor(() => expect(options).not.toBeNull());
-    await options!.handler({ razorpay_order_id:"order",razorpay_payment_id:"pay",razorpay_signature:"signature" });
-    expect(await screen.findByText("The payment result could not be verified by the backend.")).toBeVisible();
+    await act(async () => {
+      await options!.handler({
+        razorpay_order_id: "order",
+        razorpay_payment_id: "pay",
+        razorpay_signature: "signature",
+      });
+    });
+    await waitFor(() => {
+      expect(
+        screen.getByText("The payment result could not be verified by the backend."),
+      ).toBeVisible();
+    });
+  });
+
+  it("treats signature verification as awaiting authoritative payment status", async () => {
+    allowPrecheck();
+    vi.mocked(api.razorpayOrder).mockResolvedValue({ sentinel_request_id:"req",razorpay_order_id:"order",key_id:"key",amount:2499,currency:"INR",test_mode:true,activity_id:"activity" });
+    vi.mocked(api.verifyPayment).mockResolvedValue({ verified:true,sentinel_request_id:"req",razorpay_order_id:"order",razorpay_payment_id:"pay",payment_status:"signature_verified",outcome_recorded:false,checkout_recorded:false,message:"Awaiting authoritative payment state" });
+    let options: { handler: (payment: { razorpay_order_id:string; razorpay_payment_id:string; razorpay_signature:string }) => Promise<void> } | null = null;
+    window.Razorpay = function RazorpayMock(value: typeof options) { options=value; return { open: vi.fn(), on: vi.fn() }; } as never;
+    mount(); fireEvent.click(screen.getByRole("button", { name: /Pay securely with Razorpay/i }));
+    await waitFor(() => expect(options).not.toBeNull());
+    await act(async () => {
+      await options!.handler({
+        razorpay_order_id: "order",
+        razorpay_payment_id: "pay",
+        razorpay_signature: "signature",
+      });
+    });
+    await waitFor(() => {
+      expect(screen.getByText("Payment signature verified")).toBeVisible();
+    });
+    expect(screen.getByText(/Waiting for a signed Razorpay server event before showing payment success/i)).toBeVisible();
+    expect(screen.queryByText(/Payment successful/i)).not.toBeInTheDocument();
+  });
+
+  it("keeps a browser payment failure out of verified behavioral history", async () => {
+    allowPrecheck();
+    vi.mocked(api.razorpayOrder).mockResolvedValue({ sentinel_request_id:"req",razorpay_order_id:"order",key_id:"key",amount:2499,currency:"INR",test_mode:true,activity_id:"activity" });
+    let failureHandler: (() => void) | null = null;
+    window.Razorpay = function RazorpayMock() { return { open: vi.fn(), on: vi.fn((event: string, handler: () => void) => { if (event === "payment.failed") failureHandler = handler; }) }; } as never;
+    mount(); fireEvent.click(screen.getByRole("button", { name: /Pay securely with Razorpay/i }));
+    await waitFor(() => expect(failureHandler).not.toBeNull());
+    failureHandler!();
+    await waitFor(() => {
+      expect(screen.getByText(/This browser event is not yet trusted history/i)).toBeVisible();
+    });
+    expect(screen.getByText("Behavioral history").nextElementSibling).toHaveTextContent("AWAITING SIGNED WEBHOOK");
+    expect(screen.queryByText("RECORDED DECLINED")).not.toBeInTheDocument();
   });
 
   it("loads persisted activity again after the page is remounted", async () => {
     const first = mount();
-    await waitFor(() => expect(screen.getByText("FAILED")).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText("VERIFIED FAILED PAYMENT")).toBeInTheDocument());
     first.unmount();
     mount();
-    await waitFor(() => expect(screen.getByText("FAILED")).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText("VERIFIED FAILED PAYMENT")).toBeInTheDocument());
     expect(api.recentActivity).toHaveBeenCalledTimes(2);
   });
 

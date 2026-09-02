@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { normalizePrecheck, safeReason } from "./decision";
+import { decisionCopy, normalizePrecheck, policyV2ReasonCodes, presentReason, reasonPresentations, safeReason } from "./decision";
 
 describe("decision presentation", () => {
   it("fails closed for reason codes outside the UI contract", () => {
@@ -11,5 +11,30 @@ describe("decision presentation", () => {
     expect(operation.decision).toBe("block");
     expect(operation.risk_score).toBe(.84);
     expect(operation.reason_codes).toEqual(["sustained_request_burst"]);
+  });
+
+  it("provides intentional labels and explanations for every Policy v2 reason", () => {
+    expect(Object.keys(reasonPresentations).sort()).toEqual([...policyV2ReasonCodes].sort());
+    for (const code of policyV2ReasonCodes) {
+      const presentation = presentReason(code);
+      expect(presentation.label).not.toBe("Additional policy signal");
+      expect(presentation.explanation.length).toBeGreaterThan(25);
+    }
+  });
+
+  it("keeps ALLOW separate from payment approval", () => {
+    expect(decisionCopy.allow.copy).toContain("insufficient evidence to stop");
+    expect(decisionCopy.allow.copy).toContain("Payment approval still happens later through Razorpay");
+    expect(decisionCopy.allow.copy).not.toMatch(/safe payment|legitimate customer|fraud-free/i);
+  });
+
+  it("describes REVIEW without inventing a review or step-up workflow", () => {
+    expect(decisionCopy.review.copy).toContain("suppresses order creation");
+    expect(decisionCopy.review.copy).toContain("does not operate a manual-review or step-up flow");
+  });
+
+  it("makes BLOCK attempt-scoped without claiming a timed ban", () => {
+    expect(decisionCopy.block.copy).toMatch(/future attempts are independently evaluated/i);
+    expect(decisionCopy.block.copy).not.toMatch(/one hour|blocked until|device ban/i);
   });
 });

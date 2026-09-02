@@ -49,6 +49,12 @@ def test_active_api_uses_the_exact_frozen_v2_stack_and_evidence(client):
     assert runtime.service.model_score_calls == calls
 
 
+def test_ready_endpoint_returns_200_for_a_ready_runtime(client):
+    response = client.get("/health/ready")
+    assert response.status_code == 200
+    assert response.json()["ready"] is True
+
+
 def test_restart_recovery_reproduces_the_v2_decision(tmp_path):
     registry = ArtifactRegistry.load(ROOT)
     database = tmp_path / "live_state_v2.sqlite3"
@@ -81,7 +87,9 @@ def test_contract_mismatch_prevents_application_readiness(tmp_path):
 
     app = create_app(root=ROOT, config_path=bad_config, hmac_secret=SECRET)
     with TestClient(app) as client:
-        ready = client.get("/health/ready").json()
+        response = client.get("/health/ready")
+        ready = response.json()
+        assert response.status_code == 503
         assert ready["ready"] is False
         assert "does not match Feature Contract v2" in ready["error"]
 

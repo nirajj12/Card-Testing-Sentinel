@@ -16,6 +16,7 @@ ROOT = Path(__file__).resolve().parents[2]
 API_CLIENT_JS = ROOT / "src/card_testing_sentinel/web/static/api-client.js"
 DASHBOARD_JS = ROOT / "src/card_testing_sentinel/web/static/dashboard.js"
 CONSOLE_JS = ROOT / "src/card_testing_sentinel/web/static/console-controller.js"
+REACT_DECISION_TS = ROOT / "frontend/src/features/decision.ts"
 
 _STRING_PATH = re.compile(r'"(/(?:health|api)[^"?]*)"')
 _TEMPLATE_PATH = re.compile(r"`(/(?:health|api)[^`?]*)`")
@@ -51,6 +52,22 @@ def _route_matches(js_path: str, route_path: str) -> bool:
         elif js_seg != route_seg:
             return False
     return True
+
+
+def test_react_reason_contract_covers_every_policy_v2_reason_code():
+    from card_testing_sentinel.policy.reasons_v2 import REASON_CODES_V2
+
+    source = REACT_DECISION_TS.read_text()
+    match = re.search(
+        r"export const policyV2ReasonCodes = \[(.*?)\] as const;", source, re.DOTALL
+    )
+    assert match is not None, "React must publish its Policy v2 reason contract"
+    frontend_codes = re.findall(r'"([a-z0-9_]+)"', match.group(1))
+    assert tuple(frontend_codes) == REASON_CODES_V2
+    for code in frontend_codes:
+        assert re.search(
+            rf"^  {re.escape(code)}: \{{", source, re.MULTILINE
+        ), f"missing intentional React presentation for {code}"
 
 
 def test_every_frontend_api_path_maps_to_a_registered_fastapi_route():
@@ -184,14 +201,14 @@ def test_valid_next_step_returns_200_and_updates_checkout_ops_and_timeline(
     }
     assert 0.0 <= op["risk_score"] <= 1.0
     # evidence is either empty (idempotent replay with nothing stored) or
-    # exactly the six-key allowlist -- never the 44-feature vector.
+    # exactly the six-key allowlist -- never the 39-feature vector.
     allowed_evidence_keys = {
         "requests_5m",
         "recent_failures_24h",
         "decline_streak",
         "sessions_24h",
         "ip_changes_24h",
-        "successful_checkouts",
+        "successful_checkouts_30d",
     }
     assert set(op["evidence"]).issubset(allowed_evidence_keys)
     assert isinstance(body["timeline"], list) and body["timeline"]

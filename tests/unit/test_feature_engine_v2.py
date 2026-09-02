@@ -26,6 +26,7 @@ from card_testing_sentinel.features.specification_v2 import (
     validate_feature_contract_v2,
 )
 from card_testing_sentinel.features.state_v2 import customer_key
+from card_testing_sentinel.services.operations_projection import safe_evidence
 
 START = datetime(2026, 5, 1, tzinfo=UTC)
 
@@ -239,6 +240,8 @@ def test_successful_checkouts_age_out_after_thirty_days():
 
     soon = stream.request(START + timedelta(days=5))
     assert soon["successful_checkouts_30d"] == 1.0
+    assert safe_evidence(soon)["successful_checkouts_30d"] == 1.0
+    assert "successful_checkouts" not in safe_evidence(soon)
 
     later = stream.request(START + timedelta(days=31))
     assert later["successful_checkouts_30d"] == 0.0

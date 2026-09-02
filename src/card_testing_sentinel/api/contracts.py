@@ -126,8 +126,12 @@ class PrecheckResponse(BaseModel):
     idempotent_replay: bool
     processed_at: datetime
     latency_ms: float
-    #: set when decision == "block"; the merchant may expire the block after this.
+    #: Policy TTL metadata retained for compatibility. The runtime does not
+    #: persist or enforce a device ban until this timestamp.
     block_expires_at: datetime | None = None
+    #: A block applies to this request only. Every later request is rescored
+    #: from the behavioral history current at that later request.
+    block_scope: Literal["current_attempt_only"] | None = None
 
 
 class TransitionResponse(BaseModel):

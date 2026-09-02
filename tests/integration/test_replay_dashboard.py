@@ -55,6 +55,14 @@ def test_product_page_uses_the_built_spa_without_inline_javascript(client):
     assert not re.search(r"<script[^>]*>\s*[^<\s]", html)
 
 
+def test_results_direct_navigation_serves_the_built_react_spa(client):
+    home = client.get("/")
+    results = client.get("/results")
+    assert results.status_code == 200
+    assert results.text == home.text
+    assert '<div id="root"></div>' in results.text
+
+
 def test_frontend_modules_use_safe_dom_and_responsive_css():
     frontend = ROOT / "frontend/src"
     scripts = "\n".join(

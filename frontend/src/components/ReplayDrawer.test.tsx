@@ -16,7 +16,8 @@ describe("ReplayDrawer", () => {
     fireEvent.click(screen.getByRole("button", { name: /Start selected scenario/ }));
     await waitFor(() => expect(screen.getByRole("button", { name: /Next/ })).toBeEnabled());
     fireEvent.click(screen.getByRole("button", { name: /Next/ }));
-    expect(await screen.findByText("Order path eligible")).toBeInTheDocument();
+    expect(await screen.findByText("Order eligible in a real checkout")).toBeInTheDocument();
+    expect(screen.getByText(/This controlled simulation never creates a Razorpay order or opens Checkout/i)).toBeInTheDocument();
     expect(api.demoStep).toHaveBeenCalledWith("demo-1");
     fireEvent.click(screen.getByRole("button", { name: "Reset demo" }));
     await waitFor(() => expect(reset).toHaveBeenCalled());

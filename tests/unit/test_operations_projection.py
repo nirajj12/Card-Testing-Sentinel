@@ -47,7 +47,7 @@ def test_safe_evidence_selects_only_the_allowlist():
         "decline_streak": 1,
         "sessions_24h": 1,
         "ip_changes_24h": 0,
-        "successful_checkouts": 4,
+        "successful_checkouts_30d": 4,
         # everything below must never appear in the result
         "device_age_seconds": 12345,
         "amount_delta": 5.0,
@@ -68,7 +68,7 @@ def test_safe_evidence_allowlist_is_exactly_six_merchant_visible_signals():
         "decline_streak",
         "sessions_24h",
         "ip_changes_24h",
-        "successful_checkouts",
+        "successful_checkouts_30d",
     )
 
 
