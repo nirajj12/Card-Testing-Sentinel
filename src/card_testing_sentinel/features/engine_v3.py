@@ -6,9 +6,8 @@ Every snapshot is computed from merchant-visible pre-checkout information:
 - This device's own earlier requests
 - This device's earlier verified payment outcomes and checkouts
 - This customer's earlier requests, verified outcomes and checkouts
-- New in v3: Card diversity ratio, card change ratio after decline,
-  session churn rate, 24h gap variability, 24h median gap,
-  merchant-relative velocity, and log amount ratio.
+- New in v3.1: Card diversity ratio, card change ratio after decline,
+  session churn rate, 24h gap variability, and 24h median gap.
 
 No feature uses the current attempt's card, method, issuer, decline reason
 or result, and none uses any future event.

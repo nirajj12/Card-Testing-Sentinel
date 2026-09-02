@@ -1,0 +1,24 @@
+{
+  "manifest_version": "readme-figures-v1",
+  "description": "Cryptographic reproducibility manifest for Model v3.1 publication figures",
+  "input_artifacts": {
+    "metadata.json": "0c6c4f1f30b4e585022189bfdb10e4bf7c6d1efbe646abd1ec5fbdd4dca3592f",
+    "candidate_metrics.csv": "5a150e2244b56491a46c6d529cf82e6028d4c0ba4f72418722c99b7e74fa469f",
+    "calibration_metrics.csv": "35739a5d6c4bf3ad00c55e130f25d9315be2eb3993e7b416c47179952928eedd",
+    "targeted_ablations.json": "f90cf059d5f04f7d9231400cbdd378e4eb2a9c9ec618423d16231adffc597a57",
+    "development_validation_scores.csv": "ce8e925aa1f702b355fdc488dfd882f47f28cf98aea560f2ccccd482c3562832"
+  },
+  "output_figures": {
+    "pr_curve_model_v3_1.png": "7742177c59914cf24ea9eb7a1efdd2fdd52b40f978527ffceb1a556c5eb82b34",
+    "candidate_pr_auc_model_v3_1.png": "eb70a166506a2c25398b1f67f52ac45e3873101be0ed63be4282992966496acb",
+    "calibration_reliability_model_v3_1.png": "b524d085bbeeb881aa9d350c1b28914eef43df1a170d456b321f04945b873298",
+    "policy_outcomes_model_v3_1.png": "71a378ed72f584e67c3343c73c19289bcf725d7d672c1bc73533c4dd61ea8286",
+    "critical_scenario_review_rates.png": "fc4e1d79c49b83ee3254be979f05e3b0eeeed0b9e25c367a79919743e810b14c",
+    "ablation_pr_auc_model_v3_1.png": "4bd73c60e31fb7f05a93e2bbd7447e7bbfcd6affd46b6fb3be3391df66aa616b"
+  },
+  "validation_check": {
+    "recomputed_device_weighted_pr_auc": 0.9168603899474062,
+    "target_pr_auc": 0.9168603899474062,
+    "match": true
+  }
+}

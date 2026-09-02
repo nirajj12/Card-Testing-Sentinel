@@ -1,7 +1,7 @@
-"""Model v3 training, cross-validation, selection, calibration, and evaluation.
+"""Model v3.1 training, cross-validation, selection, calibration, and evaluation.
 
-Trains on Dataset v4 TRAIN split under Feature Contract v3 (46 features).
-Evaluates candidate families, calibration, ablations, counterfactual pairs,
+Trains on Dataset v4.1 TRAIN split under Feature Contract v3.1 (44 features).
+Evaluates candidate families, calibration, targeted ablations, counterfactual pairs,
 and policy interactions on the held-out VALIDATION split.
 Historical artifacts remain frozen.
 """

@@ -1,11 +1,11 @@
-"""The ordered causal-feature contract, version 3.
+"""The ordered causal-feature contract, version 3.1.
 
 v1 (28 features) and v2 (39 features) are untouched and continue to serve
-their frozen artifacts. This module provides Feature Contract v3 (46 features).
+their frozen artifacts. This module provides Feature Contract v3.1 (44 features).
 
 Every feature is derivable from merchant-visible pre-checkout causality:
-raw request facts, device historical requests, verified outcomes, customer
-history across devices, and merchant-relative normalization.
+raw request facts, device historical requests, verified outcomes, and customer
+history across devices.
 No feature uses the current attempt's card, method, issuer, decline
 reason or result, and none uses a future event.
 """

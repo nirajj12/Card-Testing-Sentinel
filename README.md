@@ -85,6 +85,43 @@ or as the final result. Exact Blind v2 raw device timelines are ignored local
 generation outputs, not packaged release evidence, so `/api/replay/*` returns
 `not_packaged` instead of fabricating records or silently replaying v1.
 
+## Model v3.1 development evidence (pre-PBRSS freeze)
+
+> **Development evidence only.** The numbers below reflect actor-safe synthetic development validation on held-out Dataset v4.1 data. They are not production performance, not real Razorpay merchant performance, and not proof of real-world generalization. The Post-Blind Remediation Stress Suite (PBRSS-v1) remains unconsumed and un-scored. The active runtime continues to serve frozen Model v2.
+
+| Metric | Primary Product Gate | Model v3.1 Synthetic Validation | Status |
+|---|---|---:|---|
+| Attack devices reaching REVIEW+ | $\ge 70.0\%$ | **93.49%** (589/630) | Surpassed |
+| Attack devices reaching BLOCK | diagnostic | **67.46%** (425/630) | Reporting |
+| Legitimate devices reaching REVIEW+ | $\le 6.0\%$ | **3.14%** (90/2870) | Surpassed |
+| Legitimate devices reaching BLOCK | $\le 1.0\%$ | **0.14%** (4/2870) | Surpassed |
+| Model PR-AUC (device-weighted) | $\ge 0.70$ (stretch) | **0.9169** | Surpassed |
+| Model ROC-AUC (device-weighted) | $\ge 0.85$ (stretch) | **0.9693** | Surpassed |
+| Expected Calibration Error (ECE) | $\le 0.030$ (stretch) | **0.0214** | Surpassed |
+| Brier score | $\le 0.080$ (stretch) | **0.0410** | Surpassed |
+| Counterfactual Pair Ordering Accuracy | $\ge 90.0\%$ (stretch) | **100.0%** (20/20 pairs) | Surpassed |
+
+### Development figures
+
+| Precision-Recall Curve | Calibration Reliability |
+|---|---|
+| ![Model v3.1 PR Curve](docs/figures/pr_curve_model_v3_1.png) | ![Model v3.1 Calibration](docs/figures/calibration_reliability_model_v3_1.png) |
+
+| Policy v2 Operating Outcomes | Critical Scenario REVIEW+ Rates |
+|---|---|
+| ![Policy Outcomes](docs/figures/policy_outcomes_model_v3_1.png) | ![Critical Scenarios](docs/figures/critical_scenario_review_rates.png) |
+
+| Candidate Model Selection (TRAIN OOF) | Targeted Feature Ablations |
+|---|---|
+| ![Candidate Selection](docs/figures/candidate_pr_auc_model_v3_1.png) | ![Ablations](docs/figures/ablation_pr_auc_model_v3_1.png) |
+
+For complete development details, diagnostic ablations, and audit trails, see:
+- [Phase 2.6 Model v3.1 Development Report](reports/phase_2_6_model_v3_1_development.md)
+- [Phase 2.6 Model v3.1 Feature Ablation Report](reports/phase_2_6_model_v3_1_ablations.md)
+- [Phase 2.6 Dataset v4.1 Audit Report](reports/phase_2_6_dataset_v4_1_audit.md)
+- [Phase 2.6 Handoff Document](docs/phase_2_6_handoff.md)
+- [README Figures Reproducibility Manifest](docs/figures/readme_chart_manifest.json)
+
 ## Local setup
 
 Python 3.11 and Node 22.13.1 or newer are required.

@@ -60,13 +60,13 @@
     ]
   },
   "selected_candidate": {
-    "identifier": "hist_gb_1",
+    "identifier": "hist_gb_2",
     "family": "hist_gradient_boosting",
     "parameters": {
-      "learning_rate": 0.05,
-      "max_leaf_nodes": 15,
+      "learning_rate": 0.08,
+      "max_leaf_nodes": 31,
       "max_iter": 150,
-      "l2_regularization": 1.0
+      "l2_regularization": 2.0
     },
     "interactions": [],
     "fitted_features": [
@@ -122,209 +122,209 @@
     "table": [
       {
         "method": "none",
-        "pr_auc": 0.8483083313078399,
-        "roc_auc": 0.9434104981729188,
-        "brier": 0.14000076574102366,
-        "ece": 0.28179398238168724,
-        "log_loss": 0.46573656099639194
+        "pr_auc": 0.9383526609123164,
+        "roc_auc": 0.9790173126434821,
+        "brier": 0.04397164641679705,
+        "ece": 0.05538735245208372,
+        "log_loss": 0.1532347903124969
       },
       {
         "method": "sigmoid",
-        "pr_auc": 0.8483083313078399,
-        "roc_auc": 0.9434104981729188,
-        "brier": 0.057179814005710164,
-        "ece": 0.01987062797976811,
-        "log_loss": 0.2088041837921841
+        "pr_auc": 0.9383526609123164,
+        "roc_auc": 0.9790173126434821,
+        "brier": 0.035665638522914114,
+        "ece": 0.014657177921094125,
+        "log_loss": 0.13596747261612055
       },
       {
         "method": "isotonic",
-        "pr_auc": 0.8335254244655906,
-        "roc_auc": 0.9477813216665019,
-        "brier": 0.05338732101131098,
-        "ece": 7.37221121071285e-17,
-        "log_loss": 0.18959044652289894
+        "pr_auc": 0.9309632317202191,
+        "roc_auc": 0.9799684326854721,
+        "brier": 0.032099517241902166,
+        "ece": 4.1383317894997534e-10,
+        "log_loss": 0.11484829470746034
       }
     ]
   },
   "validation_metrics": {
-    "pr_auc": 0.8173431051639775,
-    "roc_auc": 0.9355683573948025,
-    "brier": 0.06296357393466033,
-    "log_loss": 0.22774894715551386,
-    "ece": 0.027992320723529068,
+    "pr_auc": 0.9168603899474062,
+    "roc_auc": 0.9692543450589296,
+    "brier": 0.04100426615337859,
+    "log_loss": 0.15836026661419894,
+    "ece": 0.021434703340317024,
     "positive_rate": 0.17999999999999997
   },
-  "counterfactual_pair_accuracy": 0.75,
+  "counterfactual_pair_accuracy": 1.0,
   "policy_experiments": {
     "experiment_a_unchanged_policy_v2": {
-      "attack_review_plus": 0.8539682539682539,
-      "attack_block": 0.346031746031746,
-      "legitimate_review_plus": 0.04285714285714286,
-      "legitimate_block": 0.0
+      "attack_review_plus": 0.9349206349206349,
+      "attack_block": 0.6746031746031746,
+      "legitimate_review_plus": 0.0313588850174216,
+      "legitimate_block": 0.0013937282229965157
     },
     "experiment_b_moderate_trust": {
-      "attack_review_plus": 0.8539682539682539,
-      "attack_block": 0.346031746031746,
-      "legitimate_review_plus": 0.04285714285714286,
-      "legitimate_block": 0.0
+      "attack_review_plus": 0.9349206349206349,
+      "attack_block": 0.6714285714285714,
+      "legitimate_review_plus": 0.0313588850174216,
+      "legitimate_block": 0.0013937282229965157
     }
   },
   "scenario_performance": {
     "burst_pause_burst_v4": {
       "devices": 25,
-      "review_plus_rate": 0.96,
-      "block_rate": 0.64,
-      "mean_max_score": 0.8942490521209833
+      "review_plus_rate": 1.0,
+      "block_rate": 1.0,
+      "mean_max_score": 0.9332010303082733
     },
     "cgnat_mobile_ip_storm": {
       "devices": 292,
-      "review_plus_rate": 0.0136986301369863,
+      "review_plus_rate": 0.00684931506849315,
       "block_rate": 0.0,
-      "mean_max_score": 0.07783626289696667
+      "mean_max_score": 0.021700904522107906
     },
     "cross_device_partial": {
       "devices": 150,
-      "review_plus_rate": 0.8933333333333333,
-      "block_rate": 0.2866666666666667,
-      "mean_max_score": 0.8309325009436375
+      "review_plus_rate": 0.9733333333333334,
+      "block_rate": 0.7733333333333333,
+      "mean_max_score": 0.9134286469297485
     },
     "cross_device_weak_guest": {
       "devices": 135,
-      "review_plus_rate": 0.9333333333333333,
-      "block_rate": 0.5481481481481482,
-      "mean_max_score": 0.863539852072276
+      "review_plus_rate": 0.9629629629629629,
+      "block_rate": 0.6148148148148148,
+      "mean_max_score": 0.9009475495890545
     },
     "cvv_and_expiry_mistakes": {
       "devices": 140,
-      "review_plus_rate": 0.04285714285714286,
+      "review_plus_rate": 0.02857142857142857,
       "block_rate": 0.0,
-      "mean_max_score": 0.08328268565915035
+      "mean_max_score": 0.09019590865839826
     },
     "distributed_bot_campaign": {
       "devices": 112,
       "review_plus_rate": 0.7678571428571429,
       "block_rate": 0.0,
-      "mean_max_score": 0.6860447925049912
+      "mean_max_score": 0.7106191880446248
     },
     "dormant_account_spike": {
       "devices": 58,
       "review_plus_rate": 0.0,
       "block_rate": 0.0,
-      "mean_max_score": 0.12806748510931762
+      "mean_max_score": 0.016203721327810627
     },
     "fast_burst_v4": {
       "devices": 35,
-      "review_plus_rate": 0.8571428571428571,
-      "block_rate": 0.8285714285714286,
-      "mean_max_score": 0.8790184924377519
+      "review_plus_rate": 1.0,
+      "block_rate": 1.0,
+      "mean_max_score": 0.9330751342731465
     },
     "genuine_wallet_cycling": {
       "devices": 133,
-      "review_plus_rate": 0.015037593984962405,
-      "block_rate": 0.0,
-      "mean_max_score": 0.4564787788982819
+      "review_plus_rate": 0.06015037593984962,
+      "block_rate": 0.022556390977443608,
+      "mean_max_score": 0.11280148470154763
     },
     "merchant_normal_amount_attack_v4": {
       "devices": 14,
-      "review_plus_rate": 0.5,
-      "block_rate": 0.0,
-      "mean_max_score": 0.7571925488454021
+      "review_plus_rate": 0.9285714285714286,
+      "block_rate": 0.9285714285714286,
+      "mean_max_score": 0.9038471807661672
     },
     "mixed_campaign_v4": {
       "devices": 46,
       "review_plus_rate": 0.9347826086956522,
-      "block_rate": 0.717391304347826,
-      "mean_max_score": 0.8477352526777243
+      "block_rate": 0.9347826086956522,
+      "mean_max_score": 0.8751966680701022
     },
     "multi_device_customer_v4": {
       "devices": 244,
-      "review_plus_rate": 0.040983606557377046,
-      "block_rate": 0.0,
-      "mean_max_score": 0.15224879000945382
+      "review_plus_rate": 0.036885245901639344,
+      "block_rate": 0.004098360655737705,
+      "mean_max_score": 0.082898723450853
     },
     "network_retry_storm_hard": {
       "devices": 287,
-      "review_plus_rate": 0.03484320557491289,
+      "review_plus_rate": 0.027874564459930314,
       "block_rate": 0.0,
-      "mean_max_score": 0.07895982739706828
+      "mean_max_score": 0.09588025517857075
     },
     "new_customer_onboarding": {
       "devices": 175,
-      "review_plus_rate": 0.03428571428571429,
+      "review_plus_rate": 0.02857142857142857,
       "block_rate": 0.0,
-      "mean_max_score": 0.08881210954409491
+      "mean_max_score": 0.06953273692652509
     },
     "normal_guest_checkout": {
       "devices": 303,
-      "review_plus_rate": 0.0462046204620462,
+      "review_plus_rate": 0.04950495049504951,
       "block_rate": 0.0,
-      "mean_max_score": 0.10024103177430563
+      "mean_max_score": 0.1625462966041066
     },
     "normal_returning_customer": {
       "devices": 247,
-      "review_plus_rate": 0.044534412955465584,
+      "review_plus_rate": 0.02834008097165992,
       "block_rate": 0.0,
-      "mean_max_score": 0.08679468880525644
+      "mean_max_score": 0.0937219813005308
     },
     "patient_tester_v4": {
       "devices": 19,
-      "review_plus_rate": 0.8947368421052632,
-      "block_rate": 0.05263157894736842,
-      "mean_max_score": 0.832417636293871
+      "review_plus_rate": 1.0,
+      "block_rate": 1.0,
+      "mean_max_score": 0.9329335539542318
     },
     "persistent_card_problem_hard": {
       "devices": 282,
-      "review_plus_rate": 0.05319148936170213,
+      "review_plus_rate": 0.04609929078014184,
       "block_rate": 0.0,
-      "mean_max_score": 0.10456187286996448
+      "mean_max_score": 0.10300224559021189
     },
     "session_churn_v4": {
       "devices": 17,
-      "review_plus_rate": 0.8823529411764706,
-      "block_rate": 0.8235294117647058,
-      "mean_max_score": 0.8840017914656599
+      "review_plus_rate": 1.0,
+      "block_rate": 1.0,
+      "mean_max_score": 0.9330768012196399
     },
     "session_recreation_flaky_net": {
       "devices": 95,
-      "review_plus_rate": 0.12631578947368421,
+      "review_plus_rate": 0.2,
       "block_rate": 0.0,
-      "mean_max_score": 0.18240400771657134
+      "mean_max_score": 0.27702131016068743
     },
     "shared_household_device": {
       "devices": 267,
-      "review_plus_rate": 0.1198501872659176,
+      "review_plus_rate": 0.0,
       "block_rate": 0.0,
-      "mean_max_score": 0.25058625255992734
+      "mean_max_score": 0.044939057631169524
     },
     "sparse_multiday_v4": {
       "devices": 11,
-      "review_plus_rate": 0.9090909090909091,
-      "block_rate": 0.2727272727272727,
-      "mean_max_score": 0.8534805681863076
+      "review_plus_rate": 1.0,
+      "block_rate": 1.0,
+      "mean_max_score": 0.9329492497972413
     },
     "subscription_dunning_hard": {
       "devices": 347,
-      "review_plus_rate": 0.002881844380403458,
+      "review_plus_rate": 0.0,
       "block_rate": 0.0,
-      "mean_max_score": 0.03489038733850555
+      "mean_max_score": 0.016820094550842348
     },
     "success_camouflage_v4": {
       "devices": 23,
-      "review_plus_rate": 0.9130434782608695,
-      "block_rate": 0.0,
-      "mean_max_score": 0.8509863980220497
+      "review_plus_rate": 1.0,
+      "block_rate": 1.0,
+      "mean_max_score": 0.932059410895092
     },
     "ultra_patient_v4": {
       "devices": 20,
-      "review_plus_rate": 0.3,
-      "block_rate": 0.0,
-      "mean_max_score": 0.6525712312062435
+      "review_plus_rate": 0.9,
+      "block_rate": 0.85,
+      "mean_max_score": 0.8724914504232638
     },
     "warm_up_then_attack_v4": {
       "devices": 23,
-      "review_plus_rate": 0.8260869565217391,
-      "block_rate": 0.21739130434782608,
-      "mean_max_score": 0.8425526819975945
+      "review_plus_rate": 1.0,
+      "block_rate": 1.0,
+      "mean_max_score": 0.9330919780762372
     }
   },
   "ablations": [
@@ -332,170 +332,170 @@
       "ablation": "full_v3_1",
       "dropped_count": 0,
       "remaining_features": 44,
-      "pr_auc": 0.8173431051639775,
-      "roc_auc": 0.9355683573948025,
-      "brier": 0.06296357393466033,
-      "ece": 0.027992320723529068,
-      "attack_review_plus": 0.8539682539682539,
-      "attack_block": 0.346031746031746,
-      "legitimate_review_plus": 0.04285714285714286,
-      "legitimate_block": 0.0,
+      "pr_auc": 0.9168603899474062,
+      "roc_auc": 0.9692543450589296,
+      "brier": 0.04100426615337859,
+      "ece": 0.021434703340317024,
+      "attack_review_plus": 0.9349206349206349,
+      "attack_block": 0.6746031746031746,
+      "legitimate_review_plus": 0.0313588850174216,
+      "legitimate_block": 0.0013937282229965157,
       "scenario_metrics": {
         "burst_pause_burst_v4": {
           "devices": 25,
-          "review_plus_rate": 0.96,
-          "block_rate": 0.64,
-          "mean_max_score": 0.8942490521209833
+          "review_plus_rate": 1.0,
+          "block_rate": 1.0,
+          "mean_max_score": 0.9332010303082733
         },
         "cgnat_mobile_ip_storm": {
           "devices": 292,
-          "review_plus_rate": 0.0136986301369863,
+          "review_plus_rate": 0.00684931506849315,
           "block_rate": 0.0,
-          "mean_max_score": 0.07783626289696667
+          "mean_max_score": 0.021700904522107906
         },
         "cross_device_partial": {
           "devices": 150,
-          "review_plus_rate": 0.8933333333333333,
-          "block_rate": 0.2866666666666667,
-          "mean_max_score": 0.8309325009436375
+          "review_plus_rate": 0.9733333333333334,
+          "block_rate": 0.7733333333333333,
+          "mean_max_score": 0.9134286469297485
         },
         "cross_device_weak_guest": {
           "devices": 135,
-          "review_plus_rate": 0.9333333333333333,
-          "block_rate": 0.5481481481481482,
-          "mean_max_score": 0.863539852072276
+          "review_plus_rate": 0.9629629629629629,
+          "block_rate": 0.6148148148148148,
+          "mean_max_score": 0.9009475495890545
         },
         "cvv_and_expiry_mistakes": {
           "devices": 140,
-          "review_plus_rate": 0.04285714285714286,
+          "review_plus_rate": 0.02857142857142857,
           "block_rate": 0.0,
-          "mean_max_score": 0.08328268565915035
+          "mean_max_score": 0.09019590865839826
         },
         "distributed_bot_campaign": {
           "devices": 112,
           "review_plus_rate": 0.7678571428571429,
           "block_rate": 0.0,
-          "mean_max_score": 0.6860447925049912
+          "mean_max_score": 0.7106191880446248
         },
         "dormant_account_spike": {
           "devices": 58,
           "review_plus_rate": 0.0,
           "block_rate": 0.0,
-          "mean_max_score": 0.12806748510931762
+          "mean_max_score": 0.016203721327810627
         },
         "fast_burst_v4": {
           "devices": 35,
-          "review_plus_rate": 0.8571428571428571,
-          "block_rate": 0.8285714285714286,
-          "mean_max_score": 0.8790184924377519
+          "review_plus_rate": 1.0,
+          "block_rate": 1.0,
+          "mean_max_score": 0.9330751342731465
         },
         "genuine_wallet_cycling": {
           "devices": 133,
-          "review_plus_rate": 0.015037593984962405,
-          "block_rate": 0.0,
-          "mean_max_score": 0.4564787788982819
+          "review_plus_rate": 0.06015037593984962,
+          "block_rate": 0.022556390977443608,
+          "mean_max_score": 0.11280148470154763
         },
         "merchant_normal_amount_attack_v4": {
           "devices": 14,
-          "review_plus_rate": 0.5,
-          "block_rate": 0.0,
-          "mean_max_score": 0.7571925488454021
+          "review_plus_rate": 0.9285714285714286,
+          "block_rate": 0.9285714285714286,
+          "mean_max_score": 0.9038471807661672
         },
         "mixed_campaign_v4": {
           "devices": 46,
           "review_plus_rate": 0.9347826086956522,
-          "block_rate": 0.717391304347826,
-          "mean_max_score": 0.8477352526777243
+          "block_rate": 0.9347826086956522,
+          "mean_max_score": 0.8751966680701022
         },
         "multi_device_customer_v4": {
           "devices": 244,
-          "review_plus_rate": 0.040983606557377046,
-          "block_rate": 0.0,
-          "mean_max_score": 0.15224879000945382
+          "review_plus_rate": 0.036885245901639344,
+          "block_rate": 0.004098360655737705,
+          "mean_max_score": 0.082898723450853
         },
         "network_retry_storm_hard": {
           "devices": 287,
-          "review_plus_rate": 0.03484320557491289,
+          "review_plus_rate": 0.027874564459930314,
           "block_rate": 0.0,
-          "mean_max_score": 0.07895982739706828
+          "mean_max_score": 0.09588025517857075
         },
         "new_customer_onboarding": {
           "devices": 175,
-          "review_plus_rate": 0.03428571428571429,
+          "review_plus_rate": 0.02857142857142857,
           "block_rate": 0.0,
-          "mean_max_score": 0.08881210954409491
+          "mean_max_score": 0.06953273692652509
         },
         "normal_guest_checkout": {
           "devices": 303,
-          "review_plus_rate": 0.0462046204620462,
+          "review_plus_rate": 0.04950495049504951,
           "block_rate": 0.0,
-          "mean_max_score": 0.10024103177430563
+          "mean_max_score": 0.1625462966041066
         },
         "normal_returning_customer": {
           "devices": 247,
-          "review_plus_rate": 0.044534412955465584,
+          "review_plus_rate": 0.02834008097165992,
           "block_rate": 0.0,
-          "mean_max_score": 0.08679468880525644
+          "mean_max_score": 0.0937219813005308
         },
         "patient_tester_v4": {
           "devices": 19,
-          "review_plus_rate": 0.8947368421052632,
-          "block_rate": 0.05263157894736842,
-          "mean_max_score": 0.832417636293871
+          "review_plus_rate": 1.0,
+          "block_rate": 1.0,
+          "mean_max_score": 0.9329335539542318
         },
         "persistent_card_problem_hard": {
           "devices": 282,
-          "review_plus_rate": 0.05319148936170213,
+          "review_plus_rate": 0.04609929078014184,
           "block_rate": 0.0,
-          "mean_max_score": 0.10456187286996448
+          "mean_max_score": 0.10300224559021189
         },
         "session_churn_v4": {
           "devices": 17,
-          "review_plus_rate": 0.8823529411764706,
-          "block_rate": 0.8235294117647058,
-          "mean_max_score": 0.8840017914656599
+          "review_plus_rate": 1.0,
+          "block_rate": 1.0,
+          "mean_max_score": 0.9330768012196399
         },
         "session_recreation_flaky_net": {
           "devices": 95,
-          "review_plus_rate": 0.12631578947368421,
+          "review_plus_rate": 0.2,
           "block_rate": 0.0,
-          "mean_max_score": 0.18240400771657134
+          "mean_max_score": 0.27702131016068743
         },
         "shared_household_device": {
           "devices": 267,
-          "review_plus_rate": 0.1198501872659176,
+          "review_plus_rate": 0.0,
           "block_rate": 0.0,
-          "mean_max_score": 0.25058625255992734
+          "mean_max_score": 0.044939057631169524
         },
         "sparse_multiday_v4": {
           "devices": 11,
-          "review_plus_rate": 0.9090909090909091,
-          "block_rate": 0.2727272727272727,
-          "mean_max_score": 0.8534805681863076
+          "review_plus_rate": 1.0,
+          "block_rate": 1.0,
+          "mean_max_score": 0.9329492497972413
         },
         "subscription_dunning_hard": {
           "devices": 347,
-          "review_plus_rate": 0.002881844380403458,
+          "review_plus_rate": 0.0,
           "block_rate": 0.0,
-          "mean_max_score": 0.03489038733850555
+          "mean_max_score": 0.016820094550842348
         },
         "success_camouflage_v4": {
           "devices": 23,
-          "review_plus_rate": 0.9130434782608695,
-          "block_rate": 0.0,
-          "mean_max_score": 0.8509863980220497
+          "review_plus_rate": 1.0,
+          "block_rate": 1.0,
+          "mean_max_score": 0.932059410895092
         },
         "ultra_patient_v4": {
           "devices": 20,
-          "review_plus_rate": 0.3,
-          "block_rate": 0.0,
-          "mean_max_score": 0.6525712312062435
+          "review_plus_rate": 0.9,
+          "block_rate": 0.85,
+          "mean_max_score": 0.8724914504232638
         },
         "warm_up_then_attack_v4": {
           "devices": 23,
-          "review_plus_rate": 0.8260869565217391,
-          "block_rate": 0.21739130434782608,
-          "mean_max_score": 0.8425526819975945
+          "review_plus_rate": 1.0,
+          "block_rate": 1.0,
+          "mean_max_score": 0.9330919780762372
         }
       }
     },
@@ -503,170 +503,170 @@
       "ablation": "minus_card_diversity_ratio",
       "dropped_count": 1,
       "remaining_features": 43,
-      "pr_auc": 0.7869679832681181,
-      "roc_auc": 0.9268475343430799,
-      "brier": 0.06832616379662812,
-      "ece": 0.022671293392261156,
-      "attack_review_plus": 0.8031746031746032,
-      "attack_block": 0.0,
-      "legitimate_review_plus": 0.03554006968641115,
-      "legitimate_block": 0.0,
+      "pr_auc": 0.9178508234704988,
+      "roc_auc": 0.9697828398062116,
+      "brier": 0.04077297575454884,
+      "ece": 0.021940744317216602,
+      "attack_review_plus": 0.9349206349206349,
+      "attack_block": 0.6761904761904762,
+      "legitimate_review_plus": 0.031010452961672475,
+      "legitimate_block": 0.0013937282229965157,
       "scenario_metrics": {
         "burst_pause_burst_v4": {
           "devices": 25,
-          "review_plus_rate": 0.96,
-          "block_rate": 0.0,
-          "mean_max_score": 0.872130839219609
+          "review_plus_rate": 1.0,
+          "block_rate": 1.0,
+          "mean_max_score": 0.933681654325298
         },
         "cgnat_mobile_ip_storm": {
           "devices": 292,
-          "review_plus_rate": 0.0136986301369863,
+          "review_plus_rate": 0.00684931506849315,
           "block_rate": 0.0,
-          "mean_max_score": 0.08141092255691061
+          "mean_max_score": 0.02158739699316421
         },
         "cross_device_partial": {
           "devices": 150,
-          "review_plus_rate": 0.8333333333333334,
-          "block_rate": 0.0,
-          "mean_max_score": 0.7901477652301951
+          "review_plus_rate": 0.9733333333333334,
+          "block_rate": 0.78,
+          "mean_max_score": 0.9131957428243712
         },
         "cross_device_weak_guest": {
           "devices": 135,
-          "review_plus_rate": 0.9259259259259259,
-          "block_rate": 0.0,
-          "mean_max_score": 0.8413256255700668
+          "review_plus_rate": 0.9629629629629629,
+          "block_rate": 0.6148148148148148,
+          "mean_max_score": 0.9001603371375598
         },
         "cvv_and_expiry_mistakes": {
           "devices": 140,
-          "review_plus_rate": 0.04285714285714286,
+          "review_plus_rate": 0.02857142857142857,
           "block_rate": 0.0,
-          "mean_max_score": 0.07548878940232706
+          "mean_max_score": 0.09176344765359294
         },
         "distributed_bot_campaign": {
           "devices": 112,
           "review_plus_rate": 0.7678571428571429,
           "block_rate": 0.0,
-          "mean_max_score": 0.6955216570023646
+          "mean_max_score": 0.7115986123237958
         },
         "dormant_account_spike": {
           "devices": 58,
           "review_plus_rate": 0.0,
           "block_rate": 0.0,
-          "mean_max_score": 0.09599317829514387
+          "mean_max_score": 0.01531956638021798
         },
         "fast_burst_v4": {
           "devices": 35,
-          "review_plus_rate": 0.8571428571428571,
-          "block_rate": 0.0,
-          "mean_max_score": 0.8614790609881027
+          "review_plus_rate": 1.0,
+          "block_rate": 1.0,
+          "mean_max_score": 0.9335843570771212
         },
         "genuine_wallet_cycling": {
           "devices": 133,
-          "review_plus_rate": 0.0,
-          "block_rate": 0.0,
-          "mean_max_score": 0.405837068416747
+          "review_plus_rate": 0.045112781954887216,
+          "block_rate": 0.022556390977443608,
+          "mean_max_score": 0.10743236510392307
         },
         "merchant_normal_amount_attack_v4": {
           "devices": 14,
-          "review_plus_rate": 0.14285714285714285,
-          "block_rate": 0.0,
-          "mean_max_score": 0.6750771860125347
+          "review_plus_rate": 0.9285714285714286,
+          "block_rate": 0.9285714285714286,
+          "mean_max_score": 0.9184212841570981
         },
         "mixed_campaign_v4": {
           "devices": 46,
-          "review_plus_rate": 0.8478260869565217,
-          "block_rate": 0.0,
-          "mean_max_score": 0.8185787351298947
+          "review_plus_rate": 0.9347826086956522,
+          "block_rate": 0.9347826086956522,
+          "mean_max_score": 0.8763040428628932
         },
         "multi_device_customer_v4": {
           "devices": 244,
-          "review_plus_rate": 0.045081967213114756,
-          "block_rate": 0.0,
-          "mean_max_score": 0.13924381637445066
+          "review_plus_rate": 0.036885245901639344,
+          "block_rate": 0.004098360655737705,
+          "mean_max_score": 0.0827803779176972
         },
         "network_retry_storm_hard": {
           "devices": 287,
           "review_plus_rate": 0.027874564459930314,
           "block_rate": 0.0,
-          "mean_max_score": 0.07005972820628271
+          "mean_max_score": 0.09438200789659323
         },
         "new_customer_onboarding": {
           "devices": 175,
-          "review_plus_rate": 0.03428571428571429,
+          "review_plus_rate": 0.022857142857142857,
           "block_rate": 0.0,
-          "mean_max_score": 0.08590343428435614
+          "mean_max_score": 0.06780939032558561
         },
         "normal_guest_checkout": {
           "devices": 303,
           "review_plus_rate": 0.04950495049504951,
           "block_rate": 0.0,
-          "mean_max_score": 0.10431700437062141
+          "mean_max_score": 0.1637200128832312
         },
         "normal_returning_customer": {
           "devices": 247,
-          "review_plus_rate": 0.032388663967611336,
+          "review_plus_rate": 0.02834008097165992,
           "block_rate": 0.0,
-          "mean_max_score": 0.08009197986197274
+          "mean_max_score": 0.09269774455468169
         },
         "patient_tester_v4": {
           "devices": 19,
-          "review_plus_rate": 0.7894736842105263,
-          "block_rate": 0.0,
-          "mean_max_score": 0.7937736100988927
+          "review_plus_rate": 1.0,
+          "block_rate": 1.0,
+          "mean_max_score": 0.9335031248689792
         },
         "persistent_card_problem_hard": {
           "devices": 282,
-          "review_plus_rate": 0.05673758865248227,
+          "review_plus_rate": 0.05319148936170213,
           "block_rate": 0.0,
-          "mean_max_score": 0.08923241639570449
+          "mean_max_score": 0.10236257546561232
         },
         "session_churn_v4": {
           "devices": 17,
-          "review_plus_rate": 0.8823529411764706,
-          "block_rate": 0.0,
-          "mean_max_score": 0.8662203442850538
+          "review_plus_rate": 1.0,
+          "block_rate": 1.0,
+          "mean_max_score": 0.933503310070396
         },
         "session_recreation_flaky_net": {
           "devices": 95,
-          "review_plus_rate": 0.12631578947368421,
+          "review_plus_rate": 0.2,
           "block_rate": 0.0,
-          "mean_max_score": 0.1670459650498725
+          "mean_max_score": 0.28097975725747637
         },
         "shared_household_device": {
           "devices": 267,
-          "review_plus_rate": 0.056179775280898875,
+          "review_plus_rate": 0.0,
           "block_rate": 0.0,
-          "mean_max_score": 0.23314762402853814
+          "mean_max_score": 0.047829571851621115
         },
         "sparse_multiday_v4": {
           "devices": 11,
-          "review_plus_rate": 0.6363636363636364,
-          "block_rate": 0.0,
-          "mean_max_score": 0.8127015936830694
+          "review_plus_rate": 1.0,
+          "block_rate": 1.0,
+          "mean_max_score": 0.9335465845354721
         },
         "subscription_dunning_hard": {
           "devices": 347,
-          "review_plus_rate": 0.002881844380403458,
+          "review_plus_rate": 0.0,
           "block_rate": 0.0,
-          "mean_max_score": 0.026759683652539352
+          "mean_max_score": 0.01686397910351462
         },
         "success_camouflage_v4": {
           "devices": 23,
-          "review_plus_rate": 0.8695652173913043,
-          "block_rate": 0.0,
-          "mean_max_score": 0.8039777856979187
+          "review_plus_rate": 1.0,
+          "block_rate": 1.0,
+          "mean_max_score": 0.933196720662941
         },
         "ultra_patient_v4": {
           "devices": 20,
-          "review_plus_rate": 0.0,
-          "block_rate": 0.0,
-          "mean_max_score": 0.5869406384315841
+          "review_plus_rate": 0.9,
+          "block_rate": 0.85,
+          "mean_max_score": 0.877523567544819
         },
         "warm_up_then_attack_v4": {
           "devices": 23,
-          "review_plus_rate": 0.782608695652174,
-          "block_rate": 0.0,
-          "mean_max_score": 0.7946868145106599
+          "review_plus_rate": 1.0,
+          "block_rate": 1.0,
+          "mean_max_score": 0.9334843269584638
         }
       }
     },
@@ -674,170 +674,170 @@
       "ablation": "minus_card_change_ratio",
       "dropped_count": 1,
       "remaining_features": 43,
-      "pr_auc": 0.8173431051639775,
-      "roc_auc": 0.9355683573948025,
-      "brier": 0.06296357393466033,
-      "ece": 0.027992320723529068,
-      "attack_review_plus": 0.8539682539682539,
-      "attack_block": 0.346031746031746,
-      "legitimate_review_plus": 0.04285714285714286,
-      "legitimate_block": 0.0,
+      "pr_auc": 0.9177265755514509,
+      "roc_auc": 0.9698108488282523,
+      "brier": 0.040802965408852934,
+      "ece": 0.022124985453472575,
+      "attack_review_plus": 0.9349206349206349,
+      "attack_block": 0.6761904761904762,
+      "legitimate_review_plus": 0.030662020905923345,
+      "legitimate_block": 0.0013937282229965157,
       "scenario_metrics": {
         "burst_pause_burst_v4": {
           "devices": 25,
-          "review_plus_rate": 0.96,
-          "block_rate": 0.64,
-          "mean_max_score": 0.8942490521209833
+          "review_plus_rate": 1.0,
+          "block_rate": 1.0,
+          "mean_max_score": 0.9325183240548889
         },
         "cgnat_mobile_ip_storm": {
           "devices": 292,
-          "review_plus_rate": 0.0136986301369863,
+          "review_plus_rate": 0.00684931506849315,
           "block_rate": 0.0,
-          "mean_max_score": 0.07783626289696667
+          "mean_max_score": 0.021602997402092754
         },
         "cross_device_partial": {
           "devices": 150,
-          "review_plus_rate": 0.8933333333333333,
-          "block_rate": 0.2866666666666667,
-          "mean_max_score": 0.8309325009436375
+          "review_plus_rate": 0.9733333333333334,
+          "block_rate": 0.78,
+          "mean_max_score": 0.9125322098364357
         },
         "cross_device_weak_guest": {
           "devices": 135,
-          "review_plus_rate": 0.9333333333333333,
-          "block_rate": 0.5481481481481482,
-          "mean_max_score": 0.863539852072276
+          "review_plus_rate": 0.9629629629629629,
+          "block_rate": 0.6148148148148148,
+          "mean_max_score": 0.9010075742360898
         },
         "cvv_and_expiry_mistakes": {
           "devices": 140,
-          "review_plus_rate": 0.04285714285714286,
+          "review_plus_rate": 0.02857142857142857,
           "block_rate": 0.0,
-          "mean_max_score": 0.08328268565915035
+          "mean_max_score": 0.08941329946306174
         },
         "distributed_bot_campaign": {
           "devices": 112,
           "review_plus_rate": 0.7678571428571429,
           "block_rate": 0.0,
-          "mean_max_score": 0.6860447925049912
+          "mean_max_score": 0.7107530773231525
         },
         "dormant_account_spike": {
           "devices": 58,
           "review_plus_rate": 0.0,
           "block_rate": 0.0,
-          "mean_max_score": 0.12806748510931762
+          "mean_max_score": 0.01794597269383146
         },
         "fast_burst_v4": {
           "devices": 35,
-          "review_plus_rate": 0.8571428571428571,
-          "block_rate": 0.8285714285714286,
-          "mean_max_score": 0.8790184924377519
+          "review_plus_rate": 1.0,
+          "block_rate": 1.0,
+          "mean_max_score": 0.9324305142657477
         },
         "genuine_wallet_cycling": {
           "devices": 133,
-          "review_plus_rate": 0.015037593984962405,
-          "block_rate": 0.0,
-          "mean_max_score": 0.4564787788982819
+          "review_plus_rate": 0.05263157894736842,
+          "block_rate": 0.022556390977443608,
+          "mean_max_score": 0.11130375830618165
         },
         "merchant_normal_amount_attack_v4": {
           "devices": 14,
-          "review_plus_rate": 0.5,
-          "block_rate": 0.0,
-          "mean_max_score": 0.7571925488454021
+          "review_plus_rate": 0.9285714285714286,
+          "block_rate": 0.9285714285714286,
+          "mean_max_score": 0.9064586369859253
         },
         "mixed_campaign_v4": {
           "devices": 46,
           "review_plus_rate": 0.9347826086956522,
-          "block_rate": 0.717391304347826,
-          "mean_max_score": 0.8477352526777243
+          "block_rate": 0.9347826086956522,
+          "mean_max_score": 0.8752070651324284
         },
         "multi_device_customer_v4": {
           "devices": 244,
           "review_plus_rate": 0.040983606557377046,
-          "block_rate": 0.0,
-          "mean_max_score": 0.15224879000945382
+          "block_rate": 0.004098360655737705,
+          "mean_max_score": 0.08194020022158187
         },
         "network_retry_storm_hard": {
           "devices": 287,
-          "review_plus_rate": 0.03484320557491289,
+          "review_plus_rate": 0.024390243902439025,
           "block_rate": 0.0,
-          "mean_max_score": 0.07895982739706828
+          "mean_max_score": 0.09527281705653785
         },
         "new_customer_onboarding": {
           "devices": 175,
-          "review_plus_rate": 0.03428571428571429,
+          "review_plus_rate": 0.022857142857142857,
           "block_rate": 0.0,
-          "mean_max_score": 0.08881210954409491
+          "mean_max_score": 0.06857125572354632
         },
         "normal_guest_checkout": {
           "devices": 303,
-          "review_plus_rate": 0.0462046204620462,
+          "review_plus_rate": 0.04950495049504951,
           "block_rate": 0.0,
-          "mean_max_score": 0.10024103177430563
+          "mean_max_score": 0.16249687399860346
         },
         "normal_returning_customer": {
           "devices": 247,
-          "review_plus_rate": 0.044534412955465584,
+          "review_plus_rate": 0.02834008097165992,
           "block_rate": 0.0,
-          "mean_max_score": 0.08679468880525644
+          "mean_max_score": 0.09011986748892255
         },
         "patient_tester_v4": {
           "devices": 19,
-          "review_plus_rate": 0.8947368421052632,
-          "block_rate": 0.05263157894736842,
-          "mean_max_score": 0.832417636293871
+          "review_plus_rate": 1.0,
+          "block_rate": 1.0,
+          "mean_max_score": 0.9322610306469822
         },
         "persistent_card_problem_hard": {
           "devices": 282,
-          "review_plus_rate": 0.05319148936170213,
+          "review_plus_rate": 0.04609929078014184,
           "block_rate": 0.0,
-          "mean_max_score": 0.10456187286996448
+          "mean_max_score": 0.10274094256502923
         },
         "session_churn_v4": {
           "devices": 17,
-          "review_plus_rate": 0.8823529411764706,
-          "block_rate": 0.8235294117647058,
-          "mean_max_score": 0.8840017914656599
+          "review_plus_rate": 1.0,
+          "block_rate": 1.0,
+          "mean_max_score": 0.9323466543904956
         },
         "session_recreation_flaky_net": {
           "devices": 95,
-          "review_plus_rate": 0.12631578947368421,
+          "review_plus_rate": 0.2,
           "block_rate": 0.0,
-          "mean_max_score": 0.18240400771657134
+          "mean_max_score": 0.2764535536441458
         },
         "shared_household_device": {
           "devices": 267,
-          "review_plus_rate": 0.1198501872659176,
+          "review_plus_rate": 0.0,
           "block_rate": 0.0,
-          "mean_max_score": 0.25058625255992734
+          "mean_max_score": 0.04540095580903882
         },
         "sparse_multiday_v4": {
           "devices": 11,
-          "review_plus_rate": 0.9090909090909091,
-          "block_rate": 0.2727272727272727,
-          "mean_max_score": 0.8534805681863076
+          "review_plus_rate": 1.0,
+          "block_rate": 1.0,
+          "mean_max_score": 0.9323173661780294
         },
         "subscription_dunning_hard": {
           "devices": 347,
-          "review_plus_rate": 0.002881844380403458,
+          "review_plus_rate": 0.0,
           "block_rate": 0.0,
-          "mean_max_score": 0.03489038733850555
+          "mean_max_score": 0.01704681529628295
         },
         "success_camouflage_v4": {
           "devices": 23,
-          "review_plus_rate": 0.9130434782608695,
-          "block_rate": 0.0,
-          "mean_max_score": 0.8509863980220497
+          "review_plus_rate": 1.0,
+          "block_rate": 1.0,
+          "mean_max_score": 0.931667507116635
         },
         "ultra_patient_v4": {
           "devices": 20,
-          "review_plus_rate": 0.3,
-          "block_rate": 0.0,
-          "mean_max_score": 0.6525712312062435
+          "review_plus_rate": 0.9,
+          "block_rate": 0.85,
+          "mean_max_score": 0.8664397039588397
         },
         "warm_up_then_attack_v4": {
           "devices": 23,
-          "review_plus_rate": 0.8260869565217391,
-          "block_rate": 0.21739130434782608,
-          "mean_max_score": 0.8425526819975945
+          "review_plus_rate": 1.0,
+          "block_rate": 1.0,
+          "mean_max_score": 0.9323999686945836
         }
       }
     },
@@ -845,170 +845,170 @@
       "ablation": "minus_both_card_ratios",
       "dropped_count": 2,
       "remaining_features": 42,
-      "pr_auc": 0.7869679832681181,
-      "roc_auc": 0.9268475343430799,
-      "brier": 0.06832616379662812,
-      "ece": 0.022671293392261156,
-      "attack_review_plus": 0.8031746031746032,
-      "attack_block": 0.0,
-      "legitimate_review_plus": 0.03554006968641115,
-      "legitimate_block": 0.0,
+      "pr_auc": 0.9167347793011034,
+      "roc_auc": 0.9692266705082208,
+      "brier": 0.04091944997072888,
+      "ece": 0.021225324094741062,
+      "attack_review_plus": 0.9365079365079365,
+      "attack_block": 0.6761904761904762,
+      "legitimate_review_plus": 0.0313588850174216,
+      "legitimate_block": 0.0013937282229965157,
       "scenario_metrics": {
         "burst_pause_burst_v4": {
           "devices": 25,
-          "review_plus_rate": 0.96,
-          "block_rate": 0.0,
-          "mean_max_score": 0.872130839219609
+          "review_plus_rate": 1.0,
+          "block_rate": 1.0,
+          "mean_max_score": 0.9335397228465137
         },
         "cgnat_mobile_ip_storm": {
           "devices": 292,
-          "review_plus_rate": 0.0136986301369863,
+          "review_plus_rate": 0.00684931506849315,
           "block_rate": 0.0,
-          "mean_max_score": 0.08141092255691061
+          "mean_max_score": 0.021687981788739912
         },
         "cross_device_partial": {
           "devices": 150,
-          "review_plus_rate": 0.8333333333333334,
-          "block_rate": 0.0,
-          "mean_max_score": 0.7901477652301951
+          "review_plus_rate": 0.9733333333333334,
+          "block_rate": 0.78,
+          "mean_max_score": 0.9129294521573363
         },
         "cross_device_weak_guest": {
           "devices": 135,
-          "review_plus_rate": 0.9259259259259259,
-          "block_rate": 0.0,
-          "mean_max_score": 0.8413256255700668
+          "review_plus_rate": 0.9629629629629629,
+          "block_rate": 0.6148148148148148,
+          "mean_max_score": 0.8997928766880285
         },
         "cvv_and_expiry_mistakes": {
           "devices": 140,
-          "review_plus_rate": 0.04285714285714286,
+          "review_plus_rate": 0.02857142857142857,
           "block_rate": 0.0,
-          "mean_max_score": 0.07548878940232706
+          "mean_max_score": 0.08921871621663752
         },
         "distributed_bot_campaign": {
           "devices": 112,
           "review_plus_rate": 0.7678571428571429,
           "block_rate": 0.0,
-          "mean_max_score": 0.6955216570023646
+          "mean_max_score": 0.7109419823696631
         },
         "dormant_account_spike": {
           "devices": 58,
           "review_plus_rate": 0.0,
           "block_rate": 0.0,
-          "mean_max_score": 0.09599317829514387
+          "mean_max_score": 0.015363786389373444
         },
         "fast_burst_v4": {
           "devices": 35,
-          "review_plus_rate": 0.8571428571428571,
-          "block_rate": 0.0,
-          "mean_max_score": 0.8614790609881027
+          "review_plus_rate": 1.0,
+          "block_rate": 1.0,
+          "mean_max_score": 0.9334198799870433
         },
         "genuine_wallet_cycling": {
           "devices": 133,
-          "review_plus_rate": 0.0,
-          "block_rate": 0.0,
-          "mean_max_score": 0.405837068416747
+          "review_plus_rate": 0.045112781954887216,
+          "block_rate": 0.022556390977443608,
+          "mean_max_score": 0.10659720790765945
         },
         "merchant_normal_amount_attack_v4": {
           "devices": 14,
-          "review_plus_rate": 0.14285714285714285,
-          "block_rate": 0.0,
-          "mean_max_score": 0.6750771860125347
+          "review_plus_rate": 1.0,
+          "block_rate": 0.9285714285714286,
+          "mean_max_score": 0.9250231840883771
         },
         "mixed_campaign_v4": {
           "devices": 46,
-          "review_plus_rate": 0.8478260869565217,
-          "block_rate": 0.0,
-          "mean_max_score": 0.8185787351298947
+          "review_plus_rate": 0.9347826086956522,
+          "block_rate": 0.9347826086956522,
+          "mean_max_score": 0.8764090508833036
         },
         "multi_device_customer_v4": {
           "devices": 244,
-          "review_plus_rate": 0.045081967213114756,
-          "block_rate": 0.0,
-          "mean_max_score": 0.13924381637445066
+          "review_plus_rate": 0.040983606557377046,
+          "block_rate": 0.004098360655737705,
+          "mean_max_score": 0.08295895760546551
         },
         "network_retry_storm_hard": {
           "devices": 287,
           "review_plus_rate": 0.027874564459930314,
           "block_rate": 0.0,
-          "mean_max_score": 0.07005972820628271
+          "mean_max_score": 0.09370419052024052
         },
         "new_customer_onboarding": {
           "devices": 175,
-          "review_plus_rate": 0.03428571428571429,
+          "review_plus_rate": 0.022857142857142857,
           "block_rate": 0.0,
-          "mean_max_score": 0.08590343428435614
+          "mean_max_score": 0.06944793192544288
         },
         "normal_guest_checkout": {
           "devices": 303,
           "review_plus_rate": 0.04950495049504951,
           "block_rate": 0.0,
-          "mean_max_score": 0.10431700437062141
+          "mean_max_score": 0.16285831123132352
         },
         "normal_returning_customer": {
           "devices": 247,
-          "review_plus_rate": 0.032388663967611336,
+          "review_plus_rate": 0.02834008097165992,
           "block_rate": 0.0,
-          "mean_max_score": 0.08009197986197274
+          "mean_max_score": 0.09239878172671168
         },
         "patient_tester_v4": {
           "devices": 19,
-          "review_plus_rate": 0.7894736842105263,
-          "block_rate": 0.0,
-          "mean_max_score": 0.7937736100988927
+          "review_plus_rate": 1.0,
+          "block_rate": 1.0,
+          "mean_max_score": 0.9333753099095812
         },
         "persistent_card_problem_hard": {
           "devices": 282,
-          "review_plus_rate": 0.05673758865248227,
+          "review_plus_rate": 0.05319148936170213,
           "block_rate": 0.0,
-          "mean_max_score": 0.08923241639570449
+          "mean_max_score": 0.10207314591093639
         },
         "session_churn_v4": {
           "devices": 17,
-          "review_plus_rate": 0.8823529411764706,
-          "block_rate": 0.0,
-          "mean_max_score": 0.8662203442850538
+          "review_plus_rate": 1.0,
+          "block_rate": 1.0,
+          "mean_max_score": 0.9332840696378089
         },
         "session_recreation_flaky_net": {
           "devices": 95,
-          "review_plus_rate": 0.12631578947368421,
+          "review_plus_rate": 0.2,
           "block_rate": 0.0,
-          "mean_max_score": 0.1670459650498725
+          "mean_max_score": 0.277975551663909
         },
         "shared_household_device": {
           "devices": 267,
-          "review_plus_rate": 0.056179775280898875,
+          "review_plus_rate": 0.0,
           "block_rate": 0.0,
-          "mean_max_score": 0.23314762402853814
+          "mean_max_score": 0.047016776393859296
         },
         "sparse_multiday_v4": {
           "devices": 11,
-          "review_plus_rate": 0.6363636363636364,
-          "block_rate": 0.0,
-          "mean_max_score": 0.8127015936830694
+          "review_plus_rate": 1.0,
+          "block_rate": 1.0,
+          "mean_max_score": 0.9333802058162607
         },
         "subscription_dunning_hard": {
           "devices": 347,
-          "review_plus_rate": 0.002881844380403458,
+          "review_plus_rate": 0.0,
           "block_rate": 0.0,
-          "mean_max_score": 0.026759683652539352
+          "mean_max_score": 0.016808276601035142
         },
         "success_camouflage_v4": {
           "devices": 23,
-          "review_plus_rate": 0.8695652173913043,
-          "block_rate": 0.0,
-          "mean_max_score": 0.8039777856979187
+          "review_plus_rate": 1.0,
+          "block_rate": 1.0,
+          "mean_max_score": 0.9329927432552879
         },
         "ultra_patient_v4": {
           "devices": 20,
-          "review_plus_rate": 0.0,
-          "block_rate": 0.0,
-          "mean_max_score": 0.5869406384315841
+          "review_plus_rate": 0.9,
+          "block_rate": 0.85,
+          "mean_max_score": 0.8775045698871473
         },
         "warm_up_then_attack_v4": {
           "devices": 23,
-          "review_plus_rate": 0.782608695652174,
-          "block_rate": 0.0,
-          "mean_max_score": 0.7946868145106599
+          "review_plus_rate": 1.0,
+          "block_rate": 1.0,
+          "mean_max_score": 0.9333076123612922
         }
       }
     },
@@ -1016,170 +1016,170 @@
       "ablation": "minus_session_churn",
       "dropped_count": 1,
       "remaining_features": 43,
-      "pr_auc": 0.8170552380103735,
-      "roc_auc": 0.9351947171074777,
-      "brier": 0.06295211198011319,
-      "ece": 0.028138145729754333,
-      "attack_review_plus": 0.8539682539682539,
-      "attack_block": 0.346031746031746,
-      "legitimate_review_plus": 0.04285714285714286,
-      "legitimate_block": 0.0,
+      "pr_auc": 0.9174146022354362,
+      "roc_auc": 0.9696709121088869,
+      "brier": 0.04066252008048833,
+      "ece": 0.021708858723513684,
+      "attack_review_plus": 0.9349206349206349,
+      "attack_block": 0.6761904761904762,
+      "legitimate_review_plus": 0.02926829268292683,
+      "legitimate_block": 0.0013937282229965157,
       "scenario_metrics": {
         "burst_pause_burst_v4": {
           "devices": 25,
-          "review_plus_rate": 0.96,
-          "block_rate": 0.64,
-          "mean_max_score": 0.8938378532447294
+          "review_plus_rate": 1.0,
+          "block_rate": 1.0,
+          "mean_max_score": 0.933459173419471
         },
         "cgnat_mobile_ip_storm": {
           "devices": 292,
-          "review_plus_rate": 0.0136986301369863,
+          "review_plus_rate": 0.00684931506849315,
           "block_rate": 0.0,
-          "mean_max_score": 0.07781236637439005
+          "mean_max_score": 0.02154675728865628
         },
         "cross_device_partial": {
           "devices": 150,
-          "review_plus_rate": 0.8933333333333333,
-          "block_rate": 0.2866666666666667,
-          "mean_max_score": 0.8305102520220927
+          "review_plus_rate": 0.9733333333333334,
+          "block_rate": 0.78,
+          "mean_max_score": 0.9137071383829403
         },
         "cross_device_weak_guest": {
           "devices": 135,
-          "review_plus_rate": 0.9333333333333333,
-          "block_rate": 0.5481481481481482,
-          "mean_max_score": 0.8631690572973608
+          "review_plus_rate": 0.9629629629629629,
+          "block_rate": 0.6148148148148148,
+          "mean_max_score": 0.9013783351418516
         },
         "cvv_and_expiry_mistakes": {
           "devices": 140,
-          "review_plus_rate": 0.04285714285714286,
+          "review_plus_rate": 0.02857142857142857,
           "block_rate": 0.0,
-          "mean_max_score": 0.083239454924854
+          "mean_max_score": 0.08924306605355242
         },
         "distributed_bot_campaign": {
           "devices": 112,
           "review_plus_rate": 0.7678571428571429,
           "block_rate": 0.0,
-          "mean_max_score": 0.6856922182261219
+          "mean_max_score": 0.7115034535745518
         },
         "dormant_account_spike": {
           "devices": 58,
           "review_plus_rate": 0.0,
           "block_rate": 0.0,
-          "mean_max_score": 0.12798164920304275
+          "mean_max_score": 0.016225302161557337
         },
         "fast_burst_v4": {
           "devices": 35,
-          "review_plus_rate": 0.8571428571428571,
-          "block_rate": 0.8285714285714286,
-          "mean_max_score": 0.8785913357052304
+          "review_plus_rate": 1.0,
+          "block_rate": 1.0,
+          "mean_max_score": 0.9333718675043821
         },
         "genuine_wallet_cycling": {
           "devices": 133,
-          "review_plus_rate": 0.015037593984962405,
-          "block_rate": 0.0,
-          "mean_max_score": 0.4560670494573179
+          "review_plus_rate": 0.045112781954887216,
+          "block_rate": 0.022556390977443608,
+          "mean_max_score": 0.11080344624383094
         },
         "merchant_normal_amount_attack_v4": {
           "devices": 14,
-          "review_plus_rate": 0.5,
-          "block_rate": 0.0,
-          "mean_max_score": 0.7565814486970135
+          "review_plus_rate": 0.9285714285714286,
+          "block_rate": 0.9285714285714286,
+          "mean_max_score": 0.9021648815317725
         },
         "mixed_campaign_v4": {
           "devices": 46,
           "review_plus_rate": 0.9347826086956522,
-          "block_rate": 0.717391304347826,
-          "mean_max_score": 0.8473574838305027
+          "block_rate": 0.9347826086956522,
+          "mean_max_score": 0.8757121072930236
         },
         "multi_device_customer_v4": {
           "devices": 244,
-          "review_plus_rate": 0.040983606557377046,
-          "block_rate": 0.0,
-          "mean_max_score": 0.1521446793798771
+          "review_plus_rate": 0.03278688524590164,
+          "block_rate": 0.004098360655737705,
+          "mean_max_score": 0.08217779838007216
         },
         "network_retry_storm_hard": {
           "devices": 287,
-          "review_plus_rate": 0.03484320557491289,
+          "review_plus_rate": 0.024390243902439025,
           "block_rate": 0.0,
-          "mean_max_score": 0.07894862736219906
+          "mean_max_score": 0.09468095154624351
         },
         "new_customer_onboarding": {
           "devices": 175,
-          "review_plus_rate": 0.03428571428571429,
+          "review_plus_rate": 0.022857142857142857,
           "block_rate": 0.0,
-          "mean_max_score": 0.08878044049910629
+          "mean_max_score": 0.06732278322550438
         },
         "normal_guest_checkout": {
           "devices": 303,
-          "review_plus_rate": 0.0462046204620462,
+          "review_plus_rate": 0.04950495049504951,
           "block_rate": 0.0,
-          "mean_max_score": 0.10016941695857276
+          "mean_max_score": 0.16235415073119525
         },
         "normal_returning_customer": {
           "devices": 247,
-          "review_plus_rate": 0.044534412955465584,
+          "review_plus_rate": 0.02834008097165992,
           "block_rate": 0.0,
-          "mean_max_score": 0.0867809461934142
+          "mean_max_score": 0.09005606998859891
         },
         "patient_tester_v4": {
           "devices": 19,
-          "review_plus_rate": 0.8947368421052632,
-          "block_rate": 0.05263157894736842,
-          "mean_max_score": 0.8319284595963148
+          "review_plus_rate": 1.0,
+          "block_rate": 1.0,
+          "mean_max_score": 0.9332238110313045
         },
         "persistent_card_problem_hard": {
           "devices": 282,
-          "review_plus_rate": 0.05319148936170213,
+          "review_plus_rate": 0.04609929078014184,
           "block_rate": 0.0,
-          "mean_max_score": 0.10449859957466162
+          "mean_max_score": 0.10264010800415134
         },
         "session_churn_v4": {
           "devices": 17,
-          "review_plus_rate": 0.8823529411764706,
-          "block_rate": 0.8235294117647058,
-          "mean_max_score": 0.8835805219065923
+          "review_plus_rate": 1.0,
+          "block_rate": 1.0,
+          "mean_max_score": 0.9333285135955594
         },
         "session_recreation_flaky_net": {
           "devices": 95,
-          "review_plus_rate": 0.12631578947368421,
+          "review_plus_rate": 0.18947368421052632,
           "block_rate": 0.0,
-          "mean_max_score": 0.18230815943499898
+          "mean_max_score": 0.2815259608445341
         },
         "shared_household_device": {
           "devices": 267,
-          "review_plus_rate": 0.1198501872659176,
+          "review_plus_rate": 0.0,
           "block_rate": 0.0,
-          "mean_max_score": 0.2503973094681061
+          "mean_max_score": 0.04499385068181293
         },
         "sparse_multiday_v4": {
           "devices": 11,
-          "review_plus_rate": 0.9090909090909091,
-          "block_rate": 0.2727272727272727,
-          "mean_max_score": 0.8529949343643658
+          "review_plus_rate": 1.0,
+          "block_rate": 1.0,
+          "mean_max_score": 0.9331699748988824
         },
         "subscription_dunning_hard": {
           "devices": 347,
-          "review_plus_rate": 0.002881844380403458,
+          "review_plus_rate": 0.0,
           "block_rate": 0.0,
-          "mean_max_score": 0.03492053925456379
+          "mean_max_score": 0.01674345329910404
         },
         "success_camouflage_v4": {
           "devices": 23,
-          "review_plus_rate": 0.9130434782608695,
-          "block_rate": 0.0,
-          "mean_max_score": 0.8505192773278908
+          "review_plus_rate": 1.0,
+          "block_rate": 1.0,
+          "mean_max_score": 0.9320462671538909
         },
         "ultra_patient_v4": {
           "devices": 20,
-          "review_plus_rate": 0.3,
-          "block_rate": 0.0,
-          "mean_max_score": 0.6519930705670688
+          "review_plus_rate": 0.9,
+          "block_rate": 0.85,
+          "mean_max_score": 0.8697714401236606
         },
         "warm_up_then_attack_v4": {
           "devices": 23,
-          "review_plus_rate": 0.8260869565217391,
-          "block_rate": 0.21739130434782608,
-          "mean_max_score": 0.8420779901229717
+          "review_plus_rate": 1.0,
+          "block_rate": 1.0,
+          "mean_max_score": 0.9333452037105339
         }
       }
     },
@@ -1187,170 +1187,170 @@
       "ablation": "minus_trust_continuity",
       "dropped_count": 5,
       "remaining_features": 39,
-      "pr_auc": 0.8172894301881216,
-      "roc_auc": 0.9350346238763717,
-      "brier": 0.06353180348647483,
-      "ece": 0.029338159554441322,
-      "attack_review_plus": 0.8587301587301587,
-      "attack_block": 0.373015873015873,
-      "legitimate_review_plus": 0.049477351916376304,
-      "legitimate_block": 0.0,
+      "pr_auc": 0.9150295691841817,
+      "roc_auc": 0.9685490435136835,
+      "brier": 0.041580356086257014,
+      "ece": 0.020871576806235224,
+      "attack_review_plus": 0.9333333333333333,
+      "attack_block": 0.6746031746031746,
+      "legitimate_review_plus": 0.032752613240418116,
+      "legitimate_block": 0.0020905923344947735,
       "scenario_metrics": {
         "burst_pause_burst_v4": {
           "devices": 25,
-          "review_plus_rate": 0.96,
-          "block_rate": 0.76,
-          "mean_max_score": 0.8932205251742593
+          "review_plus_rate": 1.0,
+          "block_rate": 1.0,
+          "mean_max_score": 0.9315775545369462
         },
         "cgnat_mobile_ip_storm": {
           "devices": 292,
-          "review_plus_rate": 0.0136986301369863,
+          "review_plus_rate": 0.00684931506849315,
           "block_rate": 0.0,
-          "mean_max_score": 0.07801723348002272
+          "mean_max_score": 0.022051862181452025
         },
         "cross_device_partial": {
           "devices": 150,
-          "review_plus_rate": 0.9,
-          "block_rate": 0.3,
-          "mean_max_score": 0.8286229111860149
+          "review_plus_rate": 0.9666666666666667,
+          "block_rate": 0.7733333333333333,
+          "mean_max_score": 0.9081800792593432
         },
         "cross_device_weak_guest": {
           "devices": 135,
-          "review_plus_rate": 0.9333333333333333,
-          "block_rate": 0.5481481481481482,
-          "mean_max_score": 0.8613154950129236
+          "review_plus_rate": 0.9629629629629629,
+          "block_rate": 0.6148148148148148,
+          "mean_max_score": 0.8989239477413077
         },
         "cvv_and_expiry_mistakes": {
           "devices": 140,
-          "review_plus_rate": 0.04285714285714286,
+          "review_plus_rate": 0.02857142857142857,
           "block_rate": 0.0,
-          "mean_max_score": 0.08493508336900671
+          "mean_max_score": 0.08768682398127987
         },
         "distributed_bot_campaign": {
           "devices": 112,
           "review_plus_rate": 0.7678571428571429,
           "block_rate": 0.0,
-          "mean_max_score": 0.6848391433538839
+          "mean_max_score": 0.7099586709338368
         },
         "dormant_account_spike": {
           "devices": 58,
-          "review_plus_rate": 0.017241379310344827,
+          "review_plus_rate": 0.05172413793103448,
           "block_rate": 0.0,
-          "mean_max_score": 0.1538238510227001
+          "mean_max_score": 0.08299879450021731
         },
         "fast_burst_v4": {
           "devices": 35,
-          "review_plus_rate": 0.8571428571428571,
-          "block_rate": 0.8285714285714286,
-          "mean_max_score": 0.8791994446866833
+          "review_plus_rate": 1.0,
+          "block_rate": 1.0,
+          "mean_max_score": 0.9315038671884608
         },
         "genuine_wallet_cycling": {
           "devices": 133,
-          "review_plus_rate": 0.022556390977443608,
-          "block_rate": 0.0,
-          "mean_max_score": 0.46223947450470565
+          "review_plus_rate": 0.06766917293233082,
+          "block_rate": 0.03007518796992481,
+          "mean_max_score": 0.12503292676970884
         },
         "merchant_normal_amount_attack_v4": {
           "devices": 14,
-          "review_plus_rate": 0.5,
-          "block_rate": 0.0,
-          "mean_max_score": 0.7553757331326888
+          "review_plus_rate": 0.9285714285714286,
+          "block_rate": 0.9285714285714286,
+          "mean_max_score": 0.8849553401360405
         },
         "mixed_campaign_v4": {
           "devices": 46,
           "review_plus_rate": 0.9347826086956522,
-          "block_rate": 0.7608695652173914,
-          "mean_max_score": 0.8452903875740673
+          "block_rate": 0.9347826086956522,
+          "mean_max_score": 0.8737234472935727
         },
         "multi_device_customer_v4": {
           "devices": 244,
-          "review_plus_rate": 0.04918032786885246,
-          "block_rate": 0.0,
-          "mean_max_score": 0.15239346483325003
+          "review_plus_rate": 0.03278688524590164,
+          "block_rate": 0.004098360655737705,
+          "mean_max_score": 0.08279348935207936
         },
         "network_retry_storm_hard": {
           "devices": 287,
-          "review_plus_rate": 0.03484320557491289,
+          "review_plus_rate": 0.024390243902439025,
           "block_rate": 0.0,
-          "mean_max_score": 0.0819693564339765
+          "mean_max_score": 0.09511738851608027
         },
         "new_customer_onboarding": {
           "devices": 175,
-          "review_plus_rate": 0.04,
+          "review_plus_rate": 0.022857142857142857,
           "block_rate": 0.0,
-          "mean_max_score": 0.0891030820670056
+          "mean_max_score": 0.06621437408968077
         },
         "normal_guest_checkout": {
           "devices": 303,
-          "review_plus_rate": 0.04950495049504951,
+          "review_plus_rate": 0.0462046204620462,
           "block_rate": 0.0,
-          "mean_max_score": 0.09683743982314379
+          "mean_max_score": 0.16242184310043087
         },
         "normal_returning_customer": {
           "devices": 247,
-          "review_plus_rate": 0.048582995951417005,
+          "review_plus_rate": 0.024291497975708502,
           "block_rate": 0.0,
-          "mean_max_score": 0.08740642196079197
+          "mean_max_score": 0.09240024428840767
         },
         "patient_tester_v4": {
           "devices": 19,
-          "review_plus_rate": 0.8947368421052632,
-          "block_rate": 0.21052631578947367,
-          "mean_max_score": 0.8429175505041947
+          "review_plus_rate": 1.0,
+          "block_rate": 1.0,
+          "mean_max_score": 0.9309894471658295
         },
         "persistent_card_problem_hard": {
           "devices": 282,
-          "review_plus_rate": 0.05319148936170213,
+          "review_plus_rate": 0.04964539007092199,
           "block_rate": 0.0,
-          "mean_max_score": 0.10541888540661598
+          "mean_max_score": 0.10155590206731248
         },
         "session_churn_v4": {
           "devices": 17,
-          "review_plus_rate": 0.8823529411764706,
-          "block_rate": 0.8823529411764706,
-          "mean_max_score": 0.885703729604314
+          "review_plus_rate": 1.0,
+          "block_rate": 1.0,
+          "mean_max_score": 0.9313790642611658
         },
         "session_recreation_flaky_net": {
           "devices": 95,
-          "review_plus_rate": 0.12631578947368421,
+          "review_plus_rate": 0.17894736842105263,
           "block_rate": 0.0,
-          "mean_max_score": 0.18637898950942944
+          "mean_max_score": 0.26724172377636746
         },
         "shared_household_device": {
           "devices": 267,
-          "review_plus_rate": 0.1647940074906367,
-          "block_rate": 0.0,
-          "mean_max_score": 0.26306911730984806
+          "review_plus_rate": 0.02247191011235955,
+          "block_rate": 0.003745318352059925,
+          "mean_max_score": 0.08731795887206217
         },
         "sparse_multiday_v4": {
           "devices": 11,
-          "review_plus_rate": 0.9090909090909091,
-          "block_rate": 0.2727272727272727,
-          "mean_max_score": 0.8527862251904099
+          "review_plus_rate": 1.0,
+          "block_rate": 1.0,
+          "mean_max_score": 0.93121473136558
         },
         "subscription_dunning_hard": {
           "devices": 347,
-          "review_plus_rate": 0.002881844380403458,
+          "review_plus_rate": 0.0,
           "block_rate": 0.0,
-          "mean_max_score": 0.03572354753580843
+          "mean_max_score": 0.017165469005840445
         },
         "success_camouflage_v4": {
           "devices": 23,
-          "review_plus_rate": 0.9130434782608695,
-          "block_rate": 0.08695652173913043,
-          "mean_max_score": 0.8518597074832391
+          "review_plus_rate": 1.0,
+          "block_rate": 1.0,
+          "mean_max_score": 0.9306911081471972
         },
         "ultra_patient_v4": {
           "devices": 20,
-          "review_plus_rate": 0.4,
-          "block_rate": 0.0,
-          "mean_max_score": 0.647402299408762
+          "review_plus_rate": 0.9,
+          "block_rate": 0.85,
+          "mean_max_score": 0.8638299870858915
         },
         "warm_up_then_attack_v4": {
           "devices": 23,
-          "review_plus_rate": 0.8260869565217391,
-          "block_rate": 0.391304347826087,
-          "mean_max_score": 0.8464859140530647
+          "review_plus_rate": 1.0,
+          "block_rate": 1.0,
+          "mean_max_score": 0.93145227391152
         }
       }
     },
@@ -1358,170 +1358,170 @@
       "ablation": "minus_customer_identity_presence",
       "dropped_count": 1,
       "remaining_features": 43,
-      "pr_auc": 0.7770434399594295,
-      "roc_auc": 0.8941651563524332,
-      "brier": 0.06585827771170714,
-      "ece": 0.022205778322978344,
-      "attack_review_plus": 0.8158730158730159,
-      "attack_block": 0.0,
-      "legitimate_review_plus": 0.045993031358885016,
-      "legitimate_block": 0.0,
+      "pr_auc": 0.9048519595709766,
+      "roc_auc": 0.9607276264380402,
+      "brier": 0.042428769350309425,
+      "ece": 0.02560317093295495,
+      "attack_review_plus": 0.9365079365079365,
+      "attack_block": 0.6746031746031746,
+      "legitimate_review_plus": 0.0421602787456446,
+      "legitimate_block": 0.0013937282229965157,
       "scenario_metrics": {
         "burst_pause_burst_v4": {
           "devices": 25,
-          "review_plus_rate": 0.96,
-          "block_rate": 0.0,
-          "mean_max_score": 0.8739913273037658
+          "review_plus_rate": 1.0,
+          "block_rate": 1.0,
+          "mean_max_score": 0.9231510822295879
         },
         "cgnat_mobile_ip_storm": {
           "devices": 292,
-          "review_plus_rate": 0.0136986301369863,
+          "review_plus_rate": 0.00684931506849315,
           "block_rate": 0.0,
-          "mean_max_score": 0.08118996455698642
+          "mean_max_score": 0.020576532432674165
         },
         "cross_device_partial": {
           "devices": 150,
-          "review_plus_rate": 0.8533333333333334,
-          "block_rate": 0.0,
-          "mean_max_score": 0.8226145252821393
+          "review_plus_rate": 0.98,
+          "block_rate": 0.7733333333333333,
+          "mean_max_score": 0.9065848776874562
         },
         "cross_device_weak_guest": {
           "devices": 135,
-          "review_plus_rate": 0.9259259259259259,
-          "block_rate": 0.0,
-          "mean_max_score": 0.8348743879840684
+          "review_plus_rate": 0.9629629629629629,
+          "block_rate": 0.6148148148148148,
+          "mean_max_score": 0.8903626857756529
         },
         "cvv_and_expiry_mistakes": {
           "devices": 140,
-          "review_plus_rate": 0.04285714285714286,
+          "review_plus_rate": 0.03571428571428571,
           "block_rate": 0.0,
-          "mean_max_score": 0.09015402440206333
+          "mean_max_score": 0.10418835381480977
         },
         "distributed_bot_campaign": {
           "devices": 112,
           "review_plus_rate": 0.7678571428571429,
           "block_rate": 0.0,
-          "mean_max_score": 0.6499929904264142
+          "mean_max_score": 0.693020280738933
         },
         "dormant_account_spike": {
           "devices": 58,
           "review_plus_rate": 0.0,
           "block_rate": 0.0,
-          "mean_max_score": 0.14657185295865782
+          "mean_max_score": 0.0556342027820747
         },
         "fast_burst_v4": {
           "devices": 35,
-          "review_plus_rate": 0.8571428571428571,
-          "block_rate": 0.0,
-          "mean_max_score": 0.8473190634974076
+          "review_plus_rate": 1.0,
+          "block_rate": 1.0,
+          "mean_max_score": 0.9230198111151614
         },
         "genuine_wallet_cycling": {
           "devices": 133,
-          "review_plus_rate": 0.0,
-          "block_rate": 0.0,
-          "mean_max_score": 0.48688522894076647
+          "review_plus_rate": 0.05263157894736842,
+          "block_rate": 0.022556390977443608,
+          "mean_max_score": 0.14080731609897712
         },
         "merchant_normal_amount_attack_v4": {
           "devices": 14,
-          "review_plus_rate": 0.14285714285714285,
-          "block_rate": 0.0,
-          "mean_max_score": 0.7429906143164396
+          "review_plus_rate": 0.9285714285714286,
+          "block_rate": 0.9285714285714286,
+          "mean_max_score": 0.9018838983058138
         },
         "mixed_campaign_v4": {
           "devices": 46,
-          "review_plus_rate": 0.8478260869565217,
-          "block_rate": 0.0,
-          "mean_max_score": 0.819032661631957
+          "review_plus_rate": 0.9347826086956522,
+          "block_rate": 0.9347826086956522,
+          "mean_max_score": 0.8653626620680303
         },
         "multi_device_customer_v4": {
           "devices": 244,
-          "review_plus_rate": 0.04918032786885246,
-          "block_rate": 0.0,
-          "mean_max_score": 0.15899309280836266
+          "review_plus_rate": 0.05327868852459016,
+          "block_rate": 0.004098360655737705,
+          "mean_max_score": 0.08846111389799868
         },
         "network_retry_storm_hard": {
           "devices": 287,
-          "review_plus_rate": 0.03484320557491289,
+          "review_plus_rate": 0.03832752613240418,
           "block_rate": 0.0,
-          "mean_max_score": 0.08222623107441625
+          "mean_max_score": 0.10650225604983796
         },
         "new_customer_onboarding": {
           "devices": 175,
-          "review_plus_rate": 0.06857142857142857,
+          "review_plus_rate": 0.03428571428571429,
           "block_rate": 0.0,
-          "mean_max_score": 0.10140658693677178
+          "mean_max_score": 0.10256675145864134
         },
         "normal_guest_checkout": {
           "devices": 303,
           "review_plus_rate": 0.04950495049504951,
           "block_rate": 0.0,
-          "mean_max_score": 0.09114646441276819
+          "mean_max_score": 0.11913719523348028
         },
         "normal_returning_customer": {
           "devices": 247,
-          "review_plus_rate": 0.044534412955465584,
+          "review_plus_rate": 0.04048582995951417,
           "block_rate": 0.0,
-          "mean_max_score": 0.10166820899640729
+          "mean_max_score": 0.11353840176271877
         },
         "patient_tester_v4": {
           "devices": 19,
-          "review_plus_rate": 0.8947368421052632,
-          "block_rate": 0.0,
-          "mean_max_score": 0.8475731970433663
+          "review_plus_rate": 1.0,
+          "block_rate": 1.0,
+          "mean_max_score": 0.9228310526041438
         },
         "persistent_card_problem_hard": {
           "devices": 282,
-          "review_plus_rate": 0.0673758865248227,
+          "review_plus_rate": 0.06028368794326241,
           "block_rate": 0.0,
-          "mean_max_score": 0.12008241819707048
+          "mean_max_score": 0.12498220833365406
         },
         "session_churn_v4": {
           "devices": 17,
-          "review_plus_rate": 0.8823529411764706,
-          "block_rate": 0.0,
-          "mean_max_score": 0.8555704241362249
+          "review_plus_rate": 1.0,
+          "block_rate": 1.0,
+          "mean_max_score": 0.9229771486431888
         },
         "session_recreation_flaky_net": {
           "devices": 95,
-          "review_plus_rate": 0.12631578947368421,
+          "review_plus_rate": 0.18947368421052632,
           "block_rate": 0.0,
-          "mean_max_score": 0.1623756711588224
+          "mean_max_score": 0.24628733620614202
         },
         "shared_household_device": {
           "devices": 267,
-          "review_plus_rate": 0.11235955056179775,
+          "review_plus_rate": 0.0599250936329588,
           "block_rate": 0.0,
-          "mean_max_score": 0.2728340696428795
+          "mean_max_score": 0.11067956038876449
         },
         "sparse_multiday_v4": {
           "devices": 11,
-          "review_plus_rate": 0.8181818181818182,
-          "block_rate": 0.0,
-          "mean_max_score": 0.8335856828346806
+          "review_plus_rate": 1.0,
+          "block_rate": 1.0,
+          "mean_max_score": 0.9229152797212751
         },
         "subscription_dunning_hard": {
           "devices": 347,
           "review_plus_rate": 0.002881844380403458,
           "block_rate": 0.0,
-          "mean_max_score": 0.05186292416275504
+          "mean_max_score": 0.06637624735601842
         },
         "success_camouflage_v4": {
           "devices": 23,
-          "review_plus_rate": 0.8695652173913043,
-          "block_rate": 0.0,
-          "mean_max_score": 0.8605945213321264
+          "review_plus_rate": 1.0,
+          "block_rate": 1.0,
+          "mean_max_score": 0.9221941637022824
         },
         "ultra_patient_v4": {
           "devices": 20,
-          "review_plus_rate": 0.05,
-          "block_rate": 0.0,
-          "mean_max_score": 0.640415127079584
+          "review_plus_rate": 0.9,
+          "block_rate": 0.85,
+          "mean_max_score": 0.8659457867000413
         },
         "warm_up_then_attack_v4": {
           "devices": 23,
-          "review_plus_rate": 0.782608695652174,
-          "block_rate": 0.0,
-          "mean_max_score": 0.8477197518627534
+          "review_plus_rate": 1.0,
+          "block_rate": 1.0,
+          "mean_max_score": 0.9230607139540498
         }
       }
     },
@@ -1529,170 +1529,170 @@
       "ablation": "minus_temporal_shape",
       "dropped_count": 4,
       "remaining_features": 40,
-      "pr_auc": 0.8170827358109827,
-      "roc_auc": 0.9355107224738639,
-      "brier": 0.06309749614361117,
-      "ece": 0.027766785189790723,
-      "attack_review_plus": 0.8539682539682539,
-      "attack_block": 0.346031746031746,
-      "legitimate_review_plus": 0.04285714285714286,
-      "legitimate_block": 0.0,
+      "pr_auc": 0.9169765412948527,
+      "roc_auc": 0.9691562792842968,
+      "brier": 0.04089759332032088,
+      "ece": 0.02088355741879801,
+      "attack_review_plus": 0.9365079365079365,
+      "attack_block": 0.6714285714285714,
+      "legitimate_review_plus": 0.029965156794425088,
+      "legitimate_block": 0.0017421602787456446,
       "scenario_metrics": {
         "burst_pause_burst_v4": {
           "devices": 25,
-          "review_plus_rate": 0.96,
-          "block_rate": 0.64,
-          "mean_max_score": 0.894464410105397
+          "review_plus_rate": 1.0,
+          "block_rate": 1.0,
+          "mean_max_score": 0.9330438340501641
         },
         "cgnat_mobile_ip_storm": {
           "devices": 292,
-          "review_plus_rate": 0.0136986301369863,
+          "review_plus_rate": 0.00684931506849315,
           "block_rate": 0.0,
-          "mean_max_score": 0.07792492539042836
+          "mean_max_score": 0.021584145900439094
         },
         "cross_device_partial": {
           "devices": 150,
-          "review_plus_rate": 0.8933333333333333,
-          "block_rate": 0.2866666666666667,
-          "mean_max_score": 0.8307653583083333
+          "review_plus_rate": 0.9733333333333334,
+          "block_rate": 0.7733333333333333,
+          "mean_max_score": 0.9136109687426144
         },
         "cross_device_weak_guest": {
           "devices": 135,
-          "review_plus_rate": 0.9333333333333333,
-          "block_rate": 0.5481481481481482,
-          "mean_max_score": 0.8635093485017729
+          "review_plus_rate": 0.9629629629629629,
+          "block_rate": 0.6148148148148148,
+          "mean_max_score": 0.9019988245901749
         },
         "cvv_and_expiry_mistakes": {
           "devices": 140,
-          "review_plus_rate": 0.04285714285714286,
+          "review_plus_rate": 0.02857142857142857,
           "block_rate": 0.0,
-          "mean_max_score": 0.0840409564450615
+          "mean_max_score": 0.09114757872378047
         },
         "distributed_bot_campaign": {
           "devices": 112,
           "review_plus_rate": 0.7678571428571429,
           "block_rate": 0.0,
-          "mean_max_score": 0.6863592704572367
+          "mean_max_score": 0.7104328970496641
         },
         "dormant_account_spike": {
           "devices": 58,
           "review_plus_rate": 0.0,
           "block_rate": 0.0,
-          "mean_max_score": 0.12868610510431464
+          "mean_max_score": 0.01645356938603539
         },
         "fast_burst_v4": {
           "devices": 35,
-          "review_plus_rate": 0.8571428571428571,
-          "block_rate": 0.8285714285714286,
-          "mean_max_score": 0.8795662215322039
+          "review_plus_rate": 1.0,
+          "block_rate": 1.0,
+          "mean_max_score": 0.9328853904311911
         },
         "genuine_wallet_cycling": {
           "devices": 133,
-          "review_plus_rate": 0.015037593984962405,
-          "block_rate": 0.0,
-          "mean_max_score": 0.46532030377140027
+          "review_plus_rate": 0.05263157894736842,
+          "block_rate": 0.03007518796992481,
+          "mean_max_score": 0.10990888698945057
         },
         "merchant_normal_amount_attack_v4": {
           "devices": 14,
-          "review_plus_rate": 0.5,
-          "block_rate": 0.0,
-          "mean_max_score": 0.757563007373795
+          "review_plus_rate": 0.9285714285714286,
+          "block_rate": 0.9285714285714286,
+          "mean_max_score": 0.9085963829543159
         },
         "mixed_campaign_v4": {
           "devices": 46,
           "review_plus_rate": 0.9347826086956522,
-          "block_rate": 0.717391304347826,
-          "mean_max_score": 0.8476319730046484
+          "block_rate": 0.9347826086956522,
+          "mean_max_score": 0.8761748749022589
         },
         "multi_device_customer_v4": {
           "devices": 244,
-          "review_plus_rate": 0.040983606557377046,
-          "block_rate": 0.0,
-          "mean_max_score": 0.15211745639012106
+          "review_plus_rate": 0.036885245901639344,
+          "block_rate": 0.004098360655737705,
+          "mean_max_score": 0.08295281225999539
         },
         "network_retry_storm_hard": {
           "devices": 287,
-          "review_plus_rate": 0.03484320557491289,
+          "review_plus_rate": 0.024390243902439025,
           "block_rate": 0.0,
-          "mean_max_score": 0.07937657390756939
+          "mean_max_score": 0.0946399926780455
         },
         "new_customer_onboarding": {
           "devices": 175,
-          "review_plus_rate": 0.03428571428571429,
+          "review_plus_rate": 0.022857142857142857,
           "block_rate": 0.0,
-          "mean_max_score": 0.08993037831841648
+          "mean_max_score": 0.06834236888451818
         },
         "normal_guest_checkout": {
           "devices": 303,
-          "review_plus_rate": 0.0462046204620462,
+          "review_plus_rate": 0.04950495049504951,
           "block_rate": 0.0,
-          "mean_max_score": 0.1002913754623225
+          "mean_max_score": 0.16358513925119764
         },
         "normal_returning_customer": {
           "devices": 247,
-          "review_plus_rate": 0.044534412955465584,
+          "review_plus_rate": 0.032388663967611336,
           "block_rate": 0.0,
-          "mean_max_score": 0.0867031639431321
+          "mean_max_score": 0.09318812856922754
         },
         "patient_tester_v4": {
           "devices": 19,
-          "review_plus_rate": 0.8947368421052632,
-          "block_rate": 0.05263157894736842,
-          "mean_max_score": 0.8328144509259424
+          "review_plus_rate": 1.0,
+          "block_rate": 1.0,
+          "mean_max_score": 0.932861886587801
         },
         "persistent_card_problem_hard": {
           "devices": 282,
-          "review_plus_rate": 0.05319148936170213,
+          "review_plus_rate": 0.04609929078014184,
           "block_rate": 0.0,
-          "mean_max_score": 0.10506904900773442
+          "mean_max_score": 0.10121053795596718
         },
         "session_churn_v4": {
           "devices": 17,
-          "review_plus_rate": 0.8823529411764706,
-          "block_rate": 0.8235294117647058,
-          "mean_max_score": 0.8844558356047737
+          "review_plus_rate": 1.0,
+          "block_rate": 1.0,
+          "mean_max_score": 0.9329125106794515
         },
         "session_recreation_flaky_net": {
           "devices": 95,
-          "review_plus_rate": 0.12631578947368421,
+          "review_plus_rate": 0.17894736842105263,
           "block_rate": 0.0,
-          "mean_max_score": 0.18343687231104844
+          "mean_max_score": 0.280104258341852
         },
         "shared_household_device": {
           "devices": 267,
-          "review_plus_rate": 0.1198501872659176,
+          "review_plus_rate": 0.0,
           "block_rate": 0.0,
-          "mean_max_score": 0.2511270859138985
+          "mean_max_score": 0.04376713528254619
         },
         "sparse_multiday_v4": {
           "devices": 11,
-          "review_plus_rate": 0.9090909090909091,
-          "block_rate": 0.2727272727272727,
-          "mean_max_score": 0.8537713884225351
+          "review_plus_rate": 1.0,
+          "block_rate": 1.0,
+          "mean_max_score": 0.9329615794044783
         },
         "subscription_dunning_hard": {
           "devices": 347,
-          "review_plus_rate": 0.002881844380403458,
+          "review_plus_rate": 0.0,
           "block_rate": 0.0,
-          "mean_max_score": 0.03498703283613128
+          "mean_max_score": 0.016686068945426447
         },
         "success_camouflage_v4": {
           "devices": 23,
-          "review_plus_rate": 0.9130434782608695,
-          "block_rate": 0.0,
-          "mean_max_score": 0.8510796908387952
+          "review_plus_rate": 1.0,
+          "block_rate": 1.0,
+          "mean_max_score": 0.9320962697127948
         },
         "ultra_patient_v4": {
           "devices": 20,
-          "review_plus_rate": 0.3,
-          "block_rate": 0.0,
-          "mean_max_score": 0.6537008657093832
+          "review_plus_rate": 0.95,
+          "block_rate": 0.75,
+          "mean_max_score": 0.8920121276354651
         },
         "warm_up_then_attack_v4": {
           "devices": 23,
-          "review_plus_rate": 0.8260869565217391,
-          "block_rate": 0.21739130434782608,
-          "mean_max_score": 0.8426613748104753
+          "review_plus_rate": 1.0,
+          "block_rate": 1.0,
+          "mean_max_score": 0.9329076380220127
         }
       }
     },
@@ -1700,170 +1700,170 @@
       "ablation": "minus_relationship_entity",
       "dropped_count": 6,
       "remaining_features": 38,
-      "pr_auc": 0.7383710163741364,
-      "roc_auc": 0.9041080069278238,
-      "brier": 0.07726456294199695,
-      "ece": 0.04699154255328419,
-      "attack_review_plus": 0.8126984126984127,
-      "attack_block": 0.0,
-      "legitimate_review_plus": 0.045644599303135885,
-      "legitimate_block": 0.0,
+      "pr_auc": 0.89355676351467,
+      "roc_auc": 0.9577764702187327,
+      "brier": 0.047386552313609685,
+      "ece": 0.025638415703983324,
+      "attack_review_plus": 0.9095238095238095,
+      "attack_block": 0.6190476190476191,
+      "legitimate_review_plus": 0.03554006968641115,
+      "legitimate_block": 0.0020905923344947735,
       "scenario_metrics": {
         "burst_pause_burst_v4": {
           "devices": 25,
           "review_plus_rate": 0.96,
-          "block_rate": 0.0,
-          "mean_max_score": 0.8143473547123976
+          "block_rate": 0.96,
+          "mean_max_score": 0.8959851301588099
         },
         "cgnat_mobile_ip_storm": {
           "devices": 292,
-          "review_plus_rate": 0.0136986301369863,
+          "review_plus_rate": 0.00684931506849315,
           "block_rate": 0.0,
-          "mean_max_score": 0.06329918866491176
+          "mean_max_score": 0.021843405683536092
         },
         "cross_device_partial": {
           "devices": 150,
-          "review_plus_rate": 0.8533333333333334,
-          "block_rate": 0.0,
-          "mean_max_score": 0.7723757269077686
+          "review_plus_rate": 0.9666666666666667,
+          "block_rate": 0.7,
+          "mean_max_score": 0.8923183975170325
         },
         "cross_device_weak_guest": {
           "devices": 135,
-          "review_plus_rate": 0.9259259259259259,
-          "block_rate": 0.0,
-          "mean_max_score": 0.7983226834307066
+          "review_plus_rate": 0.9555555555555556,
+          "block_rate": 0.5925925925925926,
+          "mean_max_score": 0.8876346609047608
         },
         "cvv_and_expiry_mistakes": {
           "devices": 140,
-          "review_plus_rate": 0.04285714285714286,
+          "review_plus_rate": 0.03571428571428571,
           "block_rate": 0.0,
-          "mean_max_score": 0.1271387226946259
+          "mean_max_score": 0.10521189800359314
         },
         "distributed_bot_campaign": {
           "devices": 112,
           "review_plus_rate": 0.7678571428571429,
           "block_rate": 0.0,
-          "mean_max_score": 0.6614037386353833
+          "mean_max_score": 0.701615913111528
         },
         "dormant_account_spike": {
           "devices": 58,
           "review_plus_rate": 0.0,
           "block_rate": 0.0,
-          "mean_max_score": 0.10968792578427512
+          "mean_max_score": 0.01568900484820169
         },
         "fast_burst_v4": {
           "devices": 35,
           "review_plus_rate": 0.8571428571428571,
-          "block_rate": 0.0,
-          "mean_max_score": 0.7360309499977044
+          "block_rate": 0.8285714285714286,
+          "mean_max_score": 0.8285116518026938
         },
         "genuine_wallet_cycling": {
           "devices": 133,
-          "review_plus_rate": 0.0,
+          "review_plus_rate": 0.03007518796992481,
           "block_rate": 0.0,
-          "mean_max_score": 0.26755642670602253
+          "mean_max_score": 0.09081853799865466
         },
         "merchant_normal_amount_attack_v4": {
           "devices": 14,
-          "review_plus_rate": 0.14285714285714285,
-          "block_rate": 0.0,
-          "mean_max_score": 0.4888323345412763
+          "review_plus_rate": 0.7857142857142857,
+          "block_rate": 0.6428571428571429,
+          "mean_max_score": 0.7746585736183313
         },
         "mixed_campaign_v4": {
           "devices": 46,
-          "review_plus_rate": 0.8478260869565217,
-          "block_rate": 0.0,
-          "mean_max_score": 0.7721492292188151
+          "review_plus_rate": 0.9347826086956522,
+          "block_rate": 0.9347826086956522,
+          "mean_max_score": 0.8648490112728051
         },
         "multi_device_customer_v4": {
           "devices": 244,
-          "review_plus_rate": 0.04918032786885246,
-          "block_rate": 0.0,
-          "mean_max_score": 0.0991944037603271
+          "review_plus_rate": 0.040983606557377046,
+          "block_rate": 0.004098360655737705,
+          "mean_max_score": 0.0839951132357682
         },
         "network_retry_storm_hard": {
           "devices": 287,
-          "review_plus_rate": 0.03484320557491289,
+          "review_plus_rate": 0.027874564459930314,
           "block_rate": 0.0,
-          "mean_max_score": 0.1038408837219645
+          "mean_max_score": 0.08867163595908228
         },
         "new_customer_onboarding": {
           "devices": 175,
-          "review_plus_rate": 0.06857142857142857,
+          "review_plus_rate": 0.022857142857142857,
           "block_rate": 0.0,
-          "mean_max_score": 0.11648230310311973
+          "mean_max_score": 0.07690987387858797
         },
         "normal_guest_checkout": {
           "devices": 303,
           "review_plus_rate": 0.04950495049504951,
           "block_rate": 0.0,
-          "mean_max_score": 0.11394362895441566
+          "mean_max_score": 0.17135046461034492
         },
         "normal_returning_customer": {
           "devices": 247,
-          "review_plus_rate": 0.04048582995951417,
-          "block_rate": 0.0,
-          "mean_max_score": 0.14606919736263116
+          "review_plus_rate": 0.044534412955465584,
+          "block_rate": 0.004048582995951417,
+          "mean_max_score": 0.10916190372326297
         },
         "patient_tester_v4": {
           "devices": 19,
-          "review_plus_rate": 0.8421052631578947,
-          "block_rate": 0.0,
-          "mean_max_score": 0.7466994178775647
+          "review_plus_rate": 0.9473684210526315,
+          "block_rate": 0.9473684210526315,
+          "mean_max_score": 0.9096291184301822
         },
         "persistent_card_problem_hard": {
           "devices": 282,
           "review_plus_rate": 0.0673758865248227,
-          "block_rate": 0.0,
-          "mean_max_score": 0.24210275641959217
+          "block_rate": 0.0035460992907801418,
+          "mean_max_score": 0.1281028498447373
         },
         "session_churn_v4": {
           "devices": 17,
           "review_plus_rate": 0.8823529411764706,
-          "block_rate": 0.0,
-          "mean_max_score": 0.7569405906315365
+          "block_rate": 0.8823529411764706,
+          "mean_max_score": 0.8540106132418054
         },
         "session_recreation_flaky_net": {
           "devices": 95,
-          "review_plus_rate": 0.12631578947368421,
-          "block_rate": 0.0,
-          "mean_max_score": 0.29398125707141826
+          "review_plus_rate": 0.25263157894736843,
+          "block_rate": 0.031578947368421054,
+          "mean_max_score": 0.36067846102374207
         },
         "shared_household_device": {
           "devices": 267,
-          "review_plus_rate": 0.11235955056179775,
+          "review_plus_rate": 0.0,
           "block_rate": 0.0,
-          "mean_max_score": 0.2823674791342902
+          "mean_max_score": 0.04624933051119009
         },
         "sparse_multiday_v4": {
           "devices": 11,
-          "review_plus_rate": 0.7272727272727273,
-          "block_rate": 0.0,
-          "mean_max_score": 0.7197646570317248
+          "review_plus_rate": 0.9090909090909091,
+          "block_rate": 0.9090909090909091,
+          "mean_max_score": 0.8825762658873111
         },
         "subscription_dunning_hard": {
           "devices": 347,
-          "review_plus_rate": 0.002881844380403458,
+          "review_plus_rate": 0.0,
           "block_rate": 0.0,
-          "mean_max_score": 0.0631642327072326
+          "mean_max_score": 0.017170949223941138
         },
         "success_camouflage_v4": {
           "devices": 23,
-          "review_plus_rate": 0.8695652173913043,
-          "block_rate": 0.0,
-          "mean_max_score": 0.7473517840106483
+          "review_plus_rate": 0.9565217391304348,
+          "block_rate": 0.8260869565217391,
+          "mean_max_score": 0.8735048707165617
         },
         "ultra_patient_v4": {
           "devices": 20,
-          "review_plus_rate": 0.05,
-          "block_rate": 0.0,
-          "mean_max_score": 0.4279095082574882
+          "review_plus_rate": 0.9,
+          "block_rate": 0.8,
+          "mean_max_score": 0.8520896408457723
         },
         "warm_up_then_attack_v4": {
           "devices": 23,
-          "review_plus_rate": 0.782608695652174,
-          "block_rate": 0.0,
-          "mean_max_score": 0.7343886235197915
+          "review_plus_rate": 0.9565217391304348,
+          "block_rate": 0.9565217391304348,
+          "mean_max_score": 0.8845423997076213
         }
       }
     },
@@ -1871,170 +1871,170 @@
       "ablation": "minus_long_horizon",
       "dropped_count": 4,
       "remaining_features": 40,
-      "pr_auc": 0.8172051241010484,
-      "roc_auc": 0.9355469476783358,
-      "brier": 0.06300512374821667,
-      "ece": 0.027971843544233363,
-      "attack_review_plus": 0.8539682539682539,
-      "attack_block": 0.346031746031746,
-      "legitimate_review_plus": 0.04285714285714286,
-      "legitimate_block": 0.0,
+      "pr_auc": 0.9177547355045266,
+      "roc_auc": 0.9697650887761359,
+      "brier": 0.04074366724882461,
+      "ece": 0.023026859006943356,
+      "attack_review_plus": 0.9349206349206349,
+      "attack_block": 0.6730158730158731,
+      "legitimate_review_plus": 0.030662020905923345,
+      "legitimate_block": 0.0017421602787456446,
       "scenario_metrics": {
         "burst_pause_burst_v4": {
           "devices": 25,
-          "review_plus_rate": 0.96,
-          "block_rate": 0.64,
-          "mean_max_score": 0.894756137673881
+          "review_plus_rate": 1.0,
+          "block_rate": 1.0,
+          "mean_max_score": 0.9332091971219834
         },
         "cgnat_mobile_ip_storm": {
           "devices": 292,
-          "review_plus_rate": 0.0136986301369863,
+          "review_plus_rate": 0.00684931506849315,
           "block_rate": 0.0,
-          "mean_max_score": 0.07796926211557724
+          "mean_max_score": 0.0218637851008502
         },
         "cross_device_partial": {
           "devices": 150,
-          "review_plus_rate": 0.8933333333333333,
-          "block_rate": 0.2866666666666667,
-          "mean_max_score": 0.8314864869122751
+          "review_plus_rate": 0.9733333333333334,
+          "block_rate": 0.78,
+          "mean_max_score": 0.9136941999619234
         },
         "cross_device_weak_guest": {
           "devices": 135,
-          "review_plus_rate": 0.9333333333333333,
-          "block_rate": 0.5481481481481482,
-          "mean_max_score": 0.8639916969389604
+          "review_plus_rate": 0.9629629629629629,
+          "block_rate": 0.6148148148148148,
+          "mean_max_score": 0.902049493868149
         },
         "cvv_and_expiry_mistakes": {
           "devices": 140,
-          "review_plus_rate": 0.04285714285714286,
+          "review_plus_rate": 0.02857142857142857,
           "block_rate": 0.0,
-          "mean_max_score": 0.08338365608898844
+          "mean_max_score": 0.08922084958682476
         },
         "distributed_bot_campaign": {
           "devices": 112,
           "review_plus_rate": 0.7678571428571429,
           "block_rate": 0.0,
-          "mean_max_score": 0.6865023820059318
+          "mean_max_score": 0.7109936433855412
         },
         "dormant_account_spike": {
           "devices": 58,
           "review_plus_rate": 0.0,
           "block_rate": 0.0,
-          "mean_max_score": 0.12847410344058335
+          "mean_max_score": 0.016232941555761497
         },
         "fast_burst_v4": {
           "devices": 35,
-          "review_plus_rate": 0.8571428571428571,
-          "block_rate": 0.8285714285714286,
-          "mean_max_score": 0.8795478012092078
+          "review_plus_rate": 1.0,
+          "block_rate": 1.0,
+          "mean_max_score": 0.9331233876243412
         },
         "genuine_wallet_cycling": {
           "devices": 133,
-          "review_plus_rate": 0.015037593984962405,
-          "block_rate": 0.0,
-          "mean_max_score": 0.459508536086231
+          "review_plus_rate": 0.06015037593984962,
+          "block_rate": 0.03007518796992481,
+          "mean_max_score": 0.11268631674723942
         },
         "merchant_normal_amount_attack_v4": {
           "devices": 14,
-          "review_plus_rate": 0.5,
-          "block_rate": 0.0,
-          "mean_max_score": 0.7580296652528864
+          "review_plus_rate": 0.9285714285714286,
+          "block_rate": 0.9285714285714286,
+          "mean_max_score": 0.9196782785014094
         },
         "mixed_campaign_v4": {
           "devices": 46,
           "review_plus_rate": 0.9347826086956522,
-          "block_rate": 0.717391304347826,
-          "mean_max_score": 0.8481974664071726
+          "block_rate": 0.9347826086956522,
+          "mean_max_score": 0.8768177941427785
         },
         "multi_device_customer_v4": {
           "devices": 244,
-          "review_plus_rate": 0.040983606557377046,
-          "block_rate": 0.0,
-          "mean_max_score": 0.15250599978615556
+          "review_plus_rate": 0.036885245901639344,
+          "block_rate": 0.004098360655737705,
+          "mean_max_score": 0.0813641508085169
         },
         "network_retry_storm_hard": {
           "devices": 287,
-          "review_plus_rate": 0.03484320557491289,
+          "review_plus_rate": 0.024390243902439025,
           "block_rate": 0.0,
-          "mean_max_score": 0.07906711775611969
+          "mean_max_score": 0.09473661941534209
         },
         "new_customer_onboarding": {
           "devices": 175,
-          "review_plus_rate": 0.03428571428571429,
+          "review_plus_rate": 0.022857142857142857,
           "block_rate": 0.0,
-          "mean_max_score": 0.08892371670763137
+          "mean_max_score": 0.06798000134465591
         },
         "normal_guest_checkout": {
           "devices": 303,
-          "review_plus_rate": 0.0462046204620462,
+          "review_plus_rate": 0.052805280528052806,
           "block_rate": 0.0,
-          "mean_max_score": 0.10036984130052265
+          "mean_max_score": 0.1646961586111937
         },
         "normal_returning_customer": {
           "devices": 247,
-          "review_plus_rate": 0.044534412955465584,
+          "review_plus_rate": 0.024291497975708502,
           "block_rate": 0.0,
-          "mean_max_score": 0.08690786765448676
+          "mean_max_score": 0.09598581150483508
         },
         "patient_tester_v4": {
           "devices": 19,
-          "review_plus_rate": 0.8947368421052632,
-          "block_rate": 0.05263157894736842,
-          "mean_max_score": 0.8336309841439656
+          "review_plus_rate": 1.0,
+          "block_rate": 1.0,
+          "mean_max_score": 0.9328788694331968
         },
         "persistent_card_problem_hard": {
           "devices": 282,
-          "review_plus_rate": 0.05319148936170213,
+          "review_plus_rate": 0.04964539007092199,
           "block_rate": 0.0,
-          "mean_max_score": 0.10470128858282389
+          "mean_max_score": 0.10324502393704932
         },
         "session_churn_v4": {
           "devices": 17,
-          "review_plus_rate": 0.8823529411764706,
-          "block_rate": 0.8235294117647058,
-          "mean_max_score": 0.88452149744771
+          "review_plus_rate": 1.0,
+          "block_rate": 1.0,
+          "mean_max_score": 0.9330590247873183
         },
         "session_recreation_flaky_net": {
           "devices": 95,
-          "review_plus_rate": 0.12631578947368421,
+          "review_plus_rate": 0.18947368421052632,
           "block_rate": 0.0,
-          "mean_max_score": 0.18262369972521744
+          "mean_max_score": 0.2834578997455073
         },
         "shared_household_device": {
           "devices": 267,
-          "review_plus_rate": 0.1198501872659176,
+          "review_plus_rate": 0.0,
           "block_rate": 0.0,
-          "mean_max_score": 0.2521085694311444
+          "mean_max_score": 0.04562888103511002
         },
         "sparse_multiday_v4": {
           "devices": 11,
-          "review_plus_rate": 0.9090909090909091,
-          "block_rate": 0.2727272727272727,
-          "mean_max_score": 0.8541030252924284
+          "review_plus_rate": 1.0,
+          "block_rate": 1.0,
+          "mean_max_score": 0.9329969811790124
         },
         "subscription_dunning_hard": {
           "devices": 347,
-          "review_plus_rate": 0.002881844380403458,
+          "review_plus_rate": 0.0,
           "block_rate": 0.0,
-          "mean_max_score": 0.03493509428270985
+          "mean_max_score": 0.0168786087246781
         },
         "success_camouflage_v4": {
           "devices": 23,
-          "review_plus_rate": 0.9130434782608695,
-          "block_rate": 0.0,
-          "mean_max_score": 0.8516151535831342
+          "review_plus_rate": 1.0,
+          "block_rate": 0.9565217391304348,
+          "mean_max_score": 0.9298384967749215
         },
         "ultra_patient_v4": {
           "devices": 20,
-          "review_plus_rate": 0.3,
-          "block_rate": 0.0,
-          "mean_max_score": 0.6533901643559072
+          "review_plus_rate": 0.9,
+          "block_rate": 0.8,
+          "mean_max_score": 0.8812984748043894
         },
         "warm_up_then_attack_v4": {
           "devices": 23,
-          "review_plus_rate": 0.8260869565217391,
-          "block_rate": 0.21739130434782608,
-          "mean_max_score": 0.8431903334893122
+          "review_plus_rate": 1.0,
+          "block_rate": 1.0,
+          "mean_max_score": 0.933049880937098
         }
       }
     }
