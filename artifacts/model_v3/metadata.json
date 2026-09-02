@@ -1,0 +1,386 @@
+{
+  "model_version": "model-v3",
+  "training_time": "2026-09-02T17:52:47.676813+00:00",
+  "feature_contract": {
+    "version": "merchant-visible-causal-3",
+    "sha256": "7915e3a50c14ce47473459a511bb716b133a7ae24adce0377f57524b27cd2b04",
+    "feature_count": 46,
+    "features": [
+      "requests_10s",
+      "requests_60s",
+      "requests_5m",
+      "requests_24h",
+      "requests_per_ip_5m",
+      "devices_per_ip_24h",
+      "seconds_since_last_request",
+      "ip_changes_24h",
+      "device_age_seconds",
+      "is_new_device",
+      "session_age_seconds",
+      "sessions_24h",
+      "ip_rotation_ratio_24h",
+      "prior_payments_24h",
+      "recent_failures_24h",
+      "failure_ratio_24h",
+      "decline_streak",
+      "successful_checkouts_30d",
+      "seconds_since_last_payment",
+      "seconds_since_last_success",
+      "retry_after_decline_ratio_24h",
+      "current_amount",
+      "amount_delta",
+      "amount_variation_24h",
+      "low_amount_ratio_24h",
+      "distinct_card_last4_7d",
+      "distinct_card_networks_7d",
+      "card_change_after_decline_7d",
+      "requests_7d",
+      "failures_7d",
+      "active_day_count_7d",
+      "failures_per_active_day_7d",
+      "median_gap_between_attempts",
+      "gap_variability",
+      "customer_id_present",
+      "customer_distinct_devices_7d",
+      "customer_failures_7d",
+      "customer_successful_checkouts_30d",
+      "customer_age_seconds",
+      "card_diversity_ratio_7d",
+      "card_change_after_decline_ratio_7d",
+      "session_churn_rate_24h",
+      "gap_coefficient_of_variation_24h",
+      "median_inter_attempt_gap_seconds_24h",
+      "merchant_relative_velocity_zscore",
+      "merchant_amount_log_ratio"
+    ]
+  },
+  "selected_candidate": {
+    "identifier": "logistic_C5.0",
+    "family": "logistic_regression",
+    "parameters": {
+      "C": 5.0,
+      "max_iter": 2000
+    },
+    "interactions": [],
+    "fitted_features": [
+      "requests_10s",
+      "requests_60s",
+      "requests_5m",
+      "requests_24h",
+      "requests_per_ip_5m",
+      "devices_per_ip_24h",
+      "seconds_since_last_request",
+      "ip_changes_24h",
+      "device_age_seconds",
+      "is_new_device",
+      "session_age_seconds",
+      "sessions_24h",
+      "ip_rotation_ratio_24h",
+      "prior_payments_24h",
+      "recent_failures_24h",
+      "failure_ratio_24h",
+      "decline_streak",
+      "successful_checkouts_30d",
+      "seconds_since_last_payment",
+      "seconds_since_last_success",
+      "retry_after_decline_ratio_24h",
+      "current_amount",
+      "amount_delta",
+      "amount_variation_24h",
+      "low_amount_ratio_24h",
+      "distinct_card_last4_7d",
+      "distinct_card_networks_7d",
+      "card_change_after_decline_7d",
+      "requests_7d",
+      "failures_7d",
+      "active_day_count_7d",
+      "failures_per_active_day_7d",
+      "median_gap_between_attempts",
+      "gap_variability",
+      "customer_id_present",
+      "customer_distinct_devices_7d",
+      "customer_failures_7d",
+      "customer_successful_checkouts_30d",
+      "customer_age_seconds",
+      "card_diversity_ratio_7d",
+      "card_change_after_decline_ratio_7d",
+      "session_churn_rate_24h",
+      "gap_coefficient_of_variation_24h",
+      "median_inter_attempt_gap_seconds_24h",
+      "merchant_relative_velocity_zscore",
+      "merchant_amount_log_ratio"
+    ]
+  },
+  "calibration": {
+    "method": "sigmoid",
+    "pr_auc_loss": 0.0,
+    "table": [
+      {
+        "method": "none",
+        "pr_auc": 0.8476116679051318,
+        "roc_auc": 0.933213613644577,
+        "brier": 0.11595890936572101,
+        "ece": 0.21349110484694936,
+        "log_loss": 0.3916589953025967
+      },
+      {
+        "method": "sigmoid",
+        "pr_auc": 0.8476116679051318,
+        "roc_auc": 0.933213613644577,
+        "brier": 0.059857514665792276,
+        "ece": 0.014546147704578759,
+        "log_loss": 0.213345335743736
+      },
+      {
+        "method": "isotonic",
+        "pr_auc": 0.8333528610082308,
+        "roc_auc": 0.9344486298318303,
+        "brier": 0.057861167416164226,
+        "ece": 5.912468617482827e-11,
+        "log_loss": 0.2061587482846224
+      }
+    ]
+  },
+  "validation_metrics": {
+    "pr_auc": 0.8683503172815207,
+    "roc_auc": 0.9467287293944472,
+    "brier": 0.05564187354405653,
+    "log_loss": 0.19610802739799274,
+    "ece": 0.01751441221358963,
+    "positive_rate": 0.18
+  },
+  "counterfactual_pair_accuracy": 1.0,
+  "policy_experiments": {
+    "experiment_a_unchanged_policy_v2": {
+      "attack_review_plus": 0.861904761904762,
+      "attack_block": 0.6730158730158731,
+      "legitimate_review_plus": 0.0156794425087108,
+      "legitimate_block": 0.0013937282229965157
+    },
+    "experiment_b_moderate_trust": {
+      "attack_review_plus": 0.861904761904762,
+      "attack_block": 0.6714285714285714,
+      "legitimate_review_plus": 0.0156794425087108,
+      "legitimate_block": 0.0013937282229965157
+    }
+  },
+  "scenario_performance": {
+    "burst_pause_burst_v4": {
+      "devices": 30,
+      "review_plus_rate": 1.0,
+      "block_rate": 1.0,
+      "mean_max_score": 0.993051335752596
+    },
+    "cgnat_mobile_ip_storm": {
+      "devices": 260,
+      "review_plus_rate": 0.023076923076923078,
+      "block_rate": 0.0,
+      "mean_max_score": 0.1949473856208018
+    },
+    "cross_device_partial": {
+      "devices": 162,
+      "review_plus_rate": 0.845679012345679,
+      "block_rate": 0.6604938271604939,
+      "mean_max_score": 0.8881414869342017
+    },
+    "cross_device_weak_guest": {
+      "devices": 185,
+      "review_plus_rate": 0.9405405405405406,
+      "block_rate": 0.7351351351351352,
+      "mean_max_score": 0.9497525543216502
+    },
+    "cvv_and_expiry_mistakes": {
+      "devices": 121,
+      "review_plus_rate": 0.0,
+      "block_rate": 0.0,
+      "mean_max_score": 0.10365081276138484
+    },
+    "distributed_bot_campaign": {
+      "devices": 118,
+      "review_plus_rate": 0.635593220338983,
+      "block_rate": 0.3220338983050847,
+      "mean_max_score": 0.7718956872958385
+    },
+    "dormant_account_spike": {
+      "devices": 69,
+      "review_plus_rate": 0.014492753623188406,
+      "block_rate": 0.0,
+      "mean_max_score": 0.11785644695352077
+    },
+    "fast_burst_v4": {
+      "devices": 19,
+      "review_plus_rate": 1.0,
+      "block_rate": 1.0,
+      "mean_max_score": 0.9918540842972018
+    },
+    "genuine_wallet_cycling": {
+      "devices": 105,
+      "review_plus_rate": 0.0380952380952381,
+      "block_rate": 0.009523809523809525,
+      "mean_max_score": 0.14564449195166704
+    },
+    "merchant_normal_amount_attack_v4": {
+      "devices": 9,
+      "review_plus_rate": 1.0,
+      "block_rate": 1.0,
+      "mean_max_score": 0.9872868710464827
+    },
+    "mixed_campaign_v4": {
+      "devices": 19,
+      "review_plus_rate": 1.0,
+      "block_rate": 0.9473684210526315,
+      "mean_max_score": 0.9765033316442119
+    },
+    "multi_device_customer_v4": {
+      "devices": 325,
+      "review_plus_rate": 0.003076923076923077,
+      "block_rate": 0.0,
+      "mean_max_score": 0.052332361521096576
+    },
+    "network_retry_storm_hard": {
+      "devices": 262,
+      "review_plus_rate": 0.003816793893129771,
+      "block_rate": 0.0,
+      "mean_max_score": 0.12073430658052874
+    },
+    "new_customer_onboarding": {
+      "devices": 157,
+      "review_plus_rate": 0.0,
+      "block_rate": 0.0,
+      "mean_max_score": 0.04508121563820833
+    },
+    "normal_guest_checkout": {
+      "devices": 286,
+      "review_plus_rate": 0.0034965034965034965,
+      "block_rate": 0.0,
+      "mean_max_score": 0.12667844317855187
+    },
+    "normal_returning_customer": {
+      "devices": 315,
+      "review_plus_rate": 0.006349206349206349,
+      "block_rate": 0.0,
+      "mean_max_score": 0.06290590588648197
+    },
+    "patient_tester_v4": {
+      "devices": 30,
+      "review_plus_rate": 0.9666666666666667,
+      "block_rate": 0.7666666666666667,
+      "mean_max_score": 0.9268912509305287
+    },
+    "persistent_card_problem_hard": {
+      "devices": 296,
+      "review_plus_rate": 0.006756756756756757,
+      "block_rate": 0.0,
+      "mean_max_score": 0.13973843551425025
+    },
+    "session_churn_v4": {
+      "devices": 12,
+      "review_plus_rate": 1.0,
+      "block_rate": 1.0,
+      "mean_max_score": 0.9913384334775294
+    },
+    "session_recreation_flaky_net": {
+      "devices": 114,
+      "review_plus_rate": 0.05263157894736842,
+      "block_rate": 0.008771929824561403,
+      "mean_max_score": 0.2695848871462243
+    },
+    "shared_household_device": {
+      "devices": 260,
+      "review_plus_rate": 0.08076923076923077,
+      "block_rate": 0.007692307692307693,
+      "mean_max_score": 0.2583260345340829
+    },
+    "sparse_multiday_v4": {
+      "devices": 12,
+      "review_plus_rate": 1.0,
+      "block_rate": 0.8333333333333334,
+      "mean_max_score": 0.9616980176196982
+    },
+    "subscription_dunning_hard": {
+      "devices": 300,
+      "review_plus_rate": 0.0,
+      "block_rate": 0.0,
+      "mean_max_score": 0.024458833993787545
+    },
+    "success_camouflage_v4": {
+      "devices": 9,
+      "review_plus_rate": 0.8888888888888888,
+      "block_rate": 0.6666666666666666,
+      "mean_max_score": 0.8801816629842448
+    },
+    "ultra_patient_v4": {
+      "devices": 7,
+      "review_plus_rate": 0.42857142857142855,
+      "block_rate": 0.2857142857142857,
+      "mean_max_score": 0.5431039092548385
+    },
+    "warm_up_then_attack_v4": {
+      "devices": 18,
+      "review_plus_rate": 0.8888888888888888,
+      "block_rate": 0.7777777777777778,
+      "mean_max_score": 0.916580102650252
+    }
+  },
+  "ablations": [
+    {
+      "ablation": "full_v3",
+      "dropped_count": 0,
+      "remaining_features": 46,
+      "pr_auc": 0.8683503172815207,
+      "roc_auc": 0.9467287293944472,
+      "brier": 0.05564187354405653,
+      "ece": 0.01751441221358963
+    },
+    {
+      "ablation": "minus_temporal_shape",
+      "dropped_count": 4,
+      "remaining_features": 42,
+      "pr_auc": 0.8579764501561458,
+      "roc_auc": 0.942711054862129,
+      "brier": 0.058407513396811134,
+      "ece": 0.01669558872324648
+    },
+    {
+      "ablation": "minus_relationship_entity",
+      "dropped_count": 6,
+      "remaining_features": 40,
+      "pr_auc": 0.8044498418371473,
+      "roc_auc": 0.9232255434500238,
+      "brier": 0.07120353504309154,
+      "ece": 0.021778434000140987
+    },
+    {
+      "ablation": "minus_trust_continuity",
+      "dropped_count": 5,
+      "remaining_features": 41,
+      "pr_auc": 0.8618827176163122,
+      "roc_auc": 0.9431339813897868,
+      "brier": 0.05709877811382814,
+      "ece": 0.014588304685044339
+    },
+    {
+      "ablation": "minus_merchant_relative",
+      "dropped_count": 2,
+      "remaining_features": 44,
+      "pr_auc": 0.8119065564711572,
+      "roc_auc": 0.9244698007000721,
+      "brier": 0.07117160026411709,
+      "ece": 0.024423846607494852
+    },
+    {
+      "ablation": "minus_long_horizon",
+      "dropped_count": 4,
+      "remaining_features": 42,
+      "pr_auc": 0.8642592838259537,
+      "roc_auc": 0.9450779431181108,
+      "brier": 0.05666240788639677,
+      "ece": 0.0163086780186033
+    }
+  ],
+  "environment": {
+    "python_version": "3.11.13 (main, Jun  3 2025, 18:38:25) [Clang 17.0.0 (clang-1700.0.13.3)]",
+    "platform": "macOS-26.5.2-arm64-arm-64bit",
+    "sklearn_version": "1.6.1"
+  }
+}

@@ -1,0 +1,93 @@
+version: merchant-visible-causal-3
+
+# Feature Contract v3 -- for Model v3.
+#
+# Preserves the core causal principle:
+# Every feature below is computable from information a merchant genuinely has
+# at the moment it calls Sentinel -- BEFORE it creates a Razorpay order:
+#   * the raw facts on the current request (device/session/ip/amount/customer)
+#   * this device's OWN earlier requests
+#   * this device's earlier VERIFIED payment outcomes and checkouts
+#   * this CUSTOMER's earlier requests, verified outcomes and checkouts,
+#     across all of that customer's devices
+#   * NEW in v3: card diversity ratio, card change ratio after decline,
+#     session churn rate, gap variability coefficient, and merchant-relative
+#     velocity / amount context.
+#
+# Nothing uses the current attempt's card, method, issuer, decline reason or
+# result, and nothing uses a future event.
+
+maximum_history_days: 30
+shuffled_label_max_roc_auc: 0.60
+one_feature_max_f1: 0.85
+
+retention:
+  device_history_days: 30
+  customer_history_days: 30
+  max_device_requests: 512
+  max_device_payments: 512
+  max_customer_entries: 512
+
+gap_statistics:
+  window_days: 30
+  min_prior_requests_for_median: 2
+  min_gaps_for_variability: 3
+  neutral_value: 0.0
+
+customer_missing_neutral: 0.0
+
+features:
+  # -- request velocity: this device's prior committed requests -------------
+  - requests_10s
+  - requests_60s
+  - requests_5m
+  - requests_24h
+  - requests_per_ip_5m
+  - devices_per_ip_24h
+  - seconds_since_last_request
+  - ip_changes_24h
+  # -- device / session shape ----------------------------------------------
+  - device_age_seconds
+  - is_new_device
+  - session_age_seconds
+  - sessions_24h
+  - ip_rotation_ratio_24h
+  # -- verified historical outcomes: prior attempts only --------------------
+  - prior_payments_24h
+  - recent_failures_24h
+  - failure_ratio_24h
+  - decline_streak
+  - successful_checkouts_30d
+  - seconds_since_last_payment
+  - seconds_since_last_success
+  - retry_after_decline_ratio_24h
+  # -- amount behaviour ----------------------------------------------------
+  - current_amount
+  - amount_delta
+  - amount_variation_24h
+  - low_amount_ratio_24h
+  # -- historical payment card metadata: verified outcomes only ------------
+  - distinct_card_last4_7d
+  - distinct_card_networks_7d
+  - card_change_after_decline_7d
+  # -- long-horizon device behaviour ---------------------------------------
+  - requests_7d
+  - failures_7d
+  - active_day_count_7d
+  - failures_per_active_day_7d
+  - median_gap_between_attempts
+  - gap_variability
+  # -- customer context (neutral when customer_id is absent) ---------------
+  - customer_id_present
+  - customer_distinct_devices_7d
+  - customer_failures_7d
+  - customer_successful_checkouts_30d
+  - customer_age_seconds
+  # -- NEW in v3: Remediation Features (Causal & Decoupled) ----------------
+  - card_diversity_ratio_7d
+  - card_change_after_decline_ratio_7d
+  - session_churn_rate_24h
+  - gap_coefficient_of_variation_24h
+  - median_inter_attempt_gap_seconds_24h
+  - merchant_relative_velocity_zscore
+  - merchant_amount_log_ratio

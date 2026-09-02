@@ -1,0 +1,71 @@
+# Model v3 training configuration.
+#
+# Trains on Dataset v4 TRAIN split, under Feature Contract v3 (46 features).
+# Validation split is held out for development evaluation and model selection.
+# Historical artifacts and Blind v2 remain untouched.
+
+model_version: model-v3
+dataset: data/generated/development_v4/features_v3.csv
+feature_contract: merchant-visible-causal-3
+
+training:
+  seed: 90210443
+  folds: 5
+  pr_auc_tolerance: 0.005
+  group_by: customer_then_device
+  candidate_grids:
+    logistic_regression:
+      C: [0.01, 0.05, 0.1, 0.5, 1.0, 5.0]
+      max_iter: 2000
+    logistic_interactions:
+      C: [0.05, 0.1, 0.5, 1.0]
+      max_iter: 2000
+    hist_gradient_boosting:
+      - learning_rate: 0.05
+        max_leaf_nodes: 15
+        max_iter: 150
+        l2_regularization: 1.0
+      - learning_rate: 0.08
+        max_leaf_nodes: 31
+        max_iter: 150
+        l2_regularization: 2.0
+      - learning_rate: 0.05
+        max_leaf_nodes: 31
+        max_iter: 200
+        l2_regularization: 5.0
+
+interactions:
+  - [failures_7d, distinct_card_last4_7d]
+  - [card_diversity_ratio_7d, failures_7d]
+  - [requests_5m, merchant_relative_velocity_zscore]
+  - [customer_id_present, customer_distinct_devices_7d]
+  - [decline_streak, card_change_after_decline_7d]
+
+ablations:
+  full_v3: []
+  minus_temporal_shape:
+    - median_inter_attempt_gap_seconds_24h
+    - gap_coefficient_of_variation_24h
+    - median_gap_between_attempts
+    - gap_variability
+  minus_relationship_entity:
+    - card_diversity_ratio_7d
+    - card_change_after_decline_ratio_7d
+    - distinct_card_last4_7d
+    - distinct_card_networks_7d
+    - card_change_after_decline_7d
+    - session_churn_rate_24h
+  minus_trust_continuity:
+    - customer_successful_checkouts_30d
+    - customer_age_seconds
+    - successful_checkouts_30d
+    - device_age_seconds
+    - seconds_since_last_success
+  minus_merchant_relative:
+    - merchant_relative_velocity_zscore
+    - merchant_amount_log_ratio
+  minus_long_horizon:
+    - requests_7d
+    - failures_7d
+    - active_day_count_7d
+    - failures_per_active_day_7d
