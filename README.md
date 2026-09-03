@@ -1,709 +1,495 @@
 <div align="center">
 
-<h1>Card-Testing Sentinel</h1>
+<img src="docs/screenshots/sentinel-logo.png" alt="Card-Testing Sentinel" width="340">
 
-<h2>Stop card testing before payment begins.</h2>
+# Card-Testing Sentinel
 
-<p><strong>Pre-authorization behavioral protection for Razorpay Checkout.</strong></p>
+### Stop automated card testing before a Razorpay payment begins.
 
-<p>
-Sentinel watches repeated checkout behavior and decides whether to
-<code>ALLOW</code>, <code>REVIEW</code>, or <code>BLOCK</code> an attempt before a
-Razorpay order is created.<br/>
-The current card result cannot influence its own risk decision; only previously
-verified gateway outcomes become trusted history.
-</p>
+**Razorpay AI Buildathon 2026 — Track 02: AI Risk Manager**
 
-<p>
-<strong>Built for the <a href="https://razorpay.com/buildathon/">Razorpay AI Buildathon</a></strong><br/>
-Track 02 — AI Risk Manager
-</p>
+<br>
 
-<p>
-<img alt="Python 3.11" src="https://img.shields.io/badge/Python-3.11-3776AB?logo=python&amp;logoColor=white"/>
-<img alt="FastAPI 0.141.1" src="https://img.shields.io/badge/FastAPI-0.141.1-009688?logo=fastapi&amp;logoColor=white"/>
-<img alt="React 19.1.1" src="https://img.shields.io/badge/React-19.1.1-61DAFB?logo=react&amp;logoColor=111827"/>
-<img alt="Model v3.1" src="https://img.shields.io/badge/Model-v3.1-4F46E5"/>
-<br/>
-<img alt="44 causal features" src="https://img.shields.io/badge/Causal_Features-44-2563EB"/>
-<img alt="280 Python tests passing" src="https://img.shields.io/badge/Python_Tests-280_passing-16A34A"/>
-<img alt="69 frontend tests passing" src="https://img.shields.io/badge/Frontend_Tests-69_passing-16A34A"/>
-<img alt="Razorpay Test Mode" src="https://img.shields.io/badge/Razorpay-Test_Mode-0C63E4?logo=razorpay&amp;logoColor=white"/>
-</p>
+<!-- Navigation buttons. When public demo/video are deployed, update destinations below. -->
+<a href="#quick-start"><img src="https://img.shields.io/badge/Run%20Demo-Locally-0066FF?style=for-the-badge&logo=fastapi&logoColor=white" alt="Run Demo Locally"></a>
+<!-- Final submission: add Demo Video badge here once the public video URL is available. -->
+<!-- Final submission: replace Run Demo Locally badge with public Live Demo URL once hosted. -->
+<a href="#how-it-works"><img src="https://img.shields.io/badge/Architecture-How%20It%20Works-00AA55?style=for-the-badge" alt="How It Works"></a>
+<a href="#evaluation"><img src="https://img.shields.io/badge/Evaluation-Benchmark%20Results-8A2BE2?style=for-the-badge" alt="Evaluation"></a>
+<a href="docs/dataset.md"><img src="https://img.shields.io/badge/Dataset-v4.1%20Story-FFA500?style=for-the-badge" alt="Dataset Story"></a>
+<a href="reports/README.md"><img src="https://img.shields.io/badge/Evidence-Technical%20Index-333333?style=for-the-badge" alt="Technical Evidence"></a>
 
-<p>
-<a href="#one-decision-layer-between-checkout-and-razorpay">Architecture</a>
-&nbsp;•&nbsp;
-<a href="#what-the-evaluation-actually-showed">Evaluation</a>
-&nbsp;•&nbsp;
-<a href="#run-it-locally">Run Locally</a>
-&nbsp;•&nbsp;
-<a href="#want-to-verify-the-numbers">Evidence</a>
-</p>
+<br><br>
+
+[![Python 3.11](https://img.shields.io/badge/Python-3.11-3776AB?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688?style=flat-square&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![React 18](https://img.shields.io/badge/React-18.3-61DAFB?style=flat-square&logo=react&logoColor=black)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.6-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Razorpay Test Mode](https://img.shields.io/badge/Razorpay-Standard%20Checkout%20(Test%20Mode)-0C2340?style=flat-square&logo=razorpay&logoColor=white)](https://razorpay.com/docs/)
+[![Model v3.1](https://img.shields.io/badge/Model-v3.1%20(HistGB%20%2B%20Sigmoid)-orange?style=flat-square)](reports/phase_2_6_model_v3_1_development.md)
+[![Tests Passing](https://img.shields.io/badge/Tests-280%20Python%20%7C%2069%20Frontend%20Passed-brightgreen?style=flat-square)](tests/)
 
 </div>
 
-![Card-Testing Sentinel — pre-authorization Razorpay risk protection interface](docs/screenshots/sentinel-final-hero.png)
+<br>
 
-| Decision point | Behavior model | Sequential detection | Local latency |
-|---|---:|---:|---:|
-| Before Razorpay order creation | **44 causal features** | **92.16%** of attack devices by attempt 3 | **33.83 ms p50** |
+<div align="center">
+  <img src="docs/screenshots/sentinel-ui-hero.png" alt="Card-Testing Sentinel — Pre-Authorization Protection Interface" width="95%">
+</div>
 
-> **Evaluation status: PBRSS-v1 — MIXED.** Strong attack coverage, but
-> legitimate review friction remains too high for production.
-> `production_ready=false`
+---
 
-## Table of contents
+## Table of Contents
 
-- [Why card testing is hard to catch](#why-card-testing-is-hard-to-catch)
-- [How Sentinel protects the payment flow](#sentinel-decides-before-razorpay-creates-the-order)
-- [Architecture](#one-decision-layer-between-checkout-and-razorpay)
-- [What Sentinel knows — and what it refuses to use](#what-sentinel-knows--and-what-it-refuses-to-use)
-- [Razorpay Test Mode integration](#this-is-connected-to-a-real-razorpay-test-mode-flow)
-- [Dataset and model](#how-sentinel-learns-card-testing-behavior)
-- [Evaluation results](#what-the-evaluation-actually-showed)
-- [Evaluation journey](#how-each-failed-test-changed-the-next-version)
-- [Where Sentinel still fails](#where-sentinel-still-fails)
-- [Engineering and security](#duplicate-clicks-restarts-and-late-webhooks-should-not-break-payment-state)
-- [Run locally](#run-it-locally)
-- [Verify the project](#how-to-verify-the-project-yourself)
-- [Evidence](#want-to-verify-the-numbers)
+* [Evaluator Snapshot](#evaluator-snapshot)
+* [The Card-Testing Problem](#the-card-testing-problem)
+* [What Sentinel Does](#what-sentinel-does)
+* [How It Works](#how-it-works)
+* [Trust & Causality](#trust--causality)
+* [Why Synthetic Sequential Data?](#why-synthetic-sequential-data)
+* [How the Project Evolved](#how-the-project-evolved)
+* [Risk Signals & Current Model](#risk-signals--current-model)
+* [Evaluation](#evaluation)
+* [What Worked / What Needs Improvement](#what-worked--what-needs-improvement)
+* [Merchant Economics](#merchant-economics)
+* [Razorpay Integration](#razorpay-integration)
+* [Reliability & Verification](#reliability--verification)
+* [Limitations](#limitations)
+* [Quick Start](#quick-start)
+* [Documentation Directory](#documentation-directory)
+* [Project Structure](#project-structure)
 
-## Why card testing is hard to catch
+---
 
-A single failed low-value payment can look ordinary. Card testing becomes more
-visible across a sequence: rapid retries, changing cards, rotating sessions or
-identities, device and IP changes, repeated verified failures, timing patterns,
-and distributed activity.
+## Evaluator Snapshot
 
-The hard part is not merely recognizing that a payment failed. It is deciding
-whether the next payment attempt is risky while respecting what the merchant
-actually knows at that moment.
+Card-Testing Sentinel is a behavioral risk layer that evaluates checkout risk **before** a Razorpay payment order is created. Instead of waiting for an authorization failure, Sentinel examines trusted history from earlier attempts on a device, converts that history into 44 causal behavioral signals, and decides whether Razorpay order creation should be permitted.
 
-> Can suspicious card-testing behavior be detected before authorization without
-> using information that does not exist yet?
+| Item | Current System |
+|---|---|
+| **Problem** | Automated card testing |
+| **Decision point** | Before Razorpay order creation |
+| **Development dataset** | Dataset v4.1 |
+| **Features** | 44 causal behavioral features |
+| **Model** | Model v3.1 — Histogram Gradient Boosting |
+| **Policy** | Policy v2 |
+| **Attack `REVIEW+` recall under stress** | **96.40%** |
+| **Legitimate `REVIEW+` rate under stress** | **20.72%** |
+| **Legitimate `BLOCK` rate under stress** | **0.16%** |
+| **Stress PR-AUC** | **0.6470** |
+| **Final stress verdict** | **`MIXED`** |
+| **Production ready** | **`false`** |
 
-## Why this matters for payment checkout
+---
 
-Card testing and legitimate payment retries can look similar. A real customer
-may retry because an OTP or payment failed, the network dropped, a card was
-temporarily declined, or another card was tried. An attacker may also retry
-rapidly, change cards, rotate sessions, or spread attempts across devices.
+## The Card-Testing Problem
 
-Simply blocking repeated failures would hurt legitimate customers. Sentinel
-tries to distinguish the behavioral pattern before creating the Razorpay order.
+Card testing is an automated attack where fraudsters test batches of stolen card credentials to find valid cards before making larger fraudulent purchases.
 
-## Sentinel decides before Razorpay creates the order
+Because legitimate shoppers also mistype CVVs or experience temporary bank declines, a merchant cannot block every customer whose payment fails:
 
 ```text
-Merchant checkout
-    → Sentinel precheck
-    → trusted behavioral history
-    → 44 causal features
-    → Model v3.1
-    → Policy v2
-    → ALLOW / REVIEW / BLOCK
+Normal Shopper                             Card-Testing Attacker
+
+Card A  →  Payment fails (mistyped CVV)    Card A  →  Payment fails
+Card A  →  Same-card retry                 Card B  →  Payment fails
+Card A  →  Payment succeeds                Card C  →  Payment fails
+                                           Card D  →  Payment fails …
 ```
 
-The decision controls the payment boundary:
+> **One failed payment doesn't look suspicious. The sequence does.**
 
-| Sentinel decision | Razorpay action |
-|---|---|
-| `ALLOW` | A Razorpay Test Mode order may be created |
-| `REVIEW` | No Razorpay order is created |
-| `BLOCK` | No Razorpay order is created |
+A single payment decline is normal e-commerce friction. But rapid card switching across consecutive declines, session churning, and coordinated bot probing form distinct behavioral sequences. Sentinel intercepts these multi-attempt patterns before the gateway processes the charge.
 
-`REVIEW` is a Sentinel policy state. It is not Razorpay manual review, 3DS,
-OTP, issuer review, or evidence that a bank was contacted.
+---
 
-## One decision layer between checkout and Razorpay
+## What Sentinel Does
+
+Sentinel operates as an intelligent gatekeeper positioned between customer checkout and Razorpay order creation:
 
 ```mermaid
-flowchart LR
-    A[React Checkout] --> B[POST /api/precheck]
-    B --> C[Schema validation<br/>HMAC protection]
-    C --> D[Trusted historical state]
-    D --> E[FeatureEngineV3<br/>44 causal features]
-    E --> F[Model v3.1<br/>hist_gb_2 + sigmoid]
-    F --> G[Policy v2]
-    G --> H{Decision}
-
-    H -->|ALLOW| I[Create Razorpay<br/>Test Mode order]
-    H -->|REVIEW / BLOCK| J[Suppress order creation]
-
-    I --> K[Razorpay Standard Checkout]
-    K --> L[Signed gateway webhook]
-    L --> M[Verified trusted outcome]
-    M --> N[Future historical state]
-    N -. later request .-> D
-
-    classDef decision fill:#eef2ff,stroke:#4f46e5,stroke-width:2px;
-    classDef gateway fill:#fff7ed,stroke:#ea580c,stroke-width:2px;
-    class H decision;
-    class I,K,L gateway;
+flowchart TD
+    A[Customer Checkout] --> B[Sentinel Precheck]
+    B --> C{Risk Decision}
+    C -->|ALLOW| D[Create Razorpay Test Mode Order]
+    C -->|REVIEW| E[Suppress Order Creation<br/>HTTP 409 Conflict]
+    C -->|BLOCK| F[Suppress Order Creation<br/>HTTP 409 Conflict]
+    D --> G[Open Razorpay Standard Checkout Modal]
 ```
 
-The risk decision is persisted before any Razorpay order is requested. Only the
-`ALLOW` branch crosses the gateway boundary; `REVIEW` and `BLOCK` suppress order
-creation entirely.
+### `ALLOW`
+Risk score is below the review gate (`< 0.75`). A persisted decision permits creation of a real Razorpay Test Mode order, allowing the customer to enter payment details in the standard Razorpay checkout modal.
 
-## What Sentinel knows — and what it refuses to use
+### `REVIEW`
+Risk score is elevated (`>= 0.75`). Razorpay order creation is **suppressed** (HTTP 409 `payment_order_not_allowed`).
 
-Sentinel deliberately separates decision-time facts from post-authorization
-facts.
+> **Important Boundary:** In this prototype, `REVIEW` is an automated policy state that stops order creation. It does not represent manual Razorpay merchant review, human review queues, SMS OTP, or 3D Secure step-up.
 
-| Available before authorization | Not used from the current payment |
+### `BLOCK`
+Risk score is very high (`>= 0.90`) **and** accompanied by at least two qualifying behavioral evidence signals (such as consecutive decline streaks and multiple card changes). Order creation is strictly rejected.
+
+---
+
+## How It Works
+
+Sentinel separates the risk decision from the payment itself:
+
+```mermaid
+flowchart TD
+    subgraph Decision_Phase ["1. Decision Phase (Pre-Authorization)"]
+        A[Customer Initiates Checkout] --> B[Sentinel Precheck API]
+        C[(Previously Trusted History)] --> B
+        B --> D[Compute 44 Causal Features]
+        D --> E[Model v3.1 + Sigmoid Calibration]
+        E --> F[Policy v2 Evaluation]
+        F --> G{Decision}
+    end
+
+    subgraph Gateway_Phase ["2. Gateway Phase (Post-Decision)"]
+        G -->|ALLOW| H[Create Razorpay Test Mode Order]
+        G -->|REVIEW or BLOCK| I[Suppress Order Creation]
+        H --> J[Customer Enters Payment in Razorpay Modal]
+    end
+
+    subgraph Outcome_Phase ["3. Outcome Verification (Asynchronous)"]
+        J --> K[Signed Razorpay Webhook]
+        K --> L[HMAC-SHA256 Verification & Deduplication]
+        L --> M[Persist Verified Outcome to SQLite WAL]
+        M -. Affects future checkouts only .-> C
+    end
+```
+
+> **Decision first. Payment later. Verified gateway outcomes affect future attempts only.**
+
+Sentinel scores the transaction using only information visible before the payment order exists. Only `ALLOW` decisions reach the gateway. Payment results become trusted history only after the backend verifies Razorpay's signed webhook.
+
+### Example Attack Journey
+
+To understand sequence detection in practice:
+
+* **Attempt 1:** Fresh device → little trusted history → `ALLOW` → Razorpay receives the payment → signed failure becomes trusted history.
+* **Attempt 2:** Another card fails → Sentinel now sees repeated failures and historical card switching.
+* **Attempt 3:** Failure history + card diversity + velocity raise risk → `REVIEW/BLOCK` → no Razorpay order is created.
+
+*The current card is never available to Sentinel during its own precheck decision; card information can become historical evidence only after a verified Razorpay webhook. This journey is illustrative; exact decisions depend on the device's full behavioral history.*
+
+---
+
+## Trust & Causality
+
+The model is only allowed to use information that really exists before the decision. This prevents target leakage:
+
+| Available to Sentinel at Decision Time | Strictly Forbidden at Decision Time |
 |---|---|
-| Amount and merchant | PAN or CVV |
-| Device and session history | Current card network or card type |
-| Customer continuity | Current authorization result |
-| Request velocity and timing | Current decline reason |
-| Previous trusted failures | Future payment status |
-| Previous successful checkouts | Any browser-only failure as trusted history |
-| Historical card diversity | Post-authorization gateway metadata |
-| Historical IP/network behavior | Data learned after the decision |
+| Request velocity across short and long windows | Current PAN, CVV, or card expiry |
+| Prior attempt counts and timing intervals | Current card network, type, or issuing bank |
+| Device, customer, and session history | Current authorization outcome |
+| Previously verified payment failures | Current gateway decline reason |
+| Previously verified successful checkouts | Future webhook metadata |
+| Historical card diversity (distinct past last4s) | Client-asserted payment status |
+| Historical IP and network movement | Metadata learned after the decision |
+| Current transaction amount and merchant context | Ground-truth fraud labels |
 
-### The current card cannot influence its own risk decision
+> **The current payment cannot influence its own current risk decision.**
 
-Sentinel scores the checkout before authorization. At that moment it does not
-know the current card network, current card type, authorization result, decline
-reason, or payment status.
+In standard checkout flows, the frontend receives callback notifications when a payment completes or fails. Sentinel **never** updates trusted payment history from browser callbacks because client requests can be spoofed or manipulated. Only authoritative, HMAC-SHA256-signed Razorpay webhooks (`payment.failed`, `order.paid`) processed by the backend write to live state, affecting *later* attempts only.
 
-Safe card metadata can become historical evidence only after a signed Razorpay
-webhook has been verified by the backend. It can then affect a future request,
-never the request that introduced it.
+---
 
-```text
-precheck → decision → payment → signed outcome → historical state → future precheck
-```
+## Why Synthetic Sequential Data?
 
-## This is connected to a real Razorpay Test Mode flow
+Most public fraud datasets describe completed payments and often contain information learned after authorization. Sentinel must decide before Razorpay creates the payment order, and card testing depends on sequences of attempts across devices, sessions, cards, and time. We therefore generated deterministic multi-attempt development data using only information available at the decision point; this remains synthetic evidence and does not replace validation on real production traffic.
 
-Sentinel does not only show a risk score on a dashboard. The decision controls
-whether the Razorpay order is created.
+**[Full dataset methodology → docs/dataset.md](docs/dataset.md)**
 
-```text
-ALLOW  → Razorpay order created
-REVIEW → no Razorpay order
-BLOCK  → no Razorpay order
-```
+---
 
-After an allowed payment begins, signed gateway events determine what becomes
-trusted history. End-to-end Razorpay Test Mode verification established that:
+## How the Project Evolved
 
-- only `ALLOW` creates a real Razorpay order; `REVIEW` and `BLOCK` create none;
-- Razorpay Standard Checkout is opened only for an eligible persisted request;
-- signed `payment.failed` webhooks are authoritative for failed-payment history;
-- browser failure callbacks remain visibly separate and never create a trusted
-  decline;
-- duplicate webhook deliveries and order requests are idempotent;
-- changed-content identifier reuse is rejected rather than silently replayed;
-- payment lifecycle transitions are monotonic, so stale events cannot regress
-  state;
-- abandoned orders without a terminal signed webhook are non-authoritative and
-  are not counted as declines; and
-- safe gateway card metadata is added only to future behavioral history.
+Sentinel was not built by training one model and reporting the best score. Earlier evaluations exposed weaknesses, one attempted redesign was rejected entirely, and the final system was rebuilt around stricter causal and leakage-safe methodology:
 
-Real Test Mode multi-card verification also confirmed the causal progression of
-historical card diversity: the second signed failed payment increased distinct
-historical cards and card networks only after its webhook was accepted. Full
-evidence is in the [real Razorpay failure lifecycle report](reports/phase_5b_1_real_razorpay_failure_lifecycle.md).
-
-## What is running now
-
-The evaluator-facing application uses the frozen selection declared in
-[`configs/runtime_v3_1.yaml`](configs/runtime_v3_1.yaml).
-
-| Field | Active value |
-|---|---|
-| Runtime | `postblind-v3.1-prototype-runtime` |
-| Runtime stage | `evaluated_prototype_candidate` |
-| Production ready | **false** |
-| Features | **44** |
-| Feature contract | `merchant-visible-causal-3.1` |
-| Model | `model-v3.1` |
-| Candidate | `hist_gb_2` |
-| Calibration | `sigmoid` |
-| Policy | `validation-selected-v2` |
-| Evaluation | `pbrss-v1` |
-| Conclusion | **MIXED — strong attack detection, but too much legitimate review friction** |
-
-Model v2 remains in the repository as frozen historical evidence. It is not the
-current runtime model.
-
-## How Sentinel learns card-testing behavior
-
-Dataset v4.1 is a synthetic causal-development corpus designed around both
-card-testing attacks and difficult legitimate behavior.
-
-| Dataset v4.1 measure | Value |
-|---|---:|
-| Lifecycle events | **179,283** |
-| Authorization requests | **69,274** |
-| Devices | **12,000** |
-| Merchants | **20** |
-| Causal features | **44** |
-
-The scenarios include cross-device guest attacks, partial-identity campaigns,
-distributed bots, subscription dunning, persistent genuine card problems,
-network retry storms, shared household devices, and carrier-grade NAT traffic.
-The feature matrix contains no label, scenario, actor identifier, current
-payment outcome, or future gateway response.
-
-An earlier Model v3 experiment was **rejected** because its validation contained
-actor/group leakage and ungrounded pseudo-features. Dataset v4.1 and Model v3.1
-corrected that methodology by grouping correlated actors, campaigns, households,
-and counterfactual twins into non-straddling evaluation units.
-
-The key partition checks are explicit:
-
-| Leakage check | Overlap |
-|---|---:|
-| Train / validation leakage groups | **0** |
-| Train / validation actors | **0** |
-| Train / validation customers | **0** |
-| Cross-validation fold-straddling groups | **0** |
-| Campaign and household fold overlap | **0** |
-
-### Feature families
-
-The 44-feature contract summarizes merchant-visible, causal signals rather than
-accepting client-computed risk attributes. Its main families are:
-
-- **Velocity:** How many attempts happened recently, across short and long
-  windows?
-- **Outcome history:** Did previous verified attempts fail repeatedly, or did
-  earlier checkouts succeed?
-- **Card diversity:** How many different cards appeared in trusted historical
-  outcomes, and did the card change after a decline?
-- **Identity continuity:** Is this a known returning customer or device, or a
-  new identity?
-- **Session behavior:** Is the shopper repeatedly creating or switching
-  sessions?
-- **Network behavior:** Is the device rapidly changing IP or network context,
-  or sharing it unusually?
-- **Temporal shape:** Do attempts resemble a burst, retry loop, or slow drip?
-- **Amount behavior:** Are amounts changing repeatedly or staying around low
-  testing values?
-
-Current-card attributes and future outcomes remain outside the decision-time
-feature contract.
-
-### Model v3.1
-
-Model v3.1 looks at the 44 behavioral signals together and estimates how risky
-the current attempt looks using only history available at that moment. It is a
-scikit-learn Histogram Gradient Boosting classifier bound to the
-`merchant-visible-causal-3.1` contract and calibrated with sigmoid calibration.
-Thirteen candidates were evaluated using actor-safe grouped cross-validation;
-the frozen selection is `hist_gb_2`.
-
-| Parameter | Frozen value |
-|---|---:|
-| `learning_rate` | `0.08` |
-| `max_leaf_nodes` | `31` |
-| `max_iter` | `150` |
-| `l2_regularization` | `2.0` |
-| Calibration | `sigmoid` |
-| Feature count | `44` |
-
-## What the evaluation actually showed
-
-### Development test
-
-On the synthetic development environment, Model v3.1 separated attacks and
-legitimate traffic well. These are held-out Dataset v4.1 development results,
-not production Razorpay performance.
-
-| Metric | Result |
-|---|---:|
-| Attack `REVIEW+` | **93.49%** |
-| Attack `BLOCK` | **67.46%** |
-| Legitimate `REVIEW+` | **3.14%** |
-| Legitimate `BLOCK` | **0.14%** |
-| PR-AUC | **0.9169** |
-| ROC-AUC | **0.9693** |
-| Brier score | **0.0410** |
-| Expected calibration error | **0.0214** |
-| Counterfactual Pair Ordering Accuracy | **100% (20/20 pairs)** |
-
-### Harder shifted stress test
-
-When the traffic distribution changed, attack detection stayed strong, but too
-many legitimate checkouts were sent to `REVIEW`. PBRSS-v1 is a predeclared,
-consumed post-Blind remediation stress suite. Its frozen conclusion is **MIXED
-— strong attack detection, but too much legitimate review friction**.
-
-| Metric | Result |
-|---|---:|
-| Attack `REVIEW+` | **96.40%** |
-| Attack `BLOCK` | **59.12%** |
-| Legitimate `REVIEW+` | **20.72%** |
-| Legitimate `BLOCK` | **0.16%** |
-| PR-AUC | **0.646976** |
-| ROC-AUC | **0.726189** |
-| Brier score | **0.156037** |
-| Expected calibration error | **0.140679** |
-| Log loss | **0.6538091381** |
-| Conclusion | **MIXED — strong attack detection, but too much legitimate review friction** |
-
-Attack coverage remained strong, but legitimate review friction and calibration
-degraded substantially under shift.
-
-### Development versus stress
-
-| Measure | Development v4.1 | PBRSS-v1 shifted stress |
-|---|---:|---:|
-| Attack `REVIEW+` | 93.49% | 96.40% |
-| Legitimate `REVIEW+` | 3.14% | **20.72%** |
-| Legitimate `BLOCK` | 0.14% | 0.16% |
-| PR-AUC | 0.9169 | 0.646976 |
-| Brier | 0.0410 | 0.156037 |
-| ECE | 0.0214 | 0.140679 |
-
-These are different synthetic distributions with different purposes. They are
-not an apples-to-apples leaderboard or a controlled estimate of production
-generalization.
-
-## How each failed test changed the next version
-
-The project evolved through evidence, including results that invalidated prior
-assumptions.
-
-| Stage | Result | What changed or was learned |
+| Stage | What Happened | Why It Mattered |
 |---|---|---|
-| v1 | First behavioral baseline | Established the causal pre-authorization approach |
-| v2 | More historical behavior | Added stronger history and identity continuity |
-| Blind v2 | **WEAK — attack coverage existed, but legitimate friction was unacceptable** | Exposed dunning and retry friction |
-| v3 | **REJECTED** despite stronger-looking metrics | Audit found grouping leakage and ungrounded pseudo-features |
-| v3.1 | Rebuilt with actor-safe evaluation | Used group-safe partitions and 44 causal features |
-| PBRSS-v1 | **MIXED — strong attack detection, but too much legitimate review friction** | Shifted stress exposed calibration and ordinary-checkout friction |
+| **Model v2 / Dataset v3** | Blind-v2 evaluation was **WEAK** | The linear system struggled with harder behavior and legitimate-customer friction |
+| **Model v3 / Dataset v4** | **REJECTED** during audit | The audit found that related users could appear in different validation folds, some features were not grounded in real merchant information, and generation was not fully reproducible |
+| **Model v3.1 / Dataset v4.1** | Methodology corrected | Related users and attack groups were kept together across splits, leakage-prone features were removed, and the model was retrained using 44 causal behavioral features |
+| **PBRSS-v1** | Shifted stress result was **MIXED** | Attack coverage remained high (96.40%), but REVIEW friction (20.72%) and calibration degraded |
 
-### Historical Blind v2 result
+**The final version is better because the methodology became stricter—not because weaker results were deleted.**
 
-Blind v2 is frozen historical Model v2 evidence, not the active runtime
-evaluation.
+* **[Full dataset evolution → docs/dataset.md](docs/dataset.md)**
+* **[Full evaluation journey → reports/README.md](reports/README.md)**
 
-| Historical Blind v2 metric | Result |
-|---|---:|
-| Attack `REVIEW+` | **70.50%** |
-| Attack `BLOCK` | **34.125%** |
-| Legitimate `REVIEW+` | **14.9062%** |
-| Legitimate `BLOCK` | **5.0937%** |
-| PR-AUC | **0.487127** |
-| ROC-AUC | **0.735120** |
-| Brier score | **0.152069** |
-| Expected calibration error | **0.117139** |
-| Verdict | **WEAK — attack coverage existed, but legitimate friction was unacceptable** |
+---
 
-Its frozen governance state is `evaluated=true`, `consumed=true`, and
-`post_blind_tuning=false`.
+## Risk Signals & Current Model
 
-```mermaid
-flowchart LR
-    A[v1 baseline] --> B[v2]
-    B --> C[Blind v2<br/>WEAK: some attack coverage,<br/>unacceptable friction]
-    C --> D[v3 redesign]
-    D --> E[v3 REJECTED<br/>leakage + pseudo-features]
-    E --> F[v3.1 + Dataset v4.1<br/>actor-safe development]
-    F --> G[Strong development<br/>validation]
-    G --> H[PBRSS-v1<br/>MIXED: strong detection,<br/>high review friction]
-
-    classDef weak fill:#fff7ed,stroke:#ea580c;
-    classDef rejected fill:#fef2f2,stroke:#dc2626;
-    classDef current fill:#eef2ff,stroke:#4f46e5,stroke-width:2px;
-    class C,H weak;
-    class E rejected;
-    class F,G current;
-```
-
-The v3 experiment produced stronger-looking metrics, but it was rejected after
-the audit found grouping leakage and ungrounded pseudo-features. The rejected v3
-experiment and weak Blind v2 result are retained as provenance, not hidden as
-failed iterations.
-
-## The pattern becomes clear after repeated attempts
-
-### Behavioral history changes the decision
-
-**23.20% detected by attempt 1 → 92.16% by attempt 3 → 96.40% by attempt 5**
-
-![PBRSS-v1 cumulative attack detection by attempt](artifacts/figures/pbrss_detection_delay.png)
-
-| Attempt | Attack devices detected by that attempt |
-|---:|---:|
-| 1 | **23.20%** |
-| 2 | **25.20%** |
-| 3 | **92.16%** |
-| 5 | **96.40%** |
-
-One transaction may not provide enough evidence. Repeated behavior reveals the
-card-testing pattern, with the largest gain at attempt 3.
-
-### Where the current model becomes too cautious
-
-![PBRSS-v1 legitimate friction by scenario](artifacts/figures/pbrss_legitimate_friction.png)
-
-On PBRSS-v1, Sentinel hard-blocked only **0.16%** of legitimate devices, but sent
-**20.72%** to `REVIEW`. Ordinary checkout reached **25.30%** `REVIEW+`. That
-level of customer friction is too high for production, which is why
-`production_ready` remains **false**. The Brier and ECE results above also show
-that calibration degraded under this shifted distribution.
-
-### Local HTTP performance
-
-![Local precheck HTTP latency distribution](artifacts/figures/phase_4c_latency.png)
-
-The benchmark sent 500 sequential requests through the complete local
-`/api/precheck` HTTP path, including validation, HMAC tokenization, state loading,
-44-feature computation, model scoring, policy evaluation, and SQLite WAL
-persistence.
-
-| Local benchmark metric | Result |
-|---|---:|
-| p50 | **33.83 ms** |
-| p95 | **110.73 ms** |
-| p99 | **183.19 ms** |
-| Failures | **0 / 500** |
-
-This is a **local benchmark**, not a production SLA.
-
-## Which signals actually mattered
-
-- The relationship/entity feature family produced the largest measured
-  performance loss when removed.
-- `customer_id_present` behaved more like a legitimate trust prior than an
-  attack flag.
-- Historical trust helped reduce false friction for established customers.
-- Distributed bot campaigns remained difficult to hard-block.
-
-See the [full Model v3.1 ablation report](reports/phase_2_6_model_v3_1_ablations.md)
-for the controlled experiments and scenario-level results.
-
-## Duplicate clicks, restarts and late webhooks should not break payment state
-
-These safeguards protect the behavioral record around a payment:
-
-- **Duplicate Pay click:** should not create another decision or order.
-- **Late webhook:** should not move a captured or failed payment backward.
-- **Backend restart:** should not forget previous behavioral history.
-- **Browser failure callback:** should not be trusted as a bank outcome.
-
-The runtime therefore behaves as a stateful payment control, not a stateless
-model endpoint:
-
-- exact retries return the persisted decision without rescoring;
-- changed-content identifier reuse returns a conflict;
-- lifecycle transitions are monotonic;
-- SQLite runs in WAL mode with transactional persistence;
-- restart recovery reconstructs and verifies persisted state;
-- browser events cannot impersonate signed gateway outcomes;
-- Razorpay order creation is gated to `ALLOW`; and
-- runtime manifests verify the active feature, model, policy, and evaluation
-  artifacts before readiness.
-
-The `/api/demo/*` simulation is explicitly namespaced and server-generated. It
-does not expose arbitrary outcome or checkout-history writes for live Razorpay
-checkout identifiers and is not part of the authoritative gateway-history path.
-
-## What Sentinel trusts — and what it rejects
-
-Sentinel treats the browser as untrusted for payment outcomes.
-
-- HMAC-SHA256 protects persisted customer, device, session, merchant, and IP
-  identifiers.
-- Razorpay payment signatures and webhook signatures are verified server-side.
-- Strict schemas reject PAN, CVV, client-computed features, labels, and unknown
-  fields from the risk endpoint.
-- Secrets are environment-based and excluded from version control.
-- Runtime and development dependencies are locked.
-- The final Python and npm dependency audits found **0 known vulnerabilities**
-  in the verified environments.
-
-See the [dependency security audit](reports/dependency_security_audit.md) for the
-advisory-by-advisory evidence.
-
-## Technology stack
-
-| Layer | Technology |
-|---|---|
-| Frontend | React, TypeScript, Vite |
-| Backend | FastAPI, Python 3.11 |
-| ML | scikit-learn, Histogram Gradient Boosting |
-| Persistence | SQLite WAL |
-| Payments | Razorpay Standard Checkout, Test Mode |
-| Security | HMAC-SHA256, signed webhooks |
-| Testing | pytest, Vitest, Node test runner |
-| Packaging | Docker, GitHub Actions |
-
-## Repository structure
+Sentinel uses **44 causal behavioral features** covering velocity, verified failure history, historical card diversity, identity continuity, session behavior, network behavior, timing patterns, and amount behavior:
 
 ```text
-frontend/                     React product interface
-src/card_testing_sentinel/    FastAPI runtime, features, model and policy code
-configs/                      Versioned runtime and experiment contracts
-artifacts/                    Frozen models, evaluations and figures
-pipelines/                    Dataset, training and evaluation pipelines
-scripts/                      Verification, benchmarking and utility commands
-tests/                        Python, integration and frontend tests
-reports/                      Evaluator-facing technical evidence
-docs/                         Architecture, API and methodology documentation
-archive/                      Superseded and historical development evidence
+Trusted History → 44 Causal Features → Model v3.1 (Histogram Gradient Boosting) → Sigmoid Calibration → Policy v2 → ALLOW / REVIEW / BLOCK
 ```
 
-`archive/` preserves meaningful provenance without presenting superseded work as
-part of the active system.
+**13 candidate models were evaluated using 5-fold actor-safe grouped cross-validation on 8,500 training devices.** Related users and attack groups were kept in the same fold so the model could not appear better by seeing similar actors during both training and validation. scikit-learn Histogram Gradient Boosting (`hist_gb_2`) won with out-of-fold PR-AUC of **0.9384** and ROC-AUC of **0.9790**. Sigmoid calibration (Platt scaling) reduced Expected Calibration Error from 0.0554 to 0.0147 with zero PR-AUC ranking loss.
 
-## Run it locally
+**[Feature contract specification → configs/features_v3_1.yaml](configs/features_v3_1.yaml)**
 
-Requirements: Python 3.11 and Node.js 22.13.1 or newer.
+---
+
+## Evaluation
+
+Sentinel was evaluated first on a held-out development validation split, and then on a frozen, deliberately shifted stress benchmark.
+
+> **Definition:** `REVIEW+` indicates total intervention coverage: the proportion of devices that received either a `REVIEW` or a `BLOCK` decision.
+
+### Development Validation vs. Shifted Stress Benchmark
+
+| Metric | Held-Out Development (v4.1) | Shifted Stress Benchmark (PBRSS-v1) |
+|---|---:|---:|
+| **Evaluation Population** | 3,500 devices (630 attack / 2,870 legitimate) | 5,000 devices (1,250 attack / 3,750 legitimate) |
+| **Benchmark Attack Prevalence** | 18.0% | 25.0% |
+| **Attack `REVIEW+` Recall** | **93.49%** (589 / 630) | **96.40%** (1,205 / 1,250) |
+| **Attack `BLOCK` Recall** | **67.46%** (425 / 630) | **59.12%** (739 / 1,250) |
+| **Legitimate `REVIEW+` Friction** | **3.14%** (90 / 2,870) | **20.72%** (777 / 3,750) |
+| **Legitimate `BLOCK` Rate** | **0.14%** (4 / 2,870) | **0.16%** (6 / 3,750) |
+| **Ordinary Checkout Review Rate** | ~3.0% | **25.30%** (759 / 3,000) |
+| **PR-AUC (Device-Weighted)** | **0.9169** | **0.6470** |
+| **Expected Calibration Error (ECE)** | **0.0214** | **0.1407** |
+| **Benchmark Precision (`REVIEW+`)** | — | **60.80%** (1,205 / 1,982) |
+| **Benchmark Precision (`BLOCK`)** | — | **99.19%** (739 / 745) |
+| **Counterfactual Pair Ordering (CPOA)** | **100.0% (20 / 20 pairs)** | — |
+
+> **Benchmark Precision Note:** The 99.19% BLOCK precision and 60.80% REVIEW+ precision are device-level, policy-level, and conditional on the synthetic benchmark's 25% attack prevalence. They are not expected production precision or a production guarantee.
+
+> **Evaluation Discipline:** Model v3.1, the 44-feature contract, calibration, and Policy v2 were frozen before PBRSS-v1. The shifted benchmark was scored once, and no post-stress model, feature, calibration, or policy tuning was performed.
+
+### Evaluation Charts
+
+<div align="center">
+  <table>
+    <tr>
+      <td align="center" width="50%">
+        <img src="docs/figures/policy_outcomes_model_v3_1.png" alt="Policy Outcomes Under Model v3.1" width="100%"><br>
+        <b>Figure 1: Policy v2 Outcomes on Development Validation</b><br>
+        <i>Strong separation in development: 93.49% attack recall vs. 3.14% legitimate review friction.</i>
+      </td>
+      <td align="center" width="50%">
+        <img src="artifacts/figures/pbrss_detection_delay.png" alt="Detection Delay Across Attempts" width="100%"><br>
+        <b>Figure 2: Cumulative Detection Across Sequential Attempts (PBRSS-v1)</b><br>
+        <i>Attack detection accumulates rapidly: 92.16% of attack devices received REVIEW/BLOCK by attempt 3.</i>
+      </td>
+    </tr>
+  </table>
+</div>
+
+---
+
+## What Worked / What Needs Improvement
+
+Sentinel's final evaluation verdict is **`MIXED`**. Disclosing both strengths and operational limitations is essential:
+
+### What Worked
+* **Attack coverage survived distribution shift.**
+* **Most multi-attempt attacks were detected by the third attempt.**
+* **Very few legitimate shoppers were hard-blocked.**
+* **Counterfactual tests provide evidence that risk moves in the intended direction when declared behavioral factors change.**
+* **The pre-order Razorpay boundary worked end-to-end.**
+
+### What Needs Improvement
+* **Excessive Review Friction Under Shift:** Legitimate customer review rate rose from 3.14% in development to 20.72% under stress (and 25.30% in ordinary checkout). This represents substantial customer friction and is too high for direct production checkout without automated step-up mechanisms.
+* **Calibration Degradation:** ECE rose from 0.0214 to 0.1407 under distribution shift as predicted probabilities drifted upward.
+* **Distributed Single-Attempt Botnets:** Attackers rotating distinct devices on every attempt avoided the multi-failure history required for hard blocks.
+* **No Live Production Traffic:** The detector was evaluated on synthetic distributions; it has not been validated on live Razorpay production gateway traffic.
+* **No Step-Up Challenge Flow:** The prototype suppresses order creation on `REVIEW`; an automated step-up workflow (such as SMS OTP or 3DS) is not currently implemented.
+
+> **Final Shifted-Stress Verdict:** **`MIXED`**<br>
+> **Production Ready:** **`false`**
+
+---
+
+## Merchant Economics
+
+High fraud recall alone is insufficient: **a fraud detector is economically harmful if legitimate-customer friction costs more than the fraud losses it prevents**.
+
+| Operating Scenario | Assumed Attack Prevalence | Modeled Result |
+|---|:---:|---|
+| **Quiet Traffic** | 0.10% | **Negative modeled value:** 20.56% review friction costs more than prevented fraud |
+| **Active Campaign** | 2.00% | **Positive modeled value:** Fraud prevention savings absorb review friction costs |
+| **Higher-Loss Merchant** | 0.50% | **Positive modeled value:** High fraud severity lowers break-even prevalence to 0.24% |
+
+> **High attack recall can still be economically harmful if legitimate-customer friction costs more than the fraud losses prevented.**
+
+*Disclaimer: All financial figures are hypothetical merchant scenario parameters designed to evaluate economic trade-offs. They are not Razorpay financial data, observed merchant savings, or guarantees.*
+
+**[Full economic formulas and derivations → reports/phase_4d_economic_scenario_analysis.md](reports/phase_4d_economic_scenario_analysis.md)**
+
+---
+
+## Razorpay Integration
+
+Sentinel integrates directly with the Razorpay API:
+
+- [x] **Pre-Authorization Gating:** Only an `ALLOW` decision permits the backend to call `POST https://api.razorpay.com/v1/orders`.
+- [x] **Order Suppression:** `REVIEW` and `BLOCK` decisions suppress order creation and return HTTP 409 (`payment_order_not_allowed`).
+- [x] **Standard Checkout Modal:** Allowed orders pass `order_id` to the frontend, which launches the standard Razorpay checkout modal.
+- [x] **HMAC-SHA256 Signature Verification:** Webhooks delivered to `/api/webhooks/razorpay` are verified over the raw request payload using constant-time comparison (`hmac.compare_digest`).
+- [x] **Correlation & Deduplication:** Payments are linked to orders and original Sentinel precheck requests. Exact duplicate webhooks are processed idempotently.
+- [x] **Lifecycle Monotonicity:** Stale gateway events cannot move a terminal payment status backward.
+- [x] **Authoritative Gateway Boundary:** Browser callbacks are treated as non-authoritative; only signed webhooks update trusted history.
+
+*Tested strictly in Razorpay Test Mode; no real payment cards were charged.*
+
+**[Verified lifecycle evidence → reports/phase_5b_1_real_razorpay_failure_lifecycle.md](reports/phase_5b_1_real_razorpay_failure_lifecycle.md)**
+
+---
+
+## Reliability & Verification
+
+### Test Suite & Cryptographic Verifiers
+* **280 default Python tests passed.**
+* **262 expensive deterministic dataset-regeneration tests are maintained separately.**
+* **69 frontend tests passed.**
+* Both release and runtime v3.1 verifiers passed.
+
+### Local HTTP Benchmark Latency
+Sequential benchmarking across 500 local loopback `/api/precheck` HTTP requests (FastAPI + Pydantic + FeatureEngineV3 + Model v3.1 + SQLite WAL):
+* **Median (p50):** **33.83 ms** · **p95:** **110.73 ms** · **p99:** **183.19 ms** · **Errors:** **0 / 500 (0.0%)**<br>
+*(Local benchmark measurement; not a production SLA guarantee).*
+
+### Security & Architecture Safeguards
+* **Trusted History Boundary:** Unsigned direct history-injection routes were removed; live payment history can only be updated through verified gateway events.
+* **Constant-Time Verification:** Webhook signatures checked with `hmac.compare_digest` to prevent timing attacks.
+* **Restart Persistence:** Persisted counters and state versions reconstruct correctly from SQLite WAL after server restarts.
+
+---
+
+## Limitations
+
+Card-Testing Sentinel is an **evaluated Buildathon prototype**, not a certified production fraud platform:
+
+1. **Synthetic Evidence Only:** All machine learning performance metrics are derived from synthetic datasets and benchmarks; no live Razorpay production gateway traffic was evaluated.
+2. **Elevated Review Friction Under Distribution Shift:** Legitimate customer review friction reached 20.72% under shifted stress (25.30% in ordinary checkout).
+3. **Probability Calibration Drift:** Expected Calibration Error increased from 0.0214 to 0.1407 under distribution shift.
+4. **No Step-Up Challenge Flow:** The prototype suppresses order creation on `REVIEW`; an automated challenge mechanism (such as 3DS or SMS OTP) is not implemented.
+5. **Gateway Scope:** Razorpay integration is verified in **Test Mode** only; no real payment cards were processed.
+6. **Prototype Concurrency Architecture:** Persistence uses local SQLite WAL mode and an in-memory transition lock, suitable for single-instance evaluation but not distributed horizontal scaling.
+7. **No Production Multi-Tenancy:** Production authentication, merchant tenant isolation, distributed rate-limiting, and drift monitoring are not implemented.
+8. **Final System Status:** **`production_ready=false`** under declared evaluation governance.
+
+---
+
+## Quick Start
+
+### Prerequisites
+* Python 3.11+
+* Node.js 22.13.1+ (or LTS)
+* npm 10+
+
+### Local Setup
 
 ```bash
+# 1. Clone repository
 git clone https://github.com/nirajj12/Card-Testing-Sentinel.git
 cd Card-Testing-Sentinel
 
+# 2. Set up Python virtual environment
 python3.11 -m venv .venv
 source .venv/bin/activate
+
+# 3. Install pinned Python dependencies
 python -m pip install --upgrade pip==26.2.1 setuptools==84.0.0
 python -m pip install --no-deps -r requirements-runtime.lock
 python -m pip install --no-deps -r requirements-dev.lock
 python -m pip install --no-deps --no-build-isolation -e .
 
+# 4. Install frontend dependencies and build React bundle
 npm ci
 npm run build
 
-export CTS_HMAC_SECRET='replace-with-a-long-private-local-secret'
+# 5. Set local secret and start server
+export CTS_HMAC_SECRET='change-this-to-a-long-random-secret-for-local-use'
 python scripts/run_app.py
 ```
 
-Open `http://127.0.0.1:8000`. Keep `CTS_HMAC_SECRET` stable when reusing a
-persisted local database. Razorpay Test Mode additionally requires
-`RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, and `RAZORPAY_WEBHOOK_SECRET`; live-mode
-key IDs are rejected.
+Open **`http://127.0.0.1:8000`** in your browser to explore the interactive Sentinel interface.
 
-### API summary
+*(Optional)* For real Razorpay Test Mode checkout, provide your test credentials:
+```bash
+export RAZORPAY_KEY_ID='rzp_test_...'
+export RAZORPAY_KEY_SECRET='...'
+export RAZORPAY_WEBHOOK_SECRET='...'
+```
 
-| Method | Route | Purpose |
-|---|---|---|
-| `GET` | `/health/live` | Process liveness |
-| `GET` | `/health/ready` | Active runtime and artifact readiness |
-| `GET` | `/api/system` | Runtime, model, policy, evaluation, and gateway status |
-| `POST` | `/api/precheck` | Persist a pre-authorization decision |
-| `POST` | `/api/razorpay/orders` | Create a Test Mode order for `ALLOW` only |
-| `POST` | `/api/razorpay/payments/verify` | Verify Standard Checkout payment signature |
-| `POST` | `/api/webhooks/razorpay` | Verify and apply a Razorpay webhook |
-| `GET` | `/api/activity/recent` | Read sanitized recent activity |
-| `GET` | `/api/metrics/blind` | Read frozen historical evaluation aggregates |
-
-The [API guide](docs/api.md) documents request contracts, state transitions, and
-read-only runtime views.
-
-## Docker
-
-The current Dockerfile uses a Node 22.13.1 Alpine build stage to install locked
-frontend dependencies and compile the React bundle. A Python 3.11.15 slim
-runtime stage installs `requirements-runtime.lock`, packages the application,
-copies the compiled frontend, runs as the non-root `sentinel` user, exposes port
-8000, declares `/app/data/runtime` as a volume, and checks `/health/ready`.
+<details>
+<summary><strong>Docker setup</strong></summary>
 
 ```bash
 docker build -t card-testing-sentinel .
-docker run --rm \
-  -p 8000:8000 \
-  -e CTS_HMAC_SECRET='replace-with-a-long-private-local-secret' \
+docker run --rm -p 8000:8000 \
+  -e CTS_HMAC_SECRET='change-this-to-a-long-random-secret-for-local-use' \
   -v card_testing_state:/app/data/runtime \
   card-testing-sentinel
 ```
 
-This describes the repository's container packaging; it is not a claim of
-production deployment or production readiness.
+</details>
 
-## How to verify the project yourself
+### Run Tests & Verifiers
 
 ```bash
-ruff format --check .
-ruff check .
-npm ci
-npm run lint
+# Run unit and integration test suite
+pytest
+
+# Run frontend tests
 npm test
-npm run build
-pytest --cov-report=term-missing --cov-fail-under=80
+
+# Run cryptographic verifiers
 python scripts/verify_release.py
 python scripts/verify_runtime_v3_1.py
 ```
 
-Final validated state:
+---
 
-| Check | Result |
+## Documentation Directory
+
+| Document | Purpose |
 |---|---|
-| Python | **280 passed** |
-| Frontend | **69 passed** — 31 legacy + 38 React |
-| Frontend lint | **PASS** |
-| Frontend production build | **PASS** |
-| Historical release verifier | **PASS** |
-| Active v3.1 runtime verifier | **PASS** |
+| **[Dataset & Feature Methodology](docs/dataset.md)** | Why synthetic data was necessary, Dataset v4.1 design, `leakage_group_id` partition safety, and 44 causal feature families. |
+| **[Evaluation & Technical Evidence](reports/README.md)** | The complete evaluation narrative: Model v2 Blind failure, rejected Model v3, Model v3.1 results, PBRSS stress benchmark, and full report index. |
+| **[System Architecture](docs/architecture.md)** | Pre-authorization decision boundary, payment state machine, and webhook verification. |
+| **[API Specification](docs/api.md)** | Detailed endpoint request/response contracts, status codes, and error formats. |
+| **[External Dataset Assessment](docs/external_card_testing_dataset_assessment.md)** | Analysis of why common public fraud datasets are poorly suited to pre-authorization card testing. |
 
-The two verifiers serve different integrity boundaries:
+---
 
-- `verify_release.py` protects frozen historical Model v2 and Blind v2 evidence;
-- `verify_runtime_v3_1.py` first preserves that historical boundary, then
-  validates the active 44-feature Model v3.1 runtime and PBRSS-v1 artifacts.
+## Project Structure
 
-Slow regeneration, training, and ignored-data-dependent checks are retained
-behind the `slow` pytest marker and are not clean-clone release gates.
+```text
+Card-Testing-Sentinel/
+├── frontend/                     React 18 TypeScript application
+├── src/card_testing_sentinel/    Core runtime (FastAPI, feature engine, ML, policy)
+│   ├── api/                      REST endpoints and webhook routes
+│   ├── features/                 Causal feature extractors (v3.1)
+│   ├── ml/                       Model inference and calibration
+│   ├── policy/                   Policy v2 decision logic
+│   └── service.py                RiskService orchestration & persistence
+├── configs/                      Versioned contracts (features, datasets, runtime)
+├── artifacts/                    Committed frozen models, figures, and manifests
+├── pipelines/                    Deterministic dataset and training generators
+├── scripts/                      Release verifiers, audits, and latency benchmarks
+├── tests/                        Python unit, integration, and security test suites
+├── docs/                         Tier-2 architecture, dataset, and API documentation
+│   ├── dataset.md                Authoritative Final Dataset Story
+│   ├── architecture.md           Decision boundary and state model
+│   └── api.md                    REST API specifications
+├── reports/                      Tier-2 Final Evaluation Story and Technical Evidence Index
+│   └── README.md                 Evaluation journey and complete report directory
+└── archive/                      Quarantined historical experiments (rejected Model v3)
+```
 
-## Where Sentinel still fails
+---
 
-- **Synthetic evidence:** Development data and PBRSS-v1 are synthetic. PBRSS-v1
-  is a shifted stress suite, not a fresh independent blind benchmark or
-  production traffic.
-- **Earlier failure:** Historical Blind v2 was **WEAK — attack coverage existed,
-  but legitimate friction was unacceptable**.
-- **Current mixed result:** PBRSS-v1 was **MIXED — strong attack detection, but
-  too much legitimate review friction**.
-- **Customer friction:** PBRSS-v1 sent **20.72%** of legitimate devices to
-  `REVIEW+`, including **25.30%** in ordinary checkout.
-- **Calibration shift:** The probabilities learned on development traffic did
-  not transfer cleanly to the shifted stress traffic.
-- **Distributed attacks:** These remain difficult to hard-block consistently.
-- **Test Mode only:** No real card network was charged, and there is no
-  production traffic validation.
-- **Single-process state:** SQLite and the transition lock are not a distributed
-  storage design.
-- **Missing production controls:** Production authentication, tenant isolation,
-  distributed state, queue reconciliation, rate limiting, and drift monitoring
-  are not implemented.
+## Conclusion
 
-These constraints are why `production_ready` remains **false**.
+Card-Testing Sentinel demonstrates a straightforward payment-risk principle:
 
-## Want to verify the numbers?
-
-- [Dataset v4.1 audit](reports/phase_2_6_dataset_v4_1_audit.md)
-- [Model v3.1 development validation](reports/phase_2_6_model_v3_1_development.md)
-- [Model v3.1 ablations](reports/phase_2_6_model_v3_1_ablations.md)
-- [Blind v2 evaluation](reports/phase_13_blind_v2_evaluation_report.md)
-- [PBRSS-v1 one-score evaluation](reports/phase_3c_pbrss_v1_one_score_evaluation.md)
-- [Post-PBRSS diagnosis](reports/phase_4a_post_pbrss_diagnosis.md)
-- [Razorpay integration and local latency](reports/phase_4c_razorpay_e2e_latency.md)
-- [Real Razorpay failure lifecycle](reports/phase_5b_1_real_razorpay_failure_lifecycle.md)
-
-Additional technical evidence is available in [`reports/`](reports/).
-The [evidence index](reports/README.md) distinguishes current, supporting,
-historical frozen, and superseded reports.
-
-## Final project status
-
-| Field | Final status |
-|---|---|
-| Runtime | `postblind-v3.1-prototype-runtime` |
-| Model | `model-v3.1` |
-| Features | **44** |
-| Policy | Policy v2 |
-| Evaluation | PBRSS-v1 |
-| Conclusion | **MIXED — strong attack detection, but too much legitimate review friction** |
-| Production ready | **false** |
-
-Card-Testing Sentinel demonstrates how behavioral risk can be evaluated before
-payment authorization, enforced at Razorpay order creation, updated only from
-trusted historical gateway outcomes, and evaluated honestly under distribution
-shift.
+> **Make the risk decision before Razorpay order creation, learn only from authoritative gateway outcomes after payment lifecycle completion, and evaluate both fraud detection and legitimate-customer cost under distribution shift.**
