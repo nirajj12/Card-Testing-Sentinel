@@ -1,0 +1,33 @@
+{
+  "runtime": "postblind-v3.1-prototype-runtime",
+  "model": "model-v3.1",
+  "feature_count": 44,
+  "policy": "validation-selected-v2",
+  "environment": {
+    "os": "macOS-26.5.2-arm64-arm-64bit",
+    "python": "3.11.13",
+    "cpu": "arm",
+    "benchmark_mode": "local_non_production"
+  },
+  "methodology": {
+    "endpoint": "/api/precheck",
+    "timing": "client_monotonic_http_round_trip",
+    "execution": "sequential",
+    "fixtures": "synthetic_non_pbrss_unique_devices"
+  },
+  "warmup_requests": 50,
+  "measured_requests": 500,
+  "successes": 500,
+  "errors": 0,
+  "latency_ms": {
+    "mean": 45.91956508,
+    "median": 33.830895999999996,
+    "p50": 33.830895999999996,
+    "p90": 87.77998690000001,
+    "p95": 110.73206905000005,
+    "p99": 183.18813249999988,
+    "min": 7.913,
+    "max": 467.01175,
+    "stddev": 43.64273742437671
+  }
+}
