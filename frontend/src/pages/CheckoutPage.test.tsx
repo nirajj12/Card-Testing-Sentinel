@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { CartProvider } from "../state/CartContext";
 import { api } from "../lib/api";
 import { CheckoutPage } from "./CheckoutPage";
+import type { RazorpayOptions } from "../types";
 
 vi.mock("../lib/api", () => ({
   api: {
@@ -44,6 +45,7 @@ function mount() {
 describe("CheckoutPage activity hydration", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    sessionStorage.clear();
     document.querySelectorAll("script[data-razorpay-checkout]").forEach((node) => node.remove());
     delete window.Razorpay;
     vi.mocked(api.system).mockResolvedValue({ ready: true, model_status: "ready" });
@@ -101,6 +103,7 @@ describe("CheckoutPage activity hydration", () => {
     window.Razorpay = function RazorpayMock(value: typeof options) { options=value; return { open: vi.fn(), on: vi.fn() }; } as never;
     mount(); fireEvent.click(screen.getByRole("button", { name: /Pay securely with Razorpay/i }));
     await waitFor(() => expect(options).not.toBeNull());
+    await screen.findAllByText("ALLOW");
     await act(async () => {
       await options!.handler({
         razorpay_order_id: "order",
@@ -119,15 +122,94 @@ describe("CheckoutPage activity hydration", () => {
     allowPrecheck();
     vi.mocked(api.razorpayOrder).mockResolvedValue({ sentinel_request_id:"req",razorpay_order_id:"order",key_id:"key",amount:2499,currency:"INR",test_mode:true,activity_id:"activity" });
     let failureHandler: (() => void) | null = null;
-    window.Razorpay = function RazorpayMock() { return { open: vi.fn(), on: vi.fn((event: string, handler: () => void) => { if (event === "payment.failed") failureHandler = handler; }) }; } as never;
+    let dismissHandler: (() => void) | null = null;
+    window.Razorpay = function RazorpayMock(options: RazorpayOptions) {
+      dismissHandler = options.modal.ondismiss;
+      return { open: vi.fn(), on: vi.fn((event: string, handler: () => void) => { if (event === "payment.failed") failureHandler = handler; }) };
+    } as never;
     mount(); fireEvent.click(screen.getByRole("button", { name: /Pay securely with Razorpay/i }));
     await waitFor(() => expect(failureHandler).not.toBeNull());
     failureHandler!();
     await waitFor(() => {
-      expect(screen.getByText(/This browser event is not yet trusted history/i)).toBeVisible();
+      expect(screen.getByText(/waiting for the signed Razorpay server event/i)).toBeVisible();
     });
     expect(screen.getByText("Behavioral history").nextElementSibling).toHaveTextContent("AWAITING SIGNED WEBHOOK");
     expect(screen.queryByText("RECORDED DECLINED")).not.toBeInTheDocument();
+    expect(api.verifyPayment).not.toHaveBeenCalled();
+
+    vi.mocked(api.recentActivity).mockResolvedValue({
+      items: [{ ...persisted, id: "activity" }],
+    });
+    await act(async () => dismissHandler!());
+    expect(
+      await screen.findByText(/Verified decline recorded. A new Pay attempt/i),
+    ).toBeVisible();
+    expect(screen.getByText("Behavioral history").nextElementSibling).toHaveTextContent("RECORDED DECLINED");
+  });
+
+  it("disables Checkout-internal retry and creates a fresh protected attempt on the next Pay click", async () => {
+    vi.mocked(api.recentActivity).mockResolvedValue({ items: [] });
+    allowPrecheck();
+    vi.mocked(api.razorpayOrder).mockImplementation(async (payload) => {
+      const request = payload as { sentinel_request_id: string };
+      return {
+        sentinel_request_id: request.sentinel_request_id,
+        razorpay_order_id: `order-${request.sentinel_request_id}`,
+        key_id: "key",
+        amount: 2499,
+        currency: "INR",
+        test_mode: true,
+        activity_id: `activity-${request.sentinel_request_id}`,
+      };
+    });
+
+    const checkoutOptions: Array<{
+      retry: { enabled: boolean };
+      handler: RazorpayOptions["handler"];
+    }> = [];
+    let failureHandler: (() => void) | null = null;
+    window.Razorpay = function RazorpayMock(options: RazorpayOptions) {
+      checkoutOptions.push(options);
+      return {
+        open: vi.fn(),
+        on: vi.fn((event: string, handler: () => void) => {
+          if (event === "payment.failed") failureHandler = handler;
+        }),
+      };
+    } as never;
+
+    mount();
+    fireEvent.click(screen.getByRole("button", { name: /Pay securely with Razorpay/i }));
+    await waitFor(() => expect(checkoutOptions).toHaveLength(1));
+    expect(checkoutOptions[0].retry).toEqual({ enabled: false });
+
+    await act(async () => failureHandler!());
+    expect(api.precheck).toHaveBeenCalledTimes(1);
+    expect(api.razorpayOrder).toHaveBeenCalledTimes(1);
+
+    fireEvent.click(await screen.findByRole("button", { name: /Try payment again with Sentinel/i }));
+    await waitFor(() => expect(checkoutOptions).toHaveLength(2));
+    expect(api.precheck).toHaveBeenCalledTimes(2);
+    expect(api.razorpayOrder).toHaveBeenCalledTimes(2);
+
+    const first = vi.mocked(api.precheck).mock.calls[0][0] as Record<string, unknown>;
+    const second = vi.mocked(api.precheck).mock.calls[1][0] as Record<string, unknown>;
+    expect(second.request_id).not.toBe(first.request_id);
+    expect(second.event_id).not.toBe(first.event_id);
+    expect(second.device_id).toBe(first.device_id);
+    expect(second.session_id).toBe(first.session_id);
+    expect(first.event_sequence).toBe(1);
+    expect(second.event_sequence).toBe(2);
+
+    await act(async () => failureHandler!());
+    fireEvent.click(await screen.findByRole("button", { name: /Try payment again with Sentinel/i }));
+    await waitFor(() => expect(checkoutOptions).toHaveLength(3));
+    const third = vi.mocked(api.precheck).mock.calls[2][0] as Record<string, unknown>;
+    expect(third.request_id).not.toBe(second.request_id);
+    expect(third.event_id).not.toBe(second.event_id);
+    expect(third.device_id).toBe(first.device_id);
+    expect(third.session_id).toBe(first.session_id);
+    expect(third.event_sequence).toBe(3);
   });
 
   it("loads persisted activity again after the page is remounted", async () => {

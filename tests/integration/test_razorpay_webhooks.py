@@ -109,16 +109,18 @@ def test_invalid_signature_mutates_nothing(client):
 def test_failed_webhook_is_deduplicated_and_enters_next_feature_snapshot(client):
     _install(client)
     base = datetime.now(UTC) - timedelta(minutes=2)
-    _, order = _allowed_order(client, base=base)
+    first_request, order = _allowed_order(client, base=base)
+    repository = client.app.state.runtime.service.repository
+    original_evidence = repository.get_request(first_request["request_id"]).evidence_json
     body = _body("payment.failed", order["razorpay_order_id"], "pay_failed_1")
     first = _send(client, "evt-failed-1", body)
     duplicate = _send(client, "evt-failed-1", body)
     assert first.status_code == 200
     assert first.json()["history_status"] == "recorded_declined"
     assert duplicate.json()["duplicate"] is True
-    repository = client.app.state.runtime.service.repository
     assert repository.get_gateway_payment("pay_failed_1").status == "failed"
     assert len(repository.events) == 1
+    assert repository.get_request(first_request["request_id"]).evidence_json == original_evidence
 
     next_request = precheck_payload(2, base=datetime.now(UTC))
     next_response = client.post("/api/precheck", json=next_request)
@@ -159,6 +161,13 @@ def test_three_sequential_signed_failures_are_visible_to_the_next_precheck(clien
             ),
         )
         assert failure.status_code == 200
+
+    activity = repository.recent_activity(10)
+    razorpay_attempts = [row for row in activity if row["source"] == "razorpay_test"]
+    assert len(razorpay_attempts) == 3
+    assert len({row["id"] for row in razorpay_attempts}) == 3
+    assert all(row["payment_attempt_count"] == 1 for row in razorpay_attempts)
+    assert all(row["history_status"] == "recorded_declined" for row in razorpay_attempts)
 
     fourth = precheck_payload(4, base=anchor, amount=100.0)
     fourth["timestamp"] = (anchor + timedelta(minutes=20)).isoformat()

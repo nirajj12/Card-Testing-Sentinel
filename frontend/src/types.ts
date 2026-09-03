@@ -164,6 +164,7 @@ export type RazorpayOptions = {
   order_id: string;
   prefill: { email: string; contact: string };
   theme: { color: string };
+  retry: { enabled: boolean };
   handler: (payment: { razorpay_order_id: string; razorpay_payment_id: string; razorpay_signature: string }) => void | Promise<void>;
   modal: { ondismiss: () => void };
 };

@@ -1,5 +1,5 @@
 import { ArrowLeft, FlaskConical, Mail, Minus, Phone, Plus, ShieldCheck } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { ActivityFeed } from "../components/ActivityFeed";
 import { AttemptDrawer } from "../components/AttemptDrawer";
@@ -123,6 +123,7 @@ function checkoutButtonLabel(phase: PaymentPhase) {
   if (phase === "sentinel_evaluating") return "Sentinel is checking…";
   if (phase === "order_creating") return "Creating Razorpay order…";
   if (phase === "signature_verifying") return "Verifying Checkout response…";
+  if (phase === "failure") return "Try payment again with Sentinel";
   return "Pay securely with Razorpay";
 }
 
@@ -149,21 +150,32 @@ export function CheckoutPage() {
   const [selectedAttempt, setSelectedAttempt] = useState<ActivityAttempt | null>(null);
   const [replayOpen, setReplayOpen] = useState(Boolean(searchParams.get("demo")));
   const [system, setSystem] = useState<SystemStatus | null>(null);
+  const browserFailureReported = useRef(false);
 
-  const refreshActivities = useCallback(async () => {
+  const refreshActivities = useCallback(async (targetActivityId?: string | null) => {
     const result = await api.recentActivity<{ items: DurableActivity[] }>();
     const next = result.items.map((item, index) =>
       toActivityAttempt(item, index, result.items.length),
     );
     setActivities(next);
 
-    const current = currentActivityId
-      ? next.find((item) => item.id === currentActivityId)
+    const activityId = targetActivityId || currentActivityId;
+    const current = activityId
+      ? next.find((item) => item.id === activityId)
       : null;
-    if (!current) return;
+    if (!current?.razorpay_payment_status) return;
 
     setPaymentOutcome(current.razorpay_payment_status || null);
     setHistoryStatus(current.history_status || "not_recorded");
+    if (
+      current.razorpay_payment_status === "failed" &&
+      current.history_status === "recorded_declined"
+    ) {
+      setFailureContext("processor");
+      setError(
+        "Verified decline recorded. A new Pay attempt will be evaluated with this history.",
+      );
+    }
     const nextPhase = phaseForPaymentStatus(
       current.razorpay_payment_status,
       current.history_status,
@@ -189,6 +201,7 @@ export function CheckoutPage() {
   }
 
   function resetAttemptView() {
+    browserFailureReported.current = false;
     setPhase("idle");
     setProgress(0);
     setOperation(null);
@@ -255,18 +268,23 @@ export function CheckoutPage() {
     }
   }
 
-  function handleBrowserPaymentFailure() {
+  function handleBrowserPaymentFailure(activityId: string) {
+    browserFailureReported.current = true;
     setFailureContext("processor");
     setPaymentOutcome("failed_unverified");
     setHistoryStatus("awaiting_signed_webhook");
     setError(
-      "Razorpay Checkout reported a payment failure. This browser event is not yet trusted history; Sentinel is waiting for the signed server event.",
+      "Payment was declined. Sentinel is waiting for the signed Razorpay server event before using this result as behavioral history.",
     );
     setPhase("failure");
-    window.setTimeout(() => refreshActivities().catch(() => undefined), 800);
+    window.setTimeout(() => refreshActivities(activityId).catch(() => undefined), 800);
   }
 
-  function handleCheckoutDismissed() {
+  function handleCheckoutDismissed(activityId: string) {
+    if (browserFailureReported.current) {
+      refreshActivities(activityId).catch(() => undefined);
+      return;
+    }
     setFailureContext("checkout");
     setError("Checkout was closed before a verified payment completed.");
     setPhase("failure");
@@ -287,11 +305,12 @@ export function CheckoutPage() {
       order_id: order.razorpay_order_id,
       prefill: { email, contact },
       theme: { color: "#2864f0" },
+      retry: { enabled: false },
       handler: (payment) => verifyCheckoutResponse(payment, requestId, shopper),
-      modal: { ondismiss: handleCheckoutDismissed },
+      modal: { ondismiss: () => handleCheckoutDismissed(order.activity_id) },
     });
 
-    checkout.on("payment.failed", handleBrowserPaymentFailure);
+    checkout.on("payment.failed", () => handleBrowserPaymentFailure(order.activity_id));
     checkout.open();
     setCheckoutOpened(true);
     setPhase("checkout_open");
@@ -299,7 +318,7 @@ export function CheckoutPage() {
       sentinel_request_id: requestId,
       device_id: shopper.device,
       session_id: shopper.session,
-    }).then(() => refreshActivities()).catch(() => undefined);
+    }).then(() => refreshActivities(order.activity_id)).catch(() => undefined);
   }
 
   async function pay() {
@@ -340,16 +359,7 @@ export function CheckoutPage() {
       const nextOperation = normalizePrecheck(result);
       setOperation(nextOperation);
       setPhase("sentinel_decision");
-      addActivity({
-        id: requestId,
-        attempt: activities.length + 1,
-        amount,
-        currency: "INR",
-        timestamp,
-        requestId,
-        source: "razorpay_test",
-        operation: nextOperation,
-      });
+      refreshActivities().catch(() => undefined);
 
       if (result.decision !== "allow") {
         refreshActivities().catch(() => undefined);
