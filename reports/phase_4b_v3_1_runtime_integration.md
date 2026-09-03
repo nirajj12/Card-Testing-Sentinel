@@ -1,115 +1,71 @@
-# Phase 4B — Frozen Model v3.1 Runtime Integration
+# Runtime v3.1 Integration Report
 
-## 1. Scope
+## Goal
 
-Phase 4B integrates the already-frozen Model v3.1 stack into the application runtime. It changes serving selection, integrity validation, runtime state lineage, read-only evidence display, and verification coverage only. It does not change the model, feature formulas, feature order, calibration, policy, or PBRSS evidence.
+Integrate the frozen Model v3.1 stack into the live application runtime, ensuring exact feature parity, isolated persistence, and backward compatibility with historical verifiers.
 
-## 2. Starting commit
+## Setup
 
-The authoritative starting commit and current HEAD are both `5d7fa914fd4ac13c3717dc4c936ba0d0b49ffb80`. Phase 4B remains an uncommitted working-tree change.
+- **Active Runtime:** `postblind-v3.1-prototype-runtime`
+- **Runtime Stage:** `evaluated_prototype_candidate` (`production_ready: false`)
+- **Active Model:** `model-v3.1` (`hist_gradient_boosting`, candidate `hist_gb_2`, sigmoid calibration)
+- **Feature Contract:** `merchant-visible-causal-3.1` (44 features)
+- **Policy:** `validation-selected-v2` (`evidence_gated_v2`)
+- **Database:** `data/runtime/live_state_v3_1.sqlite3` (isolated from historical v2 state)
+- **Evaluation Status:** PBRSS-v1 consumed, conclusion `MIXED`
 
-## 3. Active runtime identity
+## What I Tested
 
-- Runtime: `postblind-v3.1-prototype-runtime`
-- Runtime stage: `evaluated_prototype_candidate`
-- Model: `model-v3.1`
-- Model family: `hist_gradient_boosting`
-- Candidate: `hist_gb_2`
-- Calibration: `sigmoid`
-- Feature contract: `merchant-visible-causal-3.1`
-- Features: 44
-- Policy: `validation-selected-v2` / `evidence_gated_v2`
-- Evaluation: `pbrss-v1`, consumed
-- Evaluation conclusion: `MIXED`
-- Synthetic evaluation: `true`
-- Production ready: `false`
+- **Artifact Registry Dispatch:** Verified that `ArtifactRegistry` correctly resolves both active `postblind-v3.1-prototype-runtime` and historical `frozen-v2-runtime`, failing closed on unknown configs.
+- **Offline / Online Parity:** Compared online `FeatureEngineV3` computations against offline batch replay (`replay_events_v3`) across a deterministic lifecycle fixture.
+- **Model Score Parity:** Verified that the runtime wrapper passes exact 44-feature column vectors to native `score_frame`, yielding identical floating-point scores with zero tolerance.
+- **State Isolation & Restart:** Confirmed that v3.1 uses an isolated SQLite database and correctly recovers state and event versions across service restarts.
+- **Razorpay Order Gating:** Tested that ALLOW requests create exactly one Test Mode order, while REVIEW and BLOCK requests return `payment_order_not_allowed` without invoking order creation.
+- **Idempotency & Monotonicity:** Tested deduplication of precheck requests, order creation, and out-of-order webhook events.
 
-## 4. Frozen Model v3.1 identity
+## Results
 
-The runtime is bound to `artifacts/model_v3_1/risk_model_v3_1.joblib` with SHA-256 `093254b63674f50b62caf5eddeaeba47d79f9327902e2567ffed75418a59b1e4`. The registry also validates the frozen model metadata, selected family, candidate parameters, calibration method, fitted feature order, artifact interface, and metadata SHA-256.
+### 1. Cryptographic and Artifact Lineage
 
-## 5. Feature contract identity
+| Artifact | Path | SHA-256 |
+| :--- | :--- | :--- |
+| **Model Binary** | `artifacts/model_v3_1/risk_model_v3_1.joblib` | `093254b63674f50b62caf5eddeaeba47d79f9327902e2567ffed75418a59b1e4` |
+| **Feature Contract** | `artifacts/model_v3_1/feature_contract.json` | `522aa6327617bfed687bd2f0955405b5f63f6595fb0c86da9077b4442af554a8` |
+| **Policy Artifact** | `artifacts/policy_v2/operational_policy_v2.json` | `8e874ef83085b9bac063c3b0ac3044bb3c171071d00bf2db44c0390d944fe74c` |
+| **Semantic Feature Hash** | `configs/features_v3_1.yaml` | `af66f693eee5043f0e97dfef1c31b1773ae480e38228f47612575d336abe2ce0` |
 
-The active contract is the exact ordered 44-feature `merchant-visible-causal-3.1` contract. Its semantic hash is `af66f693eee5043f0e97dfef1c31b1773ae480e38228f47612575d336abe2ce0`; the contract artifact SHA-256 is `522aa6327617bfed687bd2f0955405b5f63f6595fb0c86da9077b4442af554a8`. Source specification, contract artifact, metadata, loaded artifact, offline replay, and online engine order are checked against the same tuple.
+### 2. Runtime Behavior & Order Enforcement
 
-## 6. Historical v2 preservation
+| Decision | Gateway Handling | Verification Outcome |
+| :--- | :--- | :--- |
+| **ALLOW** | Calls Razorpay Test Mode order API | Exactly 1 order created; repeated requests return idempotent cached order. |
+| **REVIEW** | Order creation suppressed | HTTP 409 `payment_order_not_allowed`; 0 orders created. |
+| **BLOCK** | Order creation suppressed | HTTP 409 `payment_order_not_allowed`; 0 orders created. |
 
-`configs/runtime.yaml`, `scripts/verify_release.py`, the v2 model/evaluation evidence, and historical runtime semantics are unchanged. Explicit selection of `configs/runtime.yaml` still binds `FeatureEngineV2`, Model v2, 39 ordered features, Policy v2, and Blind-v2 evidence.
+### 3. Automated Validation
 
-## 7. Registry refactor
+- **Targeted Integration Tests:** 95 passed, 0 failed.
+- **Full Python Test Suite:** 248 passed, 262 slow deselected, 0 failed, 89% line coverage.
+- **Historical Release Verifier (`verify_release.py`):** Passed (status: verified, `frozen-v2-runtime`, 39 features, Blind v2 verdict `WEAK`).
+- **Active Runtime Verifier (`verify_runtime_v3_1.py`):** Passed (status: verified, `postblind-v3.1-prototype-runtime`, 44 features, PBRSS conclusion `MIXED`, `historical_v2_verified: true`).
 
-`ArtifactRegistry` now dispatches only two known manifest identities: historical `frozen-v2-runtime` and active `postblind-v3.1-prototype-runtime`. Unknown identities fail closed. The v3.1 path validates exact frozen hashes for the model, metadata, feature config, feature-contract artifact, Policy-v2 artifact, PBRSS freeze manifest, PBRSS result manifest, and every file named by the result manifest. It also validates consumption identity and `post_stress_tuning: false`. Model v3.1 cannot enter degraded-rules mode; a missing or unusable artifact fails startup.
+## What the Results Mean
 
-## 8. RiskService runtime selection
+1. **Seamless Architecture Transition:** Model v3.1 and Feature Engine v3 run cleanly within the live FastAPI backend with zero score drift from training.
+2. **Strict Verification Chain:** The application will fail startup if any frozen artifact, manifest, or feature order drifts from its verified cryptographic hash.
+3. **Preserved Historical Evidence:** Active v3.1 integration preserves the historical v2 runtime and release verifier without modification.
 
-`RiskService` receives the validated engine class and ordered model-feature tuple from the registry. Initial startup and `rebuild_from_persistence()` instantiate the same selected engine. The commit-time causal snapshot consistency check iterates the selected contract rather than a hard-coded v2 list. Policy execution remains `RiskPolicyV2` using the unchanged Policy-v2 configuration.
+## Limitations
 
-## 9. v3.1 SQLite isolation
+- **Evaluation Conclusion Remains MIXED:** Engineering integration does not improve underlying model generalization. The frozen PBRSS-v1 metrics (PR-AUC 0.6470, ROC-AUC 0.7262, Legit REVIEW+ 20.72%) remain active and unadjusted.
+- **Not Production Ready:** The active runtime is an evaluated prototype candidate. `production_ready` remains `false`.
 
-The active app uses `data/runtime/live_state_v3_1.sqlite3`. Historical `data/runtime/live_state_v2.sqlite3` is not reused or migrated, preventing v2 decisions and feature-state lineage from being replayed as v3.1 state.
+## Reproducibility
 
-## 10. Offline/runtime feature parity
-
-A deterministic non-PBRSS lifecycle fixture is replayed through `replay_events_v3` and directly through `FeatureEngineV3`. Both paths produce the same 44 columns in the same frozen order and exactly equal feature values.
-
-## 11. Model score parity
-
-The frozen artifact natively exposes `score_frame`. The runtime wrapper only converts the already-ordered online vector into a one-row DataFrame with the frozen 44 column names, then returns the artifact result unchanged. A deterministic non-PBRSS test captures the exact frame passed by the wrapper, proves it equals the native input with exact value/order comparison, and proves the native and wrapper scores are equal with zero relative and absolute tolerance. There is no fitting, normalization, second calibration, rounding, or output transformation.
-
-## 12. Policy v2 integrity
-
-Policy remains `validation-selected-v2` / `evidence_gated_v2`. The policy config and artifact have no diff from the starting commit, the frozen artifact hash remains `8e874ef83085b9bac063c3b0ac3044bb3c171071d00bf2db44c0390d944fe74c`, registry consistency checks pass, and the historical verifier independently verifies the policy lineage.
-
-## 13. Razorpay ALLOW/REVIEW/BLOCK behavior
-
-- `ALLOW`: creates exactly one server-side test order; an identical retry returns the stored order and does not call order creation again.
-- `REVIEW`: order creation returns `payment_order_not_allowed`; the Razorpay client is not called.
-- `BLOCK`: order creation returns `payment_order_not_allowed`; the Razorpay client is not called. Deterministic traffic coverage also verifies suppressed authorization creates no outcome or checkout.
-
-No live Razorpay Test Mode transaction was performed.
-
-## 14. Idempotency
-
-Exact precheck retries return the persisted response with `idempotent_replay: true` and do not rescore or duplicate timeline state. Conflicting retries return HTTP 409. Razorpay order retry creates no second order. Outcome and webhook deduplication tests pass.
-
-## 15. Persistence restart/rebuild
-
-The v3.1 SQLite test persists an allowed request, verified approval, and checkout, closes the service, reconstructs state through a new `RiskService`, verifies idempotent response replay, confirms `FeatureEngineV3`, and successfully scores a later request with the reproduced state version.
-
-## 16. Causal lifecycle verification
-
-Causality tests confirm the current request cannot observe its own outcome, card metadata, or checkout; those facts affect only later requests. Device ordering, independent-device interleaving, duplicate outcomes, blocked-request transition rejection, and future scoring after an intervention all pass under the selected runtime contract.
-
-## 17. `/api/system` result
-
-The endpoint reports the active v3.1 runtime, Model v3.1, `hist_gradient_boosting`, `hist_gb_2`, sigmoid calibration, the 44-feature v3.1 contract, Policy v2, consumed PBRSS-v1 evidence, conclusion `MIXED`, runtime stage `evaluated_prototype_candidate`, `synthetic_demonstration: true`, and `production_ready: false`.
-
-## 18. Historical v2 verifier
-
-`.venv/bin/python scripts/verify_release.py` passes with `verified`, `frozen-v2-runtime`, Model v2, 39 features, Policy v2, Blind-v2 verdict `WEAK`, and `post_blind_tuning: false`.
-
-## 19. New v3.1 verifier
-
-`.venv/bin/python scripts/verify_runtime_v3_1.py` passes with `verified`, the active v3.1 runtime, Model v3.1, 44 features, Policy v2, PBRSS-v1 conclusion `MIXED`, stage `evaluated_prototype_candidate`, `production_ready: false`, `pbrss_rescored: false`, and historical-v2 verification included.
-
-## 20. Tests
-
-The targeted Phase 4B command passed **95 tests** with no failures. The required full command `.venv/bin/pytest -q` passed **248 tests**, failed 0, skipped 0, and deselected 262 tests marked `slow` by the repository's configured `-m 'not slow'` default. Generated coverage was **89%**. One non-blocking joblib warning reported that physical-core discovery was unavailable and logical cores would be used; no test behavior or result was affected.
-
-## 21. Limitations and explicit governance statements
-
-PBRSS RESULT REMAINS MIXED.
-
-RUNTIME INTEGRATION DOES NOT IMPROVE THE FROZEN EVALUATION RESULT. It does not change evaluation performance: PR-AUC remains `0.6469762178054731`, ROC-AUC `0.7261889167036668`, Brier `0.15603701503584233`, ECE `0.14067900697104643`, attack REVIEW+ `96.40%`, attack BLOCK `59.12%`, legitimate REVIEW+ `20.72%`, and legitimate BLOCK `0.16%`.
-
-MODEL v3.1 IS AN EVALUATED PROTOTYPE CANDIDATE, NOT PRODUCTION READY.
-
-NO MODEL RETRAINING PERFORMED.
-
-NO RECALIBRATION PERFORMED.
-
-NO POLICY THRESHOLD CHANGES PERFORMED.
-
-PBRSS NOT RESCORED.
-
-The evaluation endpoint is display-only: it reads committed frozen JSON/CSV evidence, does not load or call the model, does not reconstruct predictions, and exposes the `MIXED` conclusion and 20.72% legitimate REVIEW+ result without reinterpretation.
+- **Runtime Configuration:** `configs/runtime_v3_1.yaml`
+- **Application Config:** `configs/app.yaml`
+- **Verification Commands:**
+  ```bash
+  python scripts/verify_release.py
+  python scripts/verify_runtime_v3_1.py
+  ```

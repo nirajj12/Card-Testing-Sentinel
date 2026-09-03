@@ -1,192 +1,86 @@
-# Phase 4D — Economic Scenario Analysis
+# Economic Scenario Analysis Report
 
-> **All monetary assumptions in this analysis are illustrative merchant-side scenario inputs. They are not measured Razorpay economics, production savings, or observed merchant losses.**
+## Goal
 
-This is a synthetic, device-level expected-value analysis. It is not production economics. PBRSS NOT RESCORED; Model v3.1 unchanged; Policy v2 unchanged; no post-evaluation tuning.
+Translate frozen PBRSS-v1 operating points into reproducible merchant-side economic scenarios to evaluate the trade-off between protected attack losses and legitimate-customer review friction under different attack prevalences.
 
-## 1. Starting point
+> **Note:** All monetary values in this report are illustrative merchant scenario parameters, not measured Razorpay financials, production savings, or empirical merchant losses.
 
-- Starting commit: `af01678b05e71661be2a5fc906d8c4213ec5baeb`
-- Starting working tree: clean
+## Setup
 
-## 2. Purpose
+- **Evaluation Basis:** Frozen device-level PBRSS-v1 performance
+- **Frozen Operating Rates:**
+  - Attack REVIEW+: **96.40%**
+  - Attack BLOCK: **59.12%**
+  - Legitimate REVIEW+: **20.72%**
+  - Legitimate BLOCK: **0.16%**
+  - Legitimate REVIEW-only (`REVIEW+ − BLOCK`): **20.56%**
+- **Model & Policy State:** Model v3.1, Policy v2 (both frozen; no rescoring or retuning)
+- **Population Baseline:** $N = 100,000$ modeled device checkout opportunities
 
-This analysis translates already-frozen PBRSS-v1 operating-point behavior into three reproducible merchant-side scenarios. It asks how the balance between surfaced attack value and legitimate-customer friction changes when attack prevalence or the assumed cost of a missed attack changes. It does not score a model or estimate observed merchant savings.
+## What I Tested
 
-## 3. Evaluation basis and unit of analysis
+- **Cost-Benefit Formula:** Modeled net economic value as protected attack losses minus review friction costs and false-block costs:
+  $$V_{\text{net}} = V_{\text{protected}} - C_{\text{review\_total}} - C_{\text{block\_total}}$$
+- **Quiet-Day Scenario:** Evaluated low-prevalence baseline traffic (0.10% attack prevalence).
+- **Active-Campaign Scenario:** Evaluated elevated attack traffic during an automated card-testing assault (2.00% attack prevalence).
+- **High-Value Merchant Scenario:** Evaluated traffic where individual checkout fraud incurs higher financial risk (0.50% prevalence, INR 10,000 attack cost).
+- **Break-Even Analysis:** Derived the exact attack prevalence threshold where Sentinel transitions from net-cost to net-positive value.
 
-The sole evaluation basis is the frozen synthetic PBRSS-v1 device-level result. The unit is a **device-level checkout actor**, also described as a device profile or risk opportunity. Fractional counts below are expected values, not partial people or observed transaction counts.
+## Results
 
-## 4. Frozen rates
+### 1. Scenario Summary ($N = 100,000$ Devices)
 
-| Frozen PBRSS-v1 metric | Rate |
-|---|---:|
-| Attack REVIEW+ | 96.40% |
-| Attack BLOCK | 59.12% |
-| Legitimate REVIEW+ | 20.72% |
-| Legitimate BLOCK | 0.16% |
-| Legitimate REVIEW-only (`REVIEW+ − BLOCK`) | 20.56% |
+| Metric | Quiet Day | Active Attack Campaign | High-Value Merchant |
+| :--- | ---:| ---:| ---:|
+| **Attack Prevalence ($p$)** | **0.10%** | **2.00%** | **0.50%** |
+| **Missed Attack Cost ($C_{\text{attack}}$)** | INR 2,000 | INR 2,000 | INR 10,000 |
+| **Review Cost ($C_{\text{review}}$)** | INR 40 | INR 40 | INR 100 |
+| **Hard Block Cost ($C_{\text{block}}$)** | INR 500 | INR 500 | INR 1,500 |
+| Attack Profiles ($A$) | 100.00 | 2,000.00 | 500.00 |
+| Legitimate Profiles ($L$) | 99,900.00 | 98,000.00 | 99,500.00 |
+| Attacks Surfaced ($A \times 0.964$) | 96.40 | 1,928.00 | 482.00 |
+| Attacks Missed ($A \times 0.036$) | 3.60 | 72.00 | 18.00 |
+| Legitimate REVIEW-Only ($L \times 0.2056$) | 20,539.44 | 20,148.80 | 20,457.20 |
+| Legitimate Hard-Blocks ($L \times 0.0016$) | 159.84 | 156.80 | 159.20 |
+| **Protected Attack Value** | **INR 192,800.00** | **INR 3,856,000.00** | **INR 4,820,000.00** |
+| No-Sentinel Baseline Cost | INR 200,000.00 | INR 4,000,000.00 | INR 5,000,000.00 |
+| Review Friction Cost | INR 821,577.60 | INR 805,952.00 | INR 2,045,720.00 |
+| False Hard-Block Cost | INR 79,920.00 | INR 78,400.00 | INR 238,800.00 |
+| Total Sentinel Residual Cost | INR 908,697.60 | INR 1,028,352.00 | INR 2,464,520.00 |
+| **Net Illustrative Value** | **INR −708,697.60** | **INR +2,971,648.00** | **INR +2,535,480.00** |
+| **Position vs. Break-Even** | **Below Break-Even** | **Above Break-Even** | **Above Break-Even** |
 
-The calculator validates these values exactly and rejects a configuration that changes them. Attack REVIEW+ is the specified surfaced-attack rate. Attack BLOCK is preserved as frozen evidence but is not substituted for REVIEW+ in the economic protection formula.
+### 2. Break-Even Prevalence Analysis
 
-## 5. Variables and formulas
+The break-even prevalence $p^*$ represents the exact attack rate where protected attack value equals total legitimate friction cost:
 
-For total device profiles `N`, attack prevalence `p`, missed-attack cost `C_attack`, genuine-review cost `C_review`, and genuine-hard-block cost `C_block`:
+$$p^* = \frac{0.2056 \cdot C_{\text{review}} + 0.0016 \cdot C_{\text{block}}}{0.964 \cdot C_{\text{attack}} + 0.2056 \cdot C_{\text{review}} + 0.0016 \cdot C_{\text{block}}}$$
 
-```text
-A = N × p
-L = N − A
-A_surface = A × 0.964
-A_missed = A × 0.036
-L_review_only = L × 0.2056
-L_block = L × 0.0016
+| Scenario | Modeled Prevalence | Break-Even Prevalence ($p^*$) | Viability Assessment |
+| :--- | ---:| ---:| :--- |
+| **Quiet Day** | 0.10% | **0.465869%** | Negative net value; friction exceeds attack losses |
+| **Active Campaign** | 2.00% | **0.465869%** | Positive net value (+INR 2.97M); high payoff during attacks |
+| **High-Value Merchant** | 0.50% | **0.237608%** | Positive net value (+INR 2.54M); high fraud cost justifies review friction |
 
-V_protected = A_surface × C_attack
-C_review_total = L_review_only × C_review
-C_block_total = L_block × C_block
-C_sentinel = A_missed × C_attack + C_review_total + C_block_total
-C_no_sentinel = A × C_attack
-V_net = C_no_sentinel − C_sentinel
-      = V_protected − C_review_total − C_block_total
-```
+## What the Results Mean
 
-All calculations retain floating-point precision until human-readable presentation.
+1. **Prevalence-Dependent Viability:** The economic utility of Sentinel depends directly on the threat environment. During low-prevalence quiet days (0.10%), 20.56% review friction causes negative net value (-INR 708,698).
+2. **High Value During Attack Waves:** When card testing surges (2.00% prevalence), detecting 96.40% of attack attempts saves INR 3.86M in fraud losses, easily absorbing review friction costs and delivering +INR 2.97M in net value.
+3. **High-Ticket Protection:** For merchants with high fraud consequences, the break-even threshold drops to 0.24%, making fraud prevention economically justified even under elevated review rates.
 
-## 6. Quiet-day scenario
+## Limitations
 
-Assumptions: 100,000 device profiles, 0.10% attack prevalence, INR 2,000 missed-attack cost, INR 40 genuine-review cost, and INR 500 genuine-block cost.
+- **Illustrative Model:** Cost parameters ($C_{\text{attack}}, C_{\text{review}}, C_{\text{block}}$) are hypothetical merchant inputs, not measured gateway data.
+- **Fixed Friction Multipliers:** Calculations assume static scalar review costs and do not model manual review queue bottlenecks or customer drop-off dynamics.
+- **Not a Production Savings Guarantee:** Positive net values depend on scenario assumptions and do not constitute a financial guarantee for real merchants.
 
-| Result | Expected value |
-|---|---:|
-| Attack profiles | 100.00 |
-| Legitimate profiles | 99,900.00 |
-| Attack surfaced | 96.40 |
-| Attack missed | 3.60 |
-| Legitimate REVIEW-only | 20,539.44 |
-| Legitimate hard-block | 159.84 |
-| Protected attack value | INR 192,800.00 |
-| No-Sentinel attack cost | INR 200,000.00 |
-| Sentinel missed-attack cost | INR 7,200.00 |
-| Review-friction cost | INR 821,577.60 |
-| False-block cost | INR 79,920.00 |
-| Total Sentinel cost | INR 908,697.60 |
-| Net illustrative value | **INR −708,697.60** |
+## Reproducibility
 
-This scenario is below break-even. Under these assumptions, expected legitimate-customer friction dominates the protected attack value.
-
-## 7. Active-attack-campaign scenario
-
-Assumptions: 100,000 device profiles, 2.00% attack prevalence, INR 2,000 missed-attack cost, INR 40 genuine-review cost, and INR 500 genuine-block cost.
-
-| Result | Expected value |
-|---|---:|
-| Attack profiles | 2,000.00 |
-| Legitimate profiles | 98,000.00 |
-| Attack surfaced | 1,928.00 |
-| Attack missed | 72.00 |
-| Legitimate REVIEW-only | 20,148.80 |
-| Legitimate hard-block | 156.80 |
-| Protected attack value | INR 3,856,000.00 |
-| No-Sentinel attack cost | INR 4,000,000.00 |
-| Sentinel missed-attack cost | INR 144,000.00 |
-| Review-friction cost | INR 805,952.00 |
-| False-block cost | INR 78,400.00 |
-| Total Sentinel cost | INR 1,028,352.00 |
-| Net illustrative value | **INR 2,971,648.00** |
-
-This scenario is above break-even. Under these assumptions, the higher concentration of attack profiles makes the frozen operating point economically useful despite legitimate-profile friction.
-
-## 8. High-value-merchant scenario
-
-Assumptions: 100,000 device profiles, 0.50% attack prevalence, INR 10,000 missed-attack cost, INR 100 genuine-review cost, and INR 1,500 genuine-block cost.
-
-| Result | Expected value |
-|---|---:|
-| Attack profiles | 500.00 |
-| Legitimate profiles | 99,500.00 |
-| Attack surfaced | 482.00 |
-| Attack missed | 18.00 |
-| Legitimate REVIEW-only | 20,457.20 |
-| Legitimate hard-block | 159.20 |
-| Protected attack value | INR 4,820,000.00 |
-| No-Sentinel attack cost | INR 5,000,000.00 |
-| Sentinel missed-attack cost | INR 180,000.00 |
-| Review-friction cost | INR 2,045,720.00 |
-| False-block cost | INR 238,800.00 |
-| Total Sentinel cost | INR 2,464,520.00 |
-| Net illustrative value | **INR 2,535,480.00** |
-
-This scenario is above break-even. Under these inputs, a higher assumed cost per missed attack can justify greater review and hard-block friction.
-
-## 9. Break-even prevalence
-
-The exact implemented formula is:
-
-```text
-legit_friction_per_legit = 0.2056 × C_review + 0.0016 × C_block
-attack_protection_per_attack = 0.964 × C_attack
-
-p_break_even = legit_friction_per_legit
-               / (attack_protection_per_attack + legit_friction_per_legit)
-```
-
-| Scenario | Break-even prevalence | Actual prevalence | Position |
-|---|---:|---:|---|
-| Quiet day | 0.465869% | 0.10% | Below |
-| Active attack campaign | 0.465869% | 2.00% | Above |
-| High-value merchant | 0.237608% | 0.50% | Above |
-
-The test suite verifies the formula algebraically and substitutes the calculated prevalence back into the full scenario, where net value is numerically zero within floating-point tolerance.
-
-## 10. No-Sentinel baseline
-
-The only primary baseline assumes that every modeled attack profile proceeds without Sentinel intervention. Its cost is `A × C_attack`: INR 200,000 for quiet day, INR 4,000,000 for active attack campaign, and INR 5,000,000 for high-value merchant. No competitor behavior or economics are invented.
-
-## 11. Interpretation
-
-The same frozen fraud-control policy can be economically unattractive in low-risk traffic and valuable during active card-testing or when missed attacks are expensive. Under these illustrative assumptions, Sentinel has negative estimated net value on the quiet day and positive estimated net value in the active-campaign and high-value scenarios.
-
-These comparisons expose the operating-point trade-off: high attack surfacing can protect more expected value as prevalence or attack cost rises, while the 20.56% genuine REVIEW-only rate creates substantial friction when attacks are scarce.
-
-## 12. Limitations
-
-- Monetary inputs are illustrative merchant assumptions, not measured Razorpay economics.
-- PBRSS-v1 is a synthetic evaluation basis, not production traffic.
-- Results apply to device profiles and expected-value opportunities, not transaction-level observations.
-- REVIEW friction and hard-block costs are simplified scalar assumptions.
-- Attack profiles are assumed to incur the full specified cost if not surfaced.
-- The calculation does not model adaptation, recovery, manual-review capacity, latency, conversion heterogeneity, or uncertainty intervals.
-- Positive estimated net value is scenario-dependent and is not a claim that Sentinel saves merchants money.
-- `production_ready` remains false; this is not production economics.
-
-## 13. Reproducibility and architecture
-
-`configs/economic_scenarios.yaml` contains the frozen rates and scenario inputs. `scripts/run_economic_scenarios.py` validates the contract, performs deterministic arithmetic, and writes stable, key-sorted JSON to `artifacts/economics/phase_4d_economic_scenarios.json`.
-
-Run:
-
-```bash
-.venv/bin/python scripts/run_economic_scenarios.py
-```
-
-The output contains no timestamp, random value, machine-dependent field, model score, or regenerated evaluation result. A unit test verifies byte-for-byte deterministic output.
-
-## 14. Scoring and frozen-evidence boundary
-
-The economic script imports only Python standard-library modules and PyYAML. It does not import the application package, model loader, model artifact, FeatureEngine, RiskService, NumPy, pandas, joblib, or scikit-learn. A static AST guard test enforces this boundary.
-
-PBRSS NOT RESCORED. Model v3.1 unchanged. Policy v2 unchanged. No retraining, recalibration, threshold adjustment, policy modification, runtime modification, or post-evaluation tuning was performed.
-
-## 15. Tests and verifiers
-
-- Targeted economic tests: 18 passed
-- Economic-script lint: passed
-- Historical frozen-release verifier: passed (`frozen-v2-runtime`, 39 features,
-  blind-v2 verdict `WEAK`, `post_blind_tuning: false`)
-- Model v3.1 runtime verifier: passed (`postblind-v3.1-prototype-runtime`, 44
-  features, PBRSS-v1 conclusion `MIXED`, `pbrss_rescored: false`,
-  `production_ready: false`)
-- Full repository test suite: 267 passed, 262 deselected, one non-blocking
-  joblib physical-core discovery warning, 89% coverage
-- Frozen artifact, source, README, and frontend integrity: unchanged
-- `git diff --check`: passed
+- **Scenario Configuration:** `configs/economic_scenarios.yaml`
+- **Execution Script:**
+  ```bash
+  python scripts/run_economic_scenarios.py
+  ```
+- **Generated Artifact:** `artifacts/economics/phase_4d_economic_scenarios.json`
+- **Unit Tests:** `tests/unit/test_phase_4d_economics.py` (18 tests passed)
