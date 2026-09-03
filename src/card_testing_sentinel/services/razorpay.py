@@ -50,6 +50,84 @@ PAYMENT_STATE_TRANSITIONS = {
     "paid": {"paid"},
 }
 
+SUPPORTED_PAYMENT_METHODS = {"card", "upi", "netbanking", "wallet"}
+CARD_NETWORKS = {
+    "visa": "visa",
+    "mastercard": "mastercard",
+    "amex": "amex",
+    "americanexpress": "amex",
+    "rupay": "rupay",
+    "diners": "diners",
+    "dinersclub": "diners",
+}
+CARD_TYPES = {"credit", "debit", "prepaid", "unknown"}
+FAILURE_REASONS = {
+    "generic_decline": "generic_decline",
+    "payment_failed": "generic_decline",
+    "insufficient_funds": "insufficient_funds",
+    "do_not_honor": "do_not_honor",
+    "card_declined": "card_declined",
+    "authentication_failed": "authentication_failed",
+    "international_blocked": "international_blocked",
+    "international_transaction_not_allowed": "international_blocked",
+}
+
+
+def _trusted_payment_metadata(payment: dict) -> dict:
+    """Project safe, optional history from a signed Razorpay payment entity."""
+    method_value = payment.get("method")
+    method = (
+        method_value.strip().lower()
+        if isinstance(method_value, str)
+        and method_value.strip().lower() in SUPPORTED_PAYMENT_METHODS
+        else None
+    )
+    metadata: dict = {}
+    if method is not None:
+        metadata["payment_method"] = method
+
+    card_value = payment.get("card")
+    card = card_value if method == "card" and isinstance(card_value, dict) else {}
+    last4 = card.get("last4")
+    if (
+        isinstance(last4, str)
+        and len(last4) == 4
+        and last4.isascii()
+        and last4.isdigit()
+    ):
+        metadata["card_last4"] = last4
+
+    network_value = card.get("network")
+    if isinstance(network_value, str) and network_value.strip():
+        network_key = "".join(
+            character for character in network_value.lower() if character.isalnum()
+        )
+        metadata["card_network"] = CARD_NETWORKS.get(network_key, "other")
+
+    type_value = card.get("type")
+    if isinstance(type_value, str) and type_value.strip():
+        card_type = type_value.strip().lower()
+        metadata["card_type"] = card_type if card_type in CARD_TYPES else "unknown"
+
+    issuer_value = card.get("issuer")
+    if isinstance(issuer_value, str):
+        issuer = issuer_value.strip()
+        if 0 < len(issuer) <= 64:
+            metadata["card_issuer"] = issuer
+
+    international = payment.get("international")
+    if not isinstance(international, bool):
+        international = card.get("international")
+    if isinstance(international, bool):
+        metadata["international"] = international
+    return metadata
+
+
+def _trusted_failure_reason(payment: dict) -> str:
+    value = payment.get("error_reason")
+    key = value.strip().lower() if isinstance(value, str) else ""
+    return FAILURE_REASONS.get(key, "generic_decline")
+
 
 @dataclass(frozen=True)
 class RazorpayCredentials:
@@ -428,6 +506,7 @@ class RazorpayCheckoutService:
         outcome = self.repository.get_event_for_request(
             order.sentinel_request_id, "authorization_outcome"
         )
+        trusted_metadata = _trusted_payment_metadata(payment)
         if status == "failed" and outcome is None:
             key = hashlib.sha256(order.sentinel_request_id.encode()).hexdigest()[:24]
             await self.risk_service.trusted_gateway_outcome(
@@ -435,7 +514,8 @@ class RazorpayCheckoutService:
                 event_id=f"rzp_outcome_{key}",
                 timestamp=now,
                 authorization_result="declined",
-                failure_reason="generic_decline",
+                failure_reason=_trusted_failure_reason(payment),
+                **trusted_metadata,
             )
             history_status = "recorded_declined"
         elif status in {"captured", "paid"} and outcome is None:
@@ -445,6 +525,7 @@ class RazorpayCheckoutService:
                 event_id=f"rzp_outcome_{key}",
                 timestamp=now,
                 authorization_result="approved",
+                **trusted_metadata,
             )
             await self.risk_service.trusted_gateway_checkout(
                 request_id=order.sentinel_request_id,

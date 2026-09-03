@@ -253,6 +253,12 @@ class RiskService:
         timestamp: datetime,
         authorization_result: str,
         failure_reason: str | None = None,
+        payment_method: str | None = None,
+        card_last4: str | None = None,
+        card_network: str | None = None,
+        card_type: str | None = None,
+        card_issuer: str | None = None,
+        international: bool | None = None,
     ) -> TransitionResponse:
         """Record an already-authenticated gateway result using stored hashes.
 
@@ -276,6 +282,21 @@ class RiskService:
             }
             if failure_reason is not None:
                 payload["failure_reason"] = failure_reason
+            optional_metadata = {
+                "payment_method": payment_method,
+                "card_last4": card_last4,
+                "card_network": card_network,
+                "card_type": card_type,
+                "card_issuer": card_issuer,
+                "international": international,
+            }
+            payload.update(
+                {
+                    key: value
+                    for key, value in optional_metadata.items()
+                    if value is not None
+                }
+            )
             return self._transition_payload(payload, "authorization_outcome")
 
     async def trusted_gateway_checkout(
