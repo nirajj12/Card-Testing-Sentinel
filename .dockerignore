@@ -13,6 +13,5 @@ artifacts/development
 tests
 pipelines
 docs
-reports
 logs
 mlruns
