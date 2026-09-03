@@ -78,6 +78,7 @@ describe("CheckoutPage activity hydration", () => {
     window.Razorpay = function RazorpayMock(value: typeof options) { options=value; return { open: vi.fn(), on: vi.fn() }; } as never;
     mount(); fireEvent.click(screen.getByRole("button", { name: /Pay securely with Razorpay/i }));
     await waitFor(() => expect(options).not.toBeNull());
+    await screen.findAllByText("ALLOW");
     await act(async () => {
       await options!.handler({
         razorpay_order_id: "order",

@@ -18,4 +18,11 @@ describe("HowItWorksPage", () => {
     expect(screen.getByRole("tab", { name: "Difficult genuine retry" })).toHaveAttribute("aria-selected", "true");
     expect(screen.getByText("Genuine failure can resemble abuse.")).toBeInTheDocument();
   });
+
+  it("uses the active signal count and keeps decision semantics bounded", () => {
+    render(<HowItWorksPage/>);
+    expect(screen.getByText("Sentinel constructs 44 ordered behavioral signals")).toBeVisible();
+    expect(screen.getByText("ALLOW permits Razorpay order creation")).toBeVisible();
+    expect(screen.getByText(/payment authorization has not happened yet/i)).toBeVisible();
+  });
 });

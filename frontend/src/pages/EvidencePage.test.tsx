@@ -1,26 +1,94 @@
-import { render, screen, waitFor } from "@testing-library/react";
-import { afterEach, describe, expect, it, vi } from "vitest";
-import { api } from "../lib/api";
-import type { BlindMetrics } from "../types";
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
+import { render, screen } from "@testing-library/react";
+import { describe, expect, it } from "vitest";
+import { publicEvidence } from "../data/publicEvidence";
 import { EvidencePage } from "./EvidencePage";
 
-const fixture: BlindMetrics = {
-  status: "available", source: "published.json", label: "evaluation", blind_version: "blind", active_runtime_version: "current", model_version: "model", policy_version: "policy", verdict: "NO_GO", consumed: true,
-  active_device_counts: { attack: 40, legitimate: 60 }, headline: { attack_intervention_rate: .7123, attack_block_rate: .521, legitimate_intervention_rate: .234, legitimate_block_rate: .102 },
-  model_metrics: { pr_auc: .654321, roc_auc: .765432, brier: .2, ece: .1 }, policy_metrics: { attack_review_or_higher_rate: .7123, attack_block_rate: .521, legitimate_review_or_higher_rate: .234, legitimate_block_rate: .102 },
-  operating_targets: { detect_attack: "PASS", protect_legitimate: "FAIL" }, detection_by_attempt: { "1": .2, "3": .7 }, scenario_metrics: [],
-  limitations: { hardest_attacks: ["patient_attacker"], highest_friction: ["normal_bad_luck"], summary: "Meaningful friction remains." }, historical_evidence: { version: "older", source: "old.json", comparable_to_blind_v2: false }, replay: { status: "not_packaged", reason: "Replay not packaged.", missing_artifact: "x" }, disclosure: "Synthetic evidence only."
-};
-
 describe("EvidencePage", () => {
-  afterEach(() => vi.restoreAllMocks());
-  it("renders exact API-backed metrics, disclaimer, and collapsed technical details", async () => {
-    vi.spyOn(api, "blindMetrics").mockResolvedValue(fixture);
-    render(<EvidencePage/>);
-    await waitFor(() => expect(screen.getAllByText("71.23%").length).toBeGreaterThan(0));
-    expect(screen.getByText("Synthetic evidence only.")).toBeInTheDocument();
-    const summary = screen.getByText("Technical details");
-    expect(summary.closest("details")).not.toHaveAttribute("open");
-    expect(screen.getByText("0.654321")).toBeInTheDocument();
+  it("shows the exact public headline metrics and defines REVIEW+", () => {
+    render(<EvidencePage />);
+    expect(screen.getByText("96.4%", { selector: ".results-metric-grid strong" })).toBeVisible();
+    expect(screen.getByText("60.8%", { selector: ".results-metric-grid strong" })).toBeVisible();
+    expect(screen.getByText("20.72%", { selector: ".results-metric-grid strong" })).toBeVisible();
+    expect(screen.getByText("0.16%", { selector: ".results-metric-grid strong" })).toBeVisible();
+    expect(screen.getByText("What REVIEW+ means")).toBeVisible();
+    expect(screen.getByText(/REVIEW\+ is the intervention class: REVIEW or BLOCK/)).toBeVisible();
+  });
+
+  it("renders attack, delay, and genuine-friction values without inventing attempt 4", () => {
+    render(<EvidencePage />);
+    expect(screen.getByRole("img", { name: /Stealth low-amount attack.*100%/ })).toBeVisible();
+    expect(screen.getByRole("img", { name: /Hybrid credential probe.*60.8%/ })).toBeVisible();
+    expect(screen.getByRole("img", { name: /Mixed-card probe.*44.93%/ })).toBeVisible();
+    expect(screen.getByRole("img", { name: /Attempt 3: 92.16% surfaced/ })).toBeVisible();
+    expect(screen.queryByText("Attempt 4")).not.toBeInTheDocument();
+    expect(screen.getByRole("img", { name: /Charity spike.*0%/ })).toBeVisible();
+    expect(screen.getByRole("img", { name: /B2B corporate-card traffic.*7.2%/ })).toBeVisible();
+    expect(screen.getByRole("img", { name: /Ordinary checkout.*25.3%/ })).toBeVisible();
+  });
+
+  it("presents strengths and limitations without contradicting the stealth result", () => {
+    render(<EvidencePage />);
+    const improvement = screen.getByText("What needs improvement").closest("article");
+    expect(improvement).toHaveTextContent("20.72% overall legitimate REVIEW+ friction");
+    expect(improvement).toHaveTextContent("Ordinary checkout reached 25.3% intervention");
+    expect(improvement).not.toHaveTextContent("Stealth low-amount attack");
+    expect(screen.getByText("Current limitation")).toBeVisible();
+  });
+
+  it("uses accurate public runtime, Razorpay, webhook, and economic language", () => {
+    render(<EvidencePage />);
+    expect(screen.getByText("Local non-production latency; not production Razorpay latency.")).toBeVisible();
+    expect(screen.getByText("Razorpay Test Mode verified")).toBeVisible();
+    expect(screen.getByText("ALLOW created a test order")).toBeVisible();
+    expect(screen.getByText("Signed webhook handling verified locally.")).toBeVisible();
+    expect(screen.getByText(/not measured Razorpay economics, observed savings/)).toBeVisible();
+  });
+
+  it("does not expose internal development or artifact terminology", () => {
+    const { container } = render(<EvidencePage />);
+    const visible = container.textContent || "";
+    expect(visible).not.toMatch(/PBRSS|Model v(?:1|2|3)|Blind v|MIXED/);
+    expect(visible).not.toMatch(/artifact(?:s)?\//i);
+    expect(visible).not.toMatch(/\bSHA\b|freeze commit|post_blind|post_stress/i);
+  });
+
+  it("keeps centralized public values aligned with the frozen figure manifest", () => {
+    const manifestPath = resolve(
+      process.cwd(),
+      "artifacts/figures/figure_manifest.json",
+    );
+    const manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
+    const attack = manifest.figures.find(
+      (figure: { filename: string }) =>
+        figure.filename === "pbrss_scenario_performance.png",
+    );
+    const latency = manifest.figures.find(
+      (figure: { filename: string }) => figure.filename === "phase_4c_latency.png",
+    );
+    const economics = manifest.figures.find(
+      (figure: { filename: string }) =>
+        figure.filename === "phase_4d_economic_scenarios.png",
+    );
+
+    const attackByScenario = Object.fromEntries(
+      attack.metrics_used.map(
+        (row: { scenario: string; review_plus_pct: number }) =>
+          [row.scenario, row.review_plus_pct],
+      ),
+    );
+    expect(publicEvidence.attackScenarios.map((row) => row.reviewPlusPct)).toEqual([
+      attackByScenario.stealth_low_amount_drip,
+      attackByScenario.hybrid_credential_stuffing_probe,
+      attackByScenario.mixed_card_probe,
+    ]);
+    expect(publicEvidence.runtime.p50Ms).toBeCloseTo(latency.metrics_used.p50);
+    expect(publicEvidence.runtime.p95Ms).toBeCloseTo(latency.metrics_used.p95);
+    expect(publicEvidence.economics.map((row) => row.netValueInr)).toEqual([
+      economics.metrics_used.quiet_day,
+      economics.metrics_used.active_attack_campaign,
+      economics.metrics_used.high_value_merchant,
+    ]);
   });
 });

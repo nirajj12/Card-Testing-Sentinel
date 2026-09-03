@@ -1,5 +1,6 @@
 import { AlertTriangle, CheckCircle2, CreditCard, Eye, Gauge, GitBranch, History, Server, ShieldCheck, Shuffle, XCircle } from "lucide-react";
 import { useRef, useState } from "react";
+import { ACTIVE_FEATURE_COUNT } from "../data/publicEvidence";
 
 type Story = "normal" | "burst" | "retry";
 const storyOrder: Story[] = ["normal", "burst", "retry"];
@@ -8,7 +9,7 @@ const stories = {
   burst: { tab: "Card-testing burst", person: "Automated actor", heading: "Small attempts become a visible sequence.", intro: "An automated actor starts with ₹2 and ₹5 attempts and rapidly tries several protected card references.", outcome: "ALLOW → REVIEW → BLOCK", tone: "block", icon: Shuffle, signals: ["Attempt velocity rises", "Protected card references change", "Declines and session changes accumulate"], steps: ["The first attempt contains limited evidence", "Repeated attempts accumulate", "Card-reference diversity increases", "Declines and session changes add evidence", "The decision can progress from ALLOW to REVIEW and BLOCK", "REVIEW and BLOCK prevent Razorpay order creation for that attempt"] },
   retry: { tab: "Difficult genuine retry", person: "Priya", heading: "Genuine failure can resemble abuse.", intro: "Priya’s genuine card is failing because of a bank or network issue, so she retries several times.", outcome: "Possible REVIEW — more evidence is needed", tone: "review", icon: AlertTriangle, signals: ["Retry velocity increases", "Verified declines accumulate", "Intent remains difficult to distinguish"], steps: ["Priya is a genuine customer", "Repeated failures increase velocity and decline-history signals", "The pattern can resemble card testing", "Sentinel may interrupt the attempt", "Reducing this customer friction is a future improvement"] },
 } as const;
-const technical = [[CreditCard,"Customer clicks Pay"],[Server,"Merchant backend sends payment context"],[Gauge,"Sentinel constructs 39 ordered signals"],[ShieldCheck,"Risk model scores the attempt"],[GitBranch,"Policy returns a bounded decision"],[CheckCircle2,"ALLOW permits order creation"],[XCircle,"REVIEW and BLOCK stop before the order"],[History,"Verified outcomes update future history"]] as const;
+const technical = [[CreditCard,"Customer clicks Pay"],[Server,"Merchant backend sends payment context"],[Gauge,`Sentinel constructs ${ACTIVE_FEATURE_COUNT} ordered behavioral signals`],[ShieldCheck,"Risk model scores the attempt"],[GitBranch,"Policy returns a bounded decision"],[CheckCircle2,"ALLOW permits Razorpay order creation"],[XCircle,"REVIEW and BLOCK stop before order creation"],[History,"Verified outcomes update future history"]] as const;
 
 export function HowItWorksPage() {
   const [active, setActive] = useState<Story>("normal"); const tabs = useRef<Array<HTMLButtonElement | null>>([]);

@@ -25,6 +25,7 @@ describe("public navigation and home", () => {
     vi.stubGlobal("matchMedia", vi.fn().mockReturnValue({ matches: true, addEventListener: vi.fn(), removeEventListener: vi.fn() }));
     render(<MemoryRouter><LandingPage/></MemoryRouter>);
     expect(screen.getByRole("heading", { name: /Stop card testing/ })).toBeVisible();
-    expect(screen.getByText(/combines 39 behavioural signals/)).toBeVisible();
+    expect(screen.getByText(/44 merchant-visible behavioural signals/)).toBeVisible();
+    expect(screen.queryByText(/39 behavioural signals/i)).not.toBeInTheDocument();
   });
 });
