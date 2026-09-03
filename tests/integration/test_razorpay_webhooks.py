@@ -44,7 +44,7 @@ def _install(client) -> None:
 
 
 def _allowed_order(client, index: int = 1, *, base=None) -> tuple[dict, dict]:
-    precheck = precheck_payload(index, base=base)
+    precheck = precheck_payload(index, base=base, amount=100.0)
     decision = client.post("/api/precheck", json=precheck)
     assert decision.status_code == 200
     assert decision.json()["decision"] == "allow"

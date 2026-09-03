@@ -34,7 +34,9 @@ def forbid_protected_blind_row_reads(monkeypatch):
 
 @pytest.fixture(scope="session")
 def registry() -> ArtifactRegistry:
-    return ArtifactRegistry.load(ROOT)
+    return ArtifactRegistry.load(
+        ROOT, manifest_path=ROOT / "configs/runtime_v3_1.yaml"
+    )
 
 
 @pytest.fixture()

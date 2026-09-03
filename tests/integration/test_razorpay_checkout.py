@@ -5,6 +5,8 @@ import hmac
 from dataclasses import replace
 from datetime import UTC, datetime, timedelta
 
+import pytest
+
 from card_testing_sentinel.services.razorpay import (
     RazorpayCheckoutService,
     RazorpayClient,
@@ -56,7 +58,9 @@ def _order_payload(precheck: dict) -> dict:
 
 def test_allow_creates_one_server_side_test_order_and_exposes_no_secret(client):
     fake = _install_fake(client)
-    precheck = precheck_payload(base=datetime.now(UTC) - timedelta(minutes=1))
+    precheck = precheck_payload(
+        base=datetime.now(UTC) - timedelta(minutes=1), amount=100.0
+    )
     decision = client.post("/api/precheck", json=precheck).json()
     assert decision["decision"] == "allow"
 
@@ -65,7 +69,7 @@ def test_allow_creates_one_server_side_test_order_and_exposes_no_secret(client):
     body = first.json()
     assert body["key_id"] == "rzp_test_public_for_tests"
     assert body["test_mode"] is True
-    assert body["amount"] == 200
+    assert body["amount"] == 10000
     assert "secret" not in str(body).lower()
 
     second = client.post("/api/razorpay/orders", json=_order_payload(precheck))
@@ -76,7 +80,9 @@ def test_allow_creates_one_server_side_test_order_and_exposes_no_secret(client):
 
 def test_payment_signature_is_verified_without_claiming_capture(client):
     fake = _install_fake(client)
-    precheck = precheck_payload(base=datetime.now(UTC) - timedelta(minutes=1))
+    precheck = precheck_payload(
+        base=datetime.now(UTC) - timedelta(minutes=1), amount=100.0
+    )
     client.post("/api/precheck", json=precheck)
     order = client.post("/api/razorpay/orders", json=_order_payload(precheck)).json()
     payment_id = "pay_test_sentinel_123"
@@ -108,7 +114,9 @@ def test_payment_signature_is_verified_without_claiming_capture(client):
 
 def test_invalid_signature_records_nothing(client):
     _install_fake(client)
-    precheck = precheck_payload(base=datetime.now(UTC) - timedelta(minutes=1))
+    precheck = precheck_payload(
+        base=datetime.now(UTC) - timedelta(minutes=1), amount=100.0
+    )
     client.post("/api/precheck", json=precheck)
     order = client.post("/api/razorpay/orders", json=_order_payload(precheck)).json()
     response = client.post(
@@ -125,13 +133,14 @@ def test_invalid_signature_records_nothing(client):
     assert not client.app.state.runtime.service.repository.events
 
 
-def test_review_or_block_decision_cannot_create_order(client):
+@pytest.mark.parametrize("decision", ["review", "block"])
+def test_review_or_block_decision_cannot_create_order(client, decision):
     fake = _install_fake(client)
     precheck = precheck_payload(base=datetime.now(UTC) - timedelta(minutes=1))
     client.post("/api/precheck", json=precheck)
     repository = client.app.state.runtime.service.repository
     stored = repository.requests[precheck["request_id"]]
-    repository.requests[precheck["request_id"]] = replace(stored, decision="block")
+    repository.requests[precheck["request_id"]] = replace(stored, decision=decision)
 
     response = client.post("/api/razorpay/orders", json=_order_payload(precheck))
     assert response.status_code == 409

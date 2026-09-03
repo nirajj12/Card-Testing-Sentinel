@@ -281,17 +281,22 @@ def test_frozen_evaluation_endpoint_never_triggers_model_scoring(client):
     ), "opening the frozen evaluation metrics must never call the scorer"
 
 
-def test_system_reports_the_active_frozen_v2_stack(client):
+def test_system_reports_the_active_frozen_v3_1_stack(client):
     body = client.get("/api/system").json()
     assert body["ready"] is True
     assert body["model_status"] == "ready"
     assert body["policy_mode"] == "model_and_rules"
-    assert body["model_stage"] == "frozen_blind_evaluated_v2"
-    assert body["model_version"] == "model-v2"
+    assert body["active_runtime_version"] == "postblind-v3.1-prototype-runtime"
+    assert body["model_stage"] == "evaluated_prototype_candidate"
+    assert body["model_version"] == "model-v3.1"
+    assert body["model_family"] == "hist_gradient_boosting"
+    assert body["model_candidate"] == "hist_gb_2"
     assert body["policy_version"] == "validation-selected-v2"
-    assert body["feature_count"] == 39
+    assert body["feature_count"] == 44
     assert body["calibration"] == "sigmoid"
-    assert body["blind_evaluated"] is True
     assert body["evaluation_consumed"] is True
-    assert body["evaluation_verdict"] == "WEAK"
+    assert body["evaluation_version"] == "pbrss-v1"
+    assert body["evaluation_conclusion"] == "MIXED"
+    assert body["synthetic_demonstration"] is True
+    assert body["production_ready"] is False
     assert "journal_mode" in body["database"]

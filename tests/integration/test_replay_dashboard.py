@@ -8,13 +8,15 @@ from tests.helpers import precheck_payload
 ROOT = Path(__file__).resolve().parents[2]
 
 
-def test_evaluation_uses_the_frozen_artifact_and_replay_reports_its_state(client):
+def test_evaluation_uses_the_active_frozen_artifact_and_replay_reports_its_state(
+    client,
+):
     metrics = client.get("/api/metrics/blind").json()
     assert metrics["status"] == "available"
-    assert metrics["source"] == "artifacts/evaluation/blind_v2_metrics.json"
-    assert metrics["blind_version"] == "blind-v2"
-    assert metrics["verdict"] == "WEAK"
-    assert metrics["active_device_counts"] == {"attack": 800, "legitimate": 3200}
+    assert metrics["source"] == "artifacts/evaluation/pbrss_v1_metrics.json"
+    assert metrics["blind_version"] == "pbrss-v1"
+    assert metrics["verdict"] == "MIXED"
+    assert metrics["active_device_counts"] == {"attack": 1250, "legitimate": 3750}
     assert "Synthetic" in metrics["disclosure"]
 
     replay = client.get("/api/replay/devices").json()

@@ -3,10 +3,10 @@ app_name: Card-Testing Sentinel
 host: 0.0.0.0
 port: 8000
 demo_mode: true
-database_path: data/runtime/live_state_v2.sqlite3
+database_path: data/runtime/live_state_v3_1.sqlite3
 request_timeout_seconds: 10
 max_page_size: 200
 log_level: INFO
 state_store: sqlite-single-process
 synthetic_demonstration: true
-runtime_manifest_path: configs/runtime.yaml
+runtime_manifest_path: configs/runtime_v3_1.yaml

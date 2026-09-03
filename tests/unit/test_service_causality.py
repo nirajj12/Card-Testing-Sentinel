@@ -53,6 +53,8 @@ def _service(registry, score: float = 0.05):
             "model": model,
             "policy": registry.policy,
             "policy_mode": "model_and_rules",
+            "feature_engine_class": registry.feature_engine_class,
+            "model_features": registry.model_features,
         },
     )()
     service = RiskService(

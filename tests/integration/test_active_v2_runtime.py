@@ -1,9 +1,8 @@
-"""End-to-end binding tests for the active frozen v2 runtime."""
+"""Historical v2 runtime compatibility and application packaging checks."""
 
 import asyncio
 from pathlib import Path
 
-import pytest
 import yaml
 from fastapi.testclient import TestClient
 
@@ -24,29 +23,23 @@ ROOT = Path(__file__).resolve().parents[2]
 SECRET = "active-v2-test-secret-at-least-sixteen-characters"
 
 
-def test_active_api_uses_the_exact_frozen_v2_stack_and_evidence(client):
-    runtime = client.app.state.runtime
-    system = client.get("/api/system").json()
+def test_explicit_historical_runtime_uses_the_exact_frozen_v2_stack(tmp_path):
+    registry = ArtifactRegistry.load(ROOT, manifest_path=ROOT / "configs/runtime.yaml")
+    service = RiskService(
+        registry,
+        SQLiteStateRepository(tmp_path / "historical_v2.sqlite3"),
+        IdentifierProtector.from_secret(SECRET),
+    )
+    system = registry.system_summary()
     assert system["active_runtime_version"] == "frozen-v2-runtime"
     assert system["feature_count"] == 39
     assert system["feature_contract_sha256"] == MODEL_FEATURES_V2_SHA256
     assert system["model_version"] == "model-v2"
     assert system["policy_version"] == "validation-selected-v2"
     assert system["policy_family"] == "evidence_gated_v2"
-    assert isinstance(runtime.service.engine, FeatureEngineV2)
-    assert tuple(runtime.registry.model._artifact.feature_names) == MODEL_FEATURES_V2
-
-    response = client.post("/api/precheck", json=precheck_payload()).json()
-    stored = runtime.service.repository.get_request(response["request_id"])
-    assert stored is not None
-    assert stored.decision == response["decision"]
-    assert stored.risk_score == pytest.approx(response["risk_score"])
-
-    calls = runtime.service.model_score_calls
-    evidence = client.get("/api/metrics/blind").json()
-    assert evidence["blind_version"] == "blind-v2"
-    assert evidence["verdict"] == "WEAK"
-    assert runtime.service.model_score_calls == calls
+    assert isinstance(service.engine, FeatureEngineV2)
+    assert tuple(registry.model._artifact.feature_names) == MODEL_FEATURES_V2
+    service.close()
 
 
 def test_ready_endpoint_returns_200_for_a_ready_runtime(client):

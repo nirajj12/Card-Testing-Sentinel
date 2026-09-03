@@ -30,8 +30,6 @@ from card_testing_sentinel.domain.exceptions import (
     InvalidLifecycleTransition,
     RuntimeStateError,
 )
-from card_testing_sentinel.features.engine_v2 import FeatureEngineV2
-from card_testing_sentinel.features.specification_v2 import MODEL_FEATURES_V2
 from card_testing_sentinel.modeling.registry import ArtifactRegistry
 from card_testing_sentinel.persistence.models import StoredEvent, StoredRequest
 from card_testing_sentinel.persistence.repository import StateRepository
@@ -62,7 +60,9 @@ class RiskService:
         self.repository = repository
         self.protector = protector
         self.lock = asyncio.Lock()
-        self.engine = FeatureEngineV2()
+        self.feature_engine_class = registry.feature_engine_class
+        self.model_features = registry.model_features
+        self.engine = self.feature_engine_class()
         self.policy = RiskPolicyV2(registry.policy)
         self.model_score_calls = 0
         self.repository.initialize()
@@ -178,7 +178,7 @@ class RiskService:
         committed = self.engine.record_request(
             event, blocked=decision.action == "block"
         )
-        if any(committed[name] != snapshot[name] for name in MODEL_FEATURES_V2):
+        if any(committed[name] != snapshot[name] for name in self.model_features):
             raise RuntimeStateError("feature snapshot changed during the decision")
 
         latency_ms = (time.perf_counter_ns() - started) / 1_000_000
@@ -378,7 +378,7 @@ class RiskService:
     # -- rebuild / reads --------------------------------------------
 
     def rebuild_from_persistence(self) -> None:
-        self.engine = FeatureEngineV2()
+        self.engine = self.feature_engine_class()
         self.policy = RiskPolicyV2(self.registry.policy)
         rows = [
             (row.timestamp, row.event_sequence, "request", row)

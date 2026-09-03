@@ -105,4 +105,12 @@ class RiskModel:
             dtype=float,
             count=len(self.feature_names),
         )
-        return self._artifact.score_vector(values)
+        if hasattr(self._artifact, "score_vector"):
+            return self._artifact.score_vector(values)
+
+        # Model v3.1 was frozen with a frame scorer. Adapt one online ordered
+        # vector to that immutable interface rather than altering the artifact.
+        import pandas as pd
+
+        frame = pd.DataFrame([values], columns=self.feature_names)
+        return float(self._artifact.score_frame(frame)[0])

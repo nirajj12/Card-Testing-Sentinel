@@ -1,0 +1,39 @@
+runtime:
+  version: postblind-v3.1-prototype-runtime
+  runtime_stage: evaluated_prototype_candidate
+  production_ready: false
+  synthetic_evaluation: true
+
+  feature_contract_version: merchant-visible-causal-3.1
+  feature_count: 44
+  feature_contract_sha256: af66f693eee5043f0e97dfef1c31b1773ae480e38228f47612575d336abe2ce0
+  feature_spec_path: configs/features_v3_1.yaml
+  feature_spec_sha256: 9f07a99cb2717c361331ab8c6d26df9b28098366b0d9cc25108ed897baeeff4d
+  feature_contract_artifact_path: artifacts/model_v3_1/feature_contract.json
+  feature_contract_artifact_sha256: 522aa6327617bfed687bd2f0955405b5f63f6595fb0c86da9077b4442af554a8
+
+  model_version: model-v3.1
+  model_family: hist_gradient_boosting
+  model_candidate: hist_gb_2
+  calibration: sigmoid
+  model_artifact_path: artifacts/model_v3_1/risk_model_v3_1.joblib
+  model_artifact_sha256: 093254b63674f50b62caf5eddeaeba47d79f9327902e2567ffed75418a59b1e4
+  model_metadata_path: artifacts/model_v3_1/metadata.json
+  model_metadata_sha256: 0c6c4f1f30b4e585022189bfdb10e4bf7c6d1efbe646abd1ec5fbdd4dca3592f
+
+  policy_version: validation-selected-v2
+  policy_family: evidence_gated_v2
+  policy_config_path: configs/policy_v2.yaml
+  policy_artifact_path: artifacts/policy_v2/operational_policy_v2.json
+  policy_artifact_sha256: 8e874ef83085b9bac063c3b0ac3044bb3c171071d00bf2db44c0390d944fe74c
+
+  evaluation_version: pbrss-v1
+  evaluation_metrics_path: artifacts/evaluation/pbrss_v1_metrics.json
+  evaluation_detection_path: artifacts/evaluation/pbrss_v1_detection_delay.json
+  evaluation_family_metrics_path: artifacts/evaluation/pbrss_v1_family_metrics.csv
+  evaluation_consumption_path: artifacts/evaluation/pbrss_v1_consumption.json
+  evaluation_freeze_manifest_path: artifacts/evaluation/pbrss_v1_freeze_manifest.json
+  evaluation_freeze_manifest_sha256: 674268d2d7ac3c313b2d2ca8cd4c16a20f70c65c2e1887d4d8fbaaba0d6f3f78
+  evaluation_result_manifest_path: artifacts/evaluation/pbrss_v1_result_manifest.json
+  evaluation_result_manifest_sha256: 3fd407689b1fd8a2248780fad8258a2629e82a928fced9026afc76b626cd0502
+  evaluation_conclusion: MIXED

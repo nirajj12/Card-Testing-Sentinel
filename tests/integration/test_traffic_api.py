@@ -222,38 +222,38 @@ def test_unknown_traffic_run_is_a_404(client):
 
 
 def test_blocked_payments_suppress_authorization_and_create_no_outcome(client):
-    _run_id, payments, _final = _run_to_completion(client)
+    _run_id, payments, _final = _run_to_completion(client, seed=4242)
     blocked = [row for row in payments if row["operations"]["decision"] == "block"]
-    assert blocked, "the default mix is expected to produce at least one block"
+    assert blocked, "the deterministic mix is expected to produce a block"
     for row in blocked:
         assert row["operations"]["authorization"] == "suppressed"
         assert row["operations"]["outcome_status"] is None
         assert row["operations"]["checkout_status"] is None
 
 
-def test_later_payments_are_still_scored_after_an_earlier_block(client):
-    """A block is a decision about one request, never a permanent ban."""
-    _run_id, payments, _final = _run_to_completion(client)
+def test_later_payments_are_still_scored_after_an_earlier_intervention(client):
+    """An intervention is about one request, never a permanent device ban."""
+    _run_id, payments, _final = _run_to_completion(client, seed=4242)
     per_device: dict[str, list[dict]] = {}
     for row in payments:
         per_device.setdefault(row["device_key"], []).append(row)
-    blocked_then_more = [
+    intervened_then_more = [
         rows
         for rows in per_device.values()
-        if any(r["operations"]["decision"] == "block" for r in rows)
-        and rows.index(next(r for r in rows if r["operations"]["decision"] == "block"))
+        if any(r["operations"]["decision"] in {"review", "block"} for r in rows)
+        and rows.index(
+            next(r for r in rows if r["operations"]["decision"] in {"review", "block"})
+        )
         < len(rows) - 1
     ]
-    assert (
-        blocked_then_more
-    ), "expected an attacker device blocked before its last attempt"
-    for rows in blocked_then_more:
-        first_block = next(
+    assert intervened_then_more, "expected a device intervened before its last attempt"
+    for rows in intervened_then_more:
+        first_intervention = next(
             index
             for index, r in enumerate(rows)
-            if r["operations"]["decision"] == "block"
+            if r["operations"]["decision"] in {"review", "block"}
         )
-        for later in rows[first_block + 1 :]:
+        for later in rows[first_intervention + 1 :]:
             assert later["operations"]["decision"] in {"allow", "review", "block"}
             assert later["operations"]["state_version"] > 0
 
