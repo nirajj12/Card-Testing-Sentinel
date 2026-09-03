@@ -1,4 +1,5 @@
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import type { ReactNode } from "react";
 import { MemoryRouter } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { CartProvider } from "../state/CartContext";
@@ -17,6 +18,11 @@ vi.mock("../lib/api", () => ({
   },
   friendlyError: () => "Safe error",
 }));
+
+vi.mock("framer-motion", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("framer-motion")>();
+  return { ...actual, AnimatePresence: ({ children }: { children: ReactNode }) => children };
+});
 
 const persisted = {
   id: "protected-activity",
