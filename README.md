@@ -11,9 +11,8 @@
 <br>
 
 <!-- Navigation buttons. When public demo/video are deployed, update destinations below. -->
-<a href="#quick-start"><img src="https://img.shields.io/badge/Run%20Demo-Locally-0066FF?style=for-the-badge&logo=fastapi&logoColor=white" alt="Run Demo Locally"></a>
+<a href="https://card-testing-sentinel-production.up.railway.app/"><img src="https://img.shields.io/badge/Live%20Demo-Railway-0066FF?style=for-the-badge&logo=railway&logoColor=white" alt="Live Demo"></a>
 <!-- Final submission: add Demo Video badge here once the public video URL is available. -->
-<!-- Final submission: replace Run Demo Locally badge with public Live Demo URL once hosted. -->
 <a href="#how-it-works"><img src="https://img.shields.io/badge/Architecture-How%20It%20Works-00AA55?style=for-the-badge" alt="How It Works"></a>
 <a href="#evaluation"><img src="https://img.shields.io/badge/Evaluation-Benchmark%20Results-8A2BE2?style=for-the-badge" alt="Evaluation"></a>
 <a href="docs/dataset.md"><img src="https://img.shields.io/badge/Dataset-v4.1%20Story-FFA500?style=for-the-badge" alt="Dataset Story"></a>
@@ -377,6 +376,8 @@ Card-Testing Sentinel is an **evaluated Buildathon prototype**, not a certified 
 ---
 
 ## Quick Start
+
+> **Live Deployment:** Explore the active demo at **[card-testing-sentinel-production.up.railway.app](https://card-testing-sentinel-production.up.railway.app/)**.
 
 ### Prerequisites
 * Python 3.11+
