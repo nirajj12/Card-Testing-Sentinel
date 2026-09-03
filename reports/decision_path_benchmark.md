@@ -1,5 +1,10 @@
 # Fraud-decision path benchmark
 
+> **Historical benchmark snapshot.** This 2026-08-26 run is retained as
+> development evidence but is not the current evaluator-facing latency result.
+> The current full-HTTP benchmark is `phase_4c_razorpay_e2e_latency.md`: 500
+> sequential prechecks, p50 33.83 ms, p95 110.73 ms, p99 183.19 ms, 0 errors.
+
 Run date: 2026-08-26. Python: CPython 3.11.13. The benchmark is implemented in `scripts/benchmark.py` and uses the real `POST /api/precheck` path with unique deterministic request identifiers and a file-backed temporary SQLite database. It does not use `/api/system`, blind-evaluation rows, or idempotent replay for the headline results.
 
 ## Model-only components

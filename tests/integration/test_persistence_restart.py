@@ -2,7 +2,7 @@ import asyncio
 import sqlite3
 from datetime import UTC, datetime, timedelta
 
-from card_testing_sentinel.api.contracts import OutcomeRequest, PrecheckRequest
+from card_testing_sentinel.api.contracts import PrecheckRequest
 from card_testing_sentinel.domain.events import LifecycleEvent
 from card_testing_sentinel.domain.exceptions import RuntimeStateError
 from card_testing_sentinel.persistence.sqlite_repository import SQLiteStateRepository
@@ -35,20 +35,15 @@ def test_restart_recovers_decision_state_and_hides_raw_identifiers(tmp_path, reg
     )
     decision = asyncio.run(first.precheck(request))
     asyncio.run(
-        first.outcome(
-            OutcomeRequest(
-                event_id="restart-outcome",
-                request_id=request.request_id,
-                device_id=request.device_id,
-                session_id=request.session_id,
-                timestamp=ts + timedelta(seconds=1),
-                event_sequence=2,
-                authorization_result="declined",
-                failure_reason="generic_decline",
-                payment_method="card",
-                card_last4="4242",
-                card_network="visa",
-            )
+        first.trusted_gateway_outcome(
+            event_id="restart-outcome",
+            request_id=request.request_id,
+            timestamp=ts + timedelta(seconds=1),
+            authorization_result="declined",
+            failure_reason="generic_decline",
+            payment_method="card",
+            card_last4="4242",
+            card_network="visa",
         )
     )
     first.close()

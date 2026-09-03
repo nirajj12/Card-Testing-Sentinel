@@ -2,13 +2,18 @@
 
 - Data generation and evaluation are synthetic; results do not establish
   performance on Razorpay or other merchant traffic.
-- Nobody was detected within the first three attempts. Median first review was
-  attempt 5 and median first block was attempt 7.
-- Twenty-nine of 300 blind attackers were never detected. Patient and evasive
-  behavior remains harder than burst behavior.
+- The active PBRSS-v1 shifted stress result is `MIXED`: attack REVIEW+ reached
+  96.40%, but 20.72% of legitimate devices also reached REVIEW+.
+- PBRSS-v1 hard-blocked 59.12% of attack devices and 0.16% of legitimate
+  devices. Distributed and single-attempt attacks remain difficult to block.
+- Historical Blind v2 evaluated Model v2 and received a `WEAK` verdict. It is
+  preserved as historical evidence, not presented as the active result.
 - The risk score is not a guaranteed fraud probability.
-- The offline potentially-preventable count assumes later attempts would stop;
-  it is not observed savings or causal fraud prevention.
+- Economic scenario values are illustrative merchant assumptions, not observed
+  savings or causal fraud prevention.
+- Razorpay integration is Test Mode only. Browser callbacks are not trusted as
+  payment outcomes; authoritative live history requires a verified, correlated
+  gateway webhook.
 - One process-wide lock and local SQLite prioritize causal correctness and
   demonstrability, not horizontal scale or high availability.
 - The prototype has no merchant authentication, authorization, rate limiting,

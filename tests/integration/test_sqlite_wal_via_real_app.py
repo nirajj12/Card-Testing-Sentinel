@@ -25,7 +25,9 @@ from pathlib import Path
 import pytest
 from fastapi.testclient import TestClient
 
+from card_testing_sentinel.api.contracts import PrecheckRequest
 from card_testing_sentinel.app import create_app
+from card_testing_sentinel.domain.events import LifecycleEvent
 from card_testing_sentinel.persistence.sqlite_repository import (
     SQLiteStateRepository,
 )
@@ -122,6 +124,76 @@ def test_wal_mode_survives_a_real_process_restart(tmp_path):
             "restart must recover the previously persisted request, not "
             "start from an empty database"
         )
+
+
+def test_public_lifecycle_injection_cannot_write_sqlite_or_future_features(tmp_path):
+    db_path = tmp_path / "trusted_boundary.sqlite3"
+    first_request = {
+        "request_id": "boundary-request-1",
+        "event_id": "boundary-precheck-1",
+        "merchant_id": "boundary-merchant",
+        "device_id": "boundary-device",
+        "session_id": "boundary-session",
+        "ip_reference": "198.51.100.88",
+        "amount": 100.0,
+        "currency": "INR",
+        "timestamp": "2031-01-01T00:00:00+00:00",
+        "event_sequence": 1,
+        "campaign_active": False,
+    }
+    with _client_with_real_sqlite(db_path) as client:
+        assert client.post("/api/precheck", json=first_request).status_code == 200
+        repository = client.app.state.runtime.service.repository
+        before = repository.status()
+
+        outcome = client.post(
+            "/api/outcomes",
+            json={
+                "event_id": "boundary-outcome-1",
+                "request_id": "boundary-request-1",
+                "device_id": "boundary-device",
+                "session_id": "boundary-session",
+                "timestamp": "2031-01-01T00:00:01+00:00",
+                "event_sequence": 2,
+                "authorization_result": "declined",
+                "payment_method": "card",
+                "card_last4": "4242",
+                "card_network": "visa",
+            },
+        )
+        checkout = client.post(
+            "/api/checkouts",
+            json={
+                "event_id": "boundary-checkout-1",
+                "request_id": "boundary-request-1",
+                "device_id": "boundary-device",
+                "session_id": "boundary-session",
+                "timestamp": "2031-01-01T00:00:02+00:00",
+                "event_sequence": 3,
+            },
+        )
+
+        assert outcome.status_code == 404
+        assert checkout.status_code == 404
+        after = repository.status()
+        assert after["events"] == before["events"] == 0
+
+        later = PrecheckRequest.model_validate(
+            {
+                **first_request,
+                "request_id": "boundary-request-2",
+                "event_id": "boundary-precheck-2",
+                "timestamp": "2031-01-01T00:01:00+00:00",
+                "event_sequence": 4,
+            }
+        )
+        service = client.app.state.runtime.service
+        event = LifecycleEvent.model_validate(service._request_payload(later))
+        snapshot = service.engine.snapshot(event)
+        assert snapshot["recent_failures_24h"] == 0.0
+        assert snapshot["decline_streak"] == 0.0
+        assert snapshot["distinct_card_last4_7d"] == 0.0
+        assert snapshot["successful_checkouts_30d"] == 0.0
 
 
 def test_api_system_never_hardcodes_the_journal_mode(tmp_path):

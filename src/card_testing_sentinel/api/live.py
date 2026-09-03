@@ -3,11 +3,8 @@ from typing import Annotated
 from fastapi import APIRouter, Query
 
 from card_testing_sentinel.api.contracts import (
-    CheckoutRequest,
-    OutcomeRequest,
     PrecheckRequest,
     PrecheckResponse,
-    TransitionResponse,
 )
 from card_testing_sentinel.api.dependencies import (
     ApplicationRuntime,
@@ -29,20 +26,6 @@ async def precheck(
     payload: PrecheckRequest, runtime: RuntimeDependency
 ) -> PrecheckResponse:
     return await _service(runtime).precheck(payload)
-
-
-@router.post("/outcomes", response_model=TransitionResponse)
-async def outcome(
-    payload: OutcomeRequest, runtime: RuntimeDependency
-) -> TransitionResponse:
-    return await _service(runtime).outcome(payload)
-
-
-@router.post("/checkouts", response_model=TransitionResponse)
-async def checkout(
-    payload: CheckoutRequest, runtime: RuntimeDependency
-) -> TransitionResponse:
-    return await _service(runtime).checkout(payload)
 
 
 @router.get("/runtime/decisions")

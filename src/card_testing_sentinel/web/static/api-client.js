@@ -66,10 +66,9 @@ export const api = {
   replayDevices: (filters) => get(query("/api/replay/devices", filters)),
   replayTimeline: (id) => get(`/api/replay/devices/${encodeURIComponent(id)}/timeline`),
 
-  /* Real production endpoints — used by the API console. */
+  /* Production-shaped runtime endpoints. Payment history is intentionally
+     absent here: only the verified Razorpay server path may write it. */
   precheck: (body) => call("/api/precheck", { method: "POST", body }),
-  outcome: (body) => call("/api/outcomes", { method: "POST", body }),
-  checkout: (body) => call("/api/checkouts", { method: "POST", body }),
   decisions: (limit = 25) => get(query("/api/runtime/decisions", { limit })),
   deviceTimeline: (id) => get(`/api/runtime/devices/${encodeURIComponent(id)}/timeline`),
 

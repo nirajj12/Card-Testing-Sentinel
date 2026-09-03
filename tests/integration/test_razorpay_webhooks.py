@@ -129,6 +129,36 @@ def test_invalid_signature_mutates_nothing(client):
     assert not repository.events
 
 
+def test_signed_unknown_order_is_ignored_without_creating_history(client):
+    _install(client)
+    body = _body("payment.failed", "order_unknown", "pay_unknown")
+    response = _send(client, "evt-unknown-order", body)
+    assert response.status_code == 200
+    assert response.json()["ignored"] is True
+    assert response.json()["reason"] == "unknown_order"
+    repository = client.app.state.runtime.service.repository
+    assert repository.get_gateway_payment("pay_unknown") is None
+    assert not repository.events
+
+
+def test_reused_webhook_delivery_id_with_changed_body_is_rejected(client):
+    _install(client)
+    first_body = json.dumps(
+        {"event": "payment.pending"}, separators=(",", ":")
+    ).encode()
+    first = _send(client, "evt-reused", first_body)
+    changed = _send(
+        client,
+        "evt-reused",
+        json.dumps({"event": "payment.created"}, separators=(",", ":")).encode(),
+    )
+    assert first.status_code == 200
+    assert first.json()["ignored"] is True
+    assert changed.status_code == 400
+    assert changed.json()["error"] == "invalid_webhook_payload"
+    assert not client.app.state.runtime.service.repository.events
+
+
 def test_failed_webhook_is_deduplicated_and_enters_next_feature_snapshot(client):
     _install(client)
     base = datetime.now(UTC) - timedelta(minutes=2)

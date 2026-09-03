@@ -26,7 +26,7 @@ Track 02 — AI Risk Manager
 <img alt="Model v3.1" src="https://img.shields.io/badge/Model-v3.1-4F46E5"/>
 <br/>
 <img alt="44 causal features" src="https://img.shields.io/badge/Causal_Features-44-2563EB"/>
-<img alt="277 Python tests passing" src="https://img.shields.io/badge/Python_Tests-277_passing-16A34A"/>
+<img alt="280 Python tests passing" src="https://img.shields.io/badge/Python_Tests-280_passing-16A34A"/>
 <img alt="69 frontend tests passing" src="https://img.shields.io/badge/Frontend_Tests-69_passing-16A34A"/>
 <img alt="Razorpay Test Mode" src="https://img.shields.io/badge/Razorpay-Test_Mode-0C63E4?logo=razorpay&amp;logoColor=white"/>
 </p>
@@ -502,12 +502,16 @@ model endpoint:
 - runtime manifests verify the active feature, model, policy, and evaluation
   artifacts before readiness.
 
+The `/api/demo/*` simulation is explicitly namespaced and server-generated. It
+does not expose arbitrary outcome or checkout-history writes for live Razorpay
+checkout identifiers and is not part of the authoritative gateway-history path.
+
 ## What Sentinel trusts — and what it rejects
 
 Sentinel treats the browser as untrusted for payment outcomes.
 
-- HMAC-SHA256 protects persisted customer, device, session, card-reference, and
-  IP identifiers.
+- HMAC-SHA256 protects persisted customer, device, session, merchant, and IP
+  identifiers.
 - Razorpay payment signatures and webhook signatures are verified server-side.
 - Strict schemas reject PAN, CVV, client-computed features, labels, and unknown
   fields from the risk endpoint.
@@ -585,8 +589,6 @@ key IDs are rejected.
 | `GET` | `/health/ready` | Active runtime and artifact readiness |
 | `GET` | `/api/system` | Runtime, model, policy, evaluation, and gateway status |
 | `POST` | `/api/precheck` | Persist a pre-authorization decision |
-| `POST` | `/api/outcomes` | Record a later verified authorization outcome |
-| `POST` | `/api/checkouts` | Record a later successful checkout |
 | `POST` | `/api/razorpay/orders` | Create a Test Mode order for `ALLOW` only |
 | `POST` | `/api/razorpay/payments/verify` | Verify Standard Checkout payment signature |
 | `POST` | `/api/webhooks/razorpay` | Verify and apply a Razorpay webhook |
@@ -634,7 +636,7 @@ Final validated state:
 
 | Check | Result |
 |---|---|
-| Python | **277 passed** |
+| Python | **280 passed** |
 | Frontend | **69 passed** — 31 legacy + 38 React |
 | Frontend lint | **PASS** |
 | Frontend production build | **PASS** |
@@ -686,6 +688,8 @@ These constraints are why `production_ready` remains **false**.
 - [Real Razorpay failure lifecycle](reports/phase_5b_1_real_razorpay_failure_lifecycle.md)
 
 Additional technical evidence is available in [`reports/`](reports/).
+The [evidence index](reports/README.md) distinguishes current, supporting,
+historical frozen, and superseded reports.
 
 ## Final project status
 

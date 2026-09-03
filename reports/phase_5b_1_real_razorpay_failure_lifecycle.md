@@ -27,8 +27,8 @@ Verify that Card-Testing Sentinel correctly handles real payment failure lifecyc
 | Lifecycle Step | Component Handling | Verified Behavior | Status |
 | :--- | :--- | :--- | :--- |
 | **1. Precheck Request** | Sentinel `/api/precheck` | Evaluates 44 causal features without current card data; returns decision. | Pass |
-| **2. ALLOW Decision** | Backend `/api/razorpay/order` | Creates exactly one Razorpay Test Mode order; idempotent on repeat. | Pass |
-| **3. REVIEW / BLOCK** | Backend `/api/razorpay/order` | Order creation suppressed (HTTP 409 `payment_order_not_allowed`); 0 orders created. | Pass |
+| **2. ALLOW Decision** | Backend `/api/razorpay/orders` | Creates exactly one Razorpay Test Mode order; idempotent on repeat. | Pass |
+| **3. REVIEW / BLOCK** | Backend `/api/razorpay/orders` | Order creation suppressed (HTTP 409 `payment_order_not_allowed`); 0 orders created. | Pass |
 | **4. Modal Failure** | Frontend Checkout Modal | Razorpay modal shows failure without internal retries (`retry.enabled = false`). | Pass |
 | **5. Browser Callback** | Frontend `ondismiss` / handler | Displays "awaiting signed webhook"; zero changes to backend behavioral history. | Pass |
 | **6. Signed Webhook** | Backend `/api/webhooks/razorpay` | Validates HMAC signature; records trusted failed payment and safe card metadata. | Pass |

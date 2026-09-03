@@ -2,32 +2,37 @@
 
 Development training uses deterministic device-grouped folds. Each device has
 total evaluation weight one; training additionally balances legitimate and
-attack device classes. Logistic regression and gradient-boosting candidates can
-be compared on ranking and calibration metrics. The operational frozen artifact
-contains the selected logistic model and fitted isotonic calibrator in one
-immutable joblib file.
+attack device classes. Thirteen regularized-linear, interaction and Histogram
+Gradient Boosting candidates were compared using actor-safe grouped
+cross-validation. The active frozen artifact is Model v3.1 candidate
+`hist_gb_2`, a Histogram Gradient Boosting classifier with sigmoid calibration
+bound to the ordered 44-feature `merchant-visible-causal-3.1` contract.
+
+Policy v2 was selected under Model v2 before the historical Blind v2 evaluation
+and intentionally retained unchanged when Model v3.1 became active. The active
+binding is declared by `configs/runtime_v3_1.yaml`. The older logistic model and
+isotonic calibration remain preserved as historical Model v2 evidence; they are
+not the current scorer.
 
 Sequential evaluation replays raw request/outcome/checkout events. The current
 request is scored before its outcome. A block suppresses only the linked outcome
 and checkout; later requests continue through the scorer. Device-level review
 and block coverage are primary policy measurements.
 
-## Frozen synthetic blind evidence
+## Historical frozen Blind v2 evidence
 
-The saved result includes 1,700 legitimate and 300 attacker devices. Two
-legitimate devices received review and none was blocked. Attacker
-review-or-higher coverage was 271/300 and block coverage was 233/300:
+The earlier Model v2 evidence includes 3,200 legitimate and 800 attacker
+devices. Its frozen verdict is `WEAK`: attack REVIEW+ was 70.50%, attack BLOCK
+was 34.125%, legitimate REVIEW+ was 14.9062%, and legitimate BLOCK was 5.0937%.
+It is retained as negative historical evidence rather than presented as the
+active evaluation.
 
-| Attack behavior | Reviewed or blocked | Blocked | Never detected |
-|---|---:|---:|---:|
-| Burst | 120/120 | 113/120 | 0 |
-| Evasive | 79/90 | 65/90 | 11 |
-| Patient | 72/90 | 55/90 | 18 |
+## Current shifted stress evidence
 
-No attacker was detected within three attempts. Median first review was attempt
-5 and median first block was attempt 7. Twenty-nine attackers were never
-detected. The saved potentially-preventable count is an offline replay upper
-bound, not observed or causal fraud prevention.
+The active Model v3.1/Policy v2 stack was evaluated once on frozen PBRSS-v1.
+That evaluation is consumed, was not followed by tuning, and has a `MIXED`
+conclusion: strong attack intervention coverage with excessive legitimate
+review friction. It is synthetic stress evidence, not production performance.
 
-The application reads the exact saved metrics, device summary and event
-decisions. It never regenerates or rescores blind rows.
+The application reads committed aggregate evaluation artifacts. It never
+regenerates or rescores frozen Blind v2 or PBRSS-v1 evidence at runtime.

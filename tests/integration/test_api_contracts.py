@@ -1,3 +1,5 @@
+from card_testing_sentinel.api.contracts import PrecheckRequest
+from card_testing_sentinel.domain.events import LifecycleEvent
 from tests.helpers import outcome_payload, precheck_payload
 
 
@@ -81,21 +83,36 @@ def test_precheck_idempotent_and_conflicting_retry(client):
     assert conflict.status_code == 409
 
 
-def test_outcome_idempotency_conflict_and_past_decision_immutable(client):
-    original = client.post("/api/precheck", json=precheck_payload()).json()
-    payload = outcome_payload()
-    first = client.post("/api/outcomes", json=payload)
-    assert first.status_code == 200
-    retry = client.post("/api/outcomes", json=payload)
-    assert retry.status_code == 200
-    assert retry.json()["idempotent_replay"] is True
-    conflict = client.post(
-        "/api/outcomes",
-        json={**payload, "authorization_result": "approved", "failure_reason": None},
+def test_public_lifecycle_injection_routes_are_absent_and_change_no_risk_state(client):
+    first = precheck_payload()
+    assert client.post("/api/precheck", json=first).status_code == 200
+
+    service = client.app.state.runtime.service
+    next_request = PrecheckRequest.model_validate(precheck_payload(2))
+    next_event = LifecycleEvent.model_validate(service._request_payload(next_request))
+    snapshot_before = service.engine.snapshot(next_event)
+    score_before = service.registry.model.score(snapshot_before)
+    events_before = list(service.repository.events_in_order())
+
+    outcome = client.post("/api/outcomes", json=outcome_payload(with_card=True))
+    checkout = client.post(
+        "/api/checkouts",
+        json={
+            "event_id": "checkout-1",
+            "request_id": "request-1",
+            "device_id": "device-demo",
+            "session_id": "session-demo",
+            "timestamp": "2030-01-01T00:00:12+00:00",
+            "event_sequence": 5,
+        },
     )
-    assert conflict.status_code == 409
-    saved = client.get("/api/runtime/decisions").json()["items"][0]
-    assert saved["decision"] == original["decision"]
+
+    assert outcome.status_code == 404
+    assert checkout.status_code == 404
+    assert service.repository.events_in_order() == events_before
+    snapshot_after = service.engine.snapshot(next_event)
+    assert snapshot_after == snapshot_before
+    assert service.registry.model.score(snapshot_after) == score_before
 
 
 def test_late_event_rejected(client, base_time):

@@ -29,3 +29,4 @@ jobs:
       - run: npm run build
       - run: pytest --cov-report=term-missing --cov-fail-under=80
       - run: python scripts/verify_release.py
+      - run: python scripts/verify_runtime_v3_1.py

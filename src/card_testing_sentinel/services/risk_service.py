@@ -238,10 +238,22 @@ class RiskService:
     # -- outcome / checkout -------------------------------------------
 
     async def outcome(self, request: OutcomeRequest) -> TransitionResponse:
+        """Apply a server-controlled simulation outcome.
+
+        This method supports the namespaced demo engine and low-level tests. It
+        must never be exposed by the normal live HTTP router; authoritative
+        gateway outcomes enter through ``trusted_gateway_outcome`` only after
+        the Razorpay service has verified the webhook signature and order.
+        """
         async with self.lock:
             return self._transition(request, "authorization_outcome")
 
     async def checkout(self, request: CheckoutRequest) -> TransitionResponse:
+        """Apply a server-controlled simulation checkout completion.
+
+        Like ``outcome``, this is an internal demo/test transition and is not a
+        public live-runtime API.
+        """
         async with self.lock:
             return self._transition(request, "checkout_completion")
 

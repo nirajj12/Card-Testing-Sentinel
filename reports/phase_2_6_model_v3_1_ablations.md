@@ -7,7 +7,7 @@ Evaluate 10 targeted feature ablations on Model v3.1 to test empirical hypothese
 ## Setup
 
 - **Model:** `model-v3.1` (`hist_gb_2`)
-- **Dataset:** `development-v4.1` (Held-out 6,000-device validation split)
+- **Dataset:** `development-v4.1` (held-out 3,500-device validation split: 630 attack, 2,870 legitimate)
 - **Baseline Feature Contract:** `merchant-visible-causal-3.1` (44 features)
 - **Ablation Methodology:** Dropped specified functional groups, retrained on TRAIN with normalized device weights, and scored the validation split.
 

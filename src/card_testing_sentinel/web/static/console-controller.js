@@ -13,8 +13,8 @@ import {
 
 const byId = (id) => document.getElementById(id);
 
-/* Drives the API console: builds a real raw lifecycle request, posts it to the
-   production endpoints, and shows the exact JSON that went out and came back. */
+/* Drives the legacy precheck console and shows the exact JSON request/response.
+   Authoritative payment lifecycle writes are intentionally not exposed here. */
 export class ConsoleController {
   constructor(onMessage) {
     this.onMessage = onMessage;
@@ -24,9 +24,6 @@ export class ConsoleController {
     this.deviceIndex = 1;
     this.cardIndex = 1;
     this.lastBody = null;
-    this.lastRequestId = null;
-    this.lastDecision = null;
-    this.approvedRequestId = null;
     this.nodes = {
       device: byId("in-device"),
       session: byId("in-session"),
@@ -49,9 +46,6 @@ export class ConsoleController {
     };
     this.buttons = {
       precheck: byId("send-precheck"),
-      decline: byId("send-decline"),
-      approve: byId("send-approve"),
-      checkout: byId("send-checkout"),
       replay: byId("test-replay"),
       conflict: byId("test-conflict"),
       newDevice: byId("new-device"),
@@ -62,9 +56,6 @@ export class ConsoleController {
 
   bind() {
     this.buttons.precheck.addEventListener("click", () => this.sendPrecheck());
-    this.buttons.decline.addEventListener("click", () => this.sendOutcome("declined"));
-    this.buttons.approve.addEventListener("click", () => this.sendOutcome("approved"));
-    this.buttons.checkout.addEventListener("click", () => this.sendCheckout());
     this.buttons.replay.addEventListener("click", () => this.sendIdempotentRetry());
     this.buttons.conflict.addEventListener("click", () => this.sendConflict());
     this.buttons.refresh.addEventListener("click", () => this.loadDecisions());
@@ -86,7 +77,6 @@ export class ConsoleController {
     this.deviceIndex += 1;
     this.cardIndex = 1;
     this.attempt = 0;
-    this.approvedRequestId = null;
     this.nodes.device.value = `device-${String(this.deviceIndex).padStart(3, "0")}`;
     this.nodes.session.value = `session-${String(this.deviceIndex).padStart(3, "0")}-1`;
     this.nodes.card.value = "tok-card-001";
@@ -107,10 +97,10 @@ export class ConsoleController {
     return {
       request_id: `req-${this.run}-${sequence}`,
       event_id: `evt-${this.run}-${sequence}`,
+      merchant_id: "legacy-console-merchant",
+      customer_id: `customer-${this.run}`,
       device_id: this.nodes.device.value.trim(),
       session_id: this.nodes.session.value.trim(),
-      card_reference: this.nodes.card.value.trim(),
-      card_bin: this.nodes.bin.value.trim(),
       ip_reference: this.nodes.ip.value.trim(),
       amount: Number(this.nodes.amount.value),
       currency: this.nodes.currency.value,
@@ -145,12 +135,9 @@ export class ConsoleController {
     renderJson(this.nodes.response, payload);
   }
 
-  setFollowUpEnabled(enabled, { blocked = false } = {}) {
-    this.buttons.decline.disabled = !enabled || blocked;
-    this.buttons.approve.disabled = !enabled || blocked;
+  setFollowUpEnabled(enabled) {
     this.buttons.replay.disabled = !enabled;
     this.buttons.conflict.disabled = !enabled;
-    this.buttons.checkout.disabled = true;
   }
 
   /* ── actions ── */
@@ -165,15 +152,13 @@ export class ConsoleController {
         const { data, status } = await api.precheck(body);
         this.attempt = attempt;
         this.lastBody = body;
-        this.lastRequestId = body.request_id;
-        this.lastDecision = data;
         this.nodes.attempt.textContent = String(attempt);
         this.showResponse(status, data, true);
         this.paint(data);
-        this.setFollowUpEnabled(true, { blocked: data.decision === "block" });
+        this.setFollowUpEnabled(true);
         if (data.decision === "block") {
           this.onMessage(
-            "Blocked. This request is suppressed, and its outcome and checkout are now refused — but later requests from the device are still scored.",
+            "Blocked. Authorization is suppressed, but later requests from the device are still scored.",
             "success",
           );
         } else {
@@ -226,72 +211,6 @@ export class ConsoleController {
         } else {
           this.failure(error);
         }
-      }
-    });
-  }
-
-  async sendOutcome(result) {
-    if (!this.lastRequestId) return;
-    const button = result === "approved" ? this.buttons.approve : this.buttons.decline;
-    const sequence = this.nextSequence();
-    const body = {
-      event_id: `evt-${this.run}-${sequence}`,
-      request_id: this.lastRequestId,
-      device_id: this.nodes.device.value.trim(),
-      session_id: this.nodes.session.value.trim(),
-      timestamp: new Date().toISOString(),
-      event_sequence: sequence,
-      authorization_result: result,
-      decline_reason: result === "declined" ? "generic_decline" : null,
-    };
-    if (result === "approved") delete body.decline_reason;
-    this.showRequest("POST", "/api/outcomes", body);
-    await this.withBusy(button, async () => {
-      try {
-        const { data, status } = await api.outcome(body);
-        this.showResponse(status, data, true);
-        this.buttons.decline.disabled = true;
-        this.buttons.approve.disabled = true;
-        if (result === "approved") {
-          this.approvedRequestId = this.lastRequestId;
-          this.buttons.checkout.disabled = false;
-        }
-        this.onMessage(
-          result === "declined"
-            ? "Decline recorded. It can only influence later requests, never the one already decided."
-            : "Approval recorded. You can now complete the checkout to reduce accumulated risk.",
-          "success",
-        );
-      } catch (error) {
-        this.failure(error);
-      }
-    });
-  }
-
-  async sendCheckout() {
-    if (!this.approvedRequestId) return;
-    const sequence = this.nextSequence();
-    const body = {
-      event_id: `evt-${this.run}-${sequence}`,
-      request_id: this.approvedRequestId,
-      device_id: this.nodes.device.value.trim(),
-      session_id: this.nodes.session.value.trim(),
-      timestamp: new Date().toISOString(),
-      event_sequence: sequence,
-    };
-    this.showRequest("POST", "/api/checkouts", body);
-    await this.withBusy(this.buttons.checkout, async () => {
-      try {
-        const { data, status } = await api.checkout(body);
-        this.showResponse(status, data, true);
-        this.buttons.checkout.disabled = true;
-        this.approvedRequestId = null;
-        this.onMessage(
-          "Checkout recorded. A genuine purchase reduces this device's accumulated risk on later requests.",
-          "success",
-        );
-      } catch (error) {
-        this.failure(error);
       }
     });
   }

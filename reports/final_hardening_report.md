@@ -1,5 +1,10 @@
 # Final hardening report
 
+> **Historical hardening checkpoint.** The test counts, runtime description and
+> latency measurements below record the 2026-08-26 system and are not current
+> submission headlines. See `reports/README.md` for the active evidence map and
+> `phase_4c_razorpay_e2e_latency.md` for current latency.
+
 ## Status
 
 **completed_with_accepted_risks** — the requested hardening and submission packaging are complete. There are no remaining published dependency advisories in either the final development environment or clean runtime environment. Accepted risks are the explicitly disclosed product constraints that this pass was not authorized to redesign: synthetic data, single-process SQLite, a global transition lock, no production authentication or tenant isolation, no distributed state, and no model-drift monitoring. The tests also emit one development-only Starlette warning recommending a future migration from the deprecated HTTPX-backed `TestClient` adapter to `httpx2`; it does not affect the Uvicorn runtime or audit result.

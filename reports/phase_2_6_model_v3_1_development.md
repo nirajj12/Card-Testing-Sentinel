@@ -18,7 +18,7 @@ Document the development, actor-safe cross-validation, calibration, and syntheti
 
 - **Candidate Selection:** Evaluated 13 model candidates across tree-based and regularized linear families using 5-fold actor-safe grouped cross-validation on TRAIN.
 - **Probability Calibration:** Compared uncalibrated scores against Sigmoid (Platt) and Isotonic calibration to minimize Expected Calibration Error (ECE) without losing ranking quality.
-- **Synthetic Development Validation:** Evaluated the selected calibrated model on a held-out 6,000-device validation split against predefined product gates.
+- **Synthetic Development Validation:** Evaluated the selected calibrated model on the held-out 3,500-device validation split (630 attack, 2,870 legitimate) against predefined product gates.
 - **Scenario Breakdown:** Checked performance across 8 critical fraud and legitimate scenario cohorts.
 - **Counterfactual Ordering (CPOA):** Evaluated risk scores on 20 synthetic counterfactual twin pairs sharing identical surface attributes.
 

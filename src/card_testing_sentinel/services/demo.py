@@ -7,6 +7,12 @@ SQLite repository -- that live `/api/precheck` traffic uses, and drives it
 through real precheck/outcome/checkout transitions with uniquely
 namespaced synthetic identifiers per run.
 
+These lifecycle transitions are server-generated simulation data, not browser-
+submitted or Razorpay-verified outcomes. The fixed ``demo-merchant`` plus
+per-run device, session, and IP namespaces keep their feature history separate
+from the real Test Mode checkout merchant. The normal live router exposes no
+direct outcome or checkout-completion write endpoint.
+
 Two orchestration modes share one drive path (`_drive_attempt`):
 
 * **Replay Lab** (`start` / `step`) -- one device walking one hand-authored
