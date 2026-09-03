@@ -1,0 +1,63 @@
+dataset_name: post-blind-remediation-stress-suite-v1
+spec_version: pbrss-v1-frozen-spec
+generator_version: pbrss-v1-generator-1
+seed: 773829104
+split: stress
+window:
+  start: 2026-01-01T00:00:00+00:00
+  days: 120
+population:
+  devices: 5000
+  target_requests: 20000
+  attack_device_fraction: 0.25
+  guest_checkout_rate: [0.55, 0.65]
+  pareto_shape: 2.2
+  network_delay_seconds: [1.5, 180.0]
+  attack_pause_hours: [1.0, 48.0]
+  long_retry_days: [7.0, 14.0]
+  cgnat_devices_per_subnet: 80
+merchants:
+  count: 16
+  per_archetype: 2
+  archetypes:
+    ecommerce: {typical_amount: 1800, amount_spread: 0.75, success_rate: 0.84}
+    guest_heavy_d2c: {typical_amount: 950, amount_spread: 0.7, success_rate: 0.80}
+    subscription_saas: {typical_amount: 1200, amount_spread: 0.45, success_rate: 0.86}
+    digital_micro_payment: {typical_amount: 80, amount_spread: 0.8, success_rate: 0.82}
+    flash_sale: {typical_amount: 1400, amount_spread: 0.85, success_rate: 0.77}
+    high_ticket_travel_tech: {typical_amount: 65000, amount_spread: 0.65, success_rate: 0.79}
+    b2b_wholesale: {typical_amount: 120000, amount_spread: 0.5, success_rate: 0.76, origin: unseen}
+    donation_charity: {typical_amount: 75, amount_spread: 0.55, success_rate: 0.78, origin: unseen}
+scenarios:
+  held_out:
+    stealth_low_amount_drip:
+      population: attack
+      amount: [1.0, 5.0]
+      attempts: [7, 11]
+      gap_hours: [18.0, 36.0]
+      duration_days: 10
+    hybrid_credential_stuffing_probe:
+      population: attack
+      attempts: [3, 6]
+      identity_switch_after_decline: true
+      synthetic_defence_only: true
+    charity_micro_donation_spike:
+      population: legitimate
+      amount: [50.0, 100.0]
+      burst_hours: 2
+      guest_retries: true
+    b2b_multi_corporate_card:
+      population: legitimate
+      amount: 120000.0
+      corporate_cards: 4
+  background:
+    attack: mixed_card_probe
+    legitimate: ordinary_checkout
+evaluation:
+  suite_id: pbrss-v1
+  pre_pbrss_model_freeze_commit: 1c9dab4ed2902b4207e6758f1c929fee1b8a08dc
+  feature_contract: merchant-visible-causal-3.1
+  model_version: model-v3.1
+  calibration: sigmoid
+  policy_version: validation-selected-v2
+  one_score_only: true
