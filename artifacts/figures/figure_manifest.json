@@ -1,0 +1,275 @@
+{
+  "figures": [
+    {
+      "filename": "pbrss_scenario_performance.png",
+      "generated_from_frozen_evidence": true,
+      "generation_script": "scripts/generate_final_figures.py",
+      "metrics_used": [
+        {
+          "block_pct": 60.8,
+          "review_plus_pct": 100.0,
+          "scenario": "hybrid_credential_stuffing_probe"
+        },
+        {
+          "block_pct": 44.93333333333333,
+          "review_plus_pct": 94.0,
+          "scenario": "mixed_card_probe"
+        },
+        {
+          "block_pct": 100.0,
+          "review_plus_pct": 100.0,
+          "scenario": "stealth_low_amount_drip"
+        }
+      ],
+      "model_rescored": false,
+      "pbrss_rescored": false,
+      "source_artifacts": [
+        {
+          "path": "artifacts/evaluation/pbrss_v1_family_metrics.csv",
+          "sha256": "43410d31927e509356982c18e2e169daa25c9a3ab6a8330bc4b4c24eeac82503"
+        }
+      ],
+      "title": "Attack coverage across shifted stress scenarios"
+    },
+    {
+      "filename": "pbrss_detection_delay.png",
+      "generated_from_frozen_evidence": true,
+      "generation_script": "scripts/generate_final_figures.py",
+      "metrics_used": [
+        {
+          "attempt": 1,
+          "surfaced_pct": 23.200000000000003
+        },
+        {
+          "attempt": 2,
+          "surfaced_pct": 25.2
+        },
+        {
+          "attempt": 3,
+          "surfaced_pct": 92.16
+        },
+        {
+          "attempt": 5,
+          "surfaced_pct": 96.39999999999999
+        }
+      ],
+      "model_rescored": false,
+      "pbrss_rescored": false,
+      "source_artifacts": [
+        {
+          "path": "artifacts/evaluation/pbrss_v1_detection_delay.json",
+          "sha256": "f798d4047534f5cc34df52ec998a4ea77f55515659f1d560059d927a8e1bf26d"
+        }
+      ],
+      "title": "Behavioral history drives detection"
+    },
+    {
+      "filename": "pbrss_legitimate_friction.png",
+      "generated_from_frozen_evidence": true,
+      "generation_script": "scripts/generate_final_figures.py",
+      "metrics_used": [
+        {
+          "block_pct": 0.8,
+          "review_plus_pct": 7.199999999999999,
+          "scenario": "b2b_multi_corporate_card"
+        },
+        {
+          "block_pct": 0.0,
+          "review_plus_pct": 0.0,
+          "scenario": "charity_micro_donation_spike"
+        },
+        {
+          "block_pct": 0.13333333333333333,
+          "review_plus_pct": 25.3,
+          "scenario": "ordinary_checkout"
+        }
+      ],
+      "model_rescored": false,
+      "pbrss_rescored": false,
+      "source_artifacts": [
+        {
+          "path": "artifacts/evaluation/pbrss_v1_family_metrics.csv",
+          "sha256": "43410d31927e509356982c18e2e169daa25c9a3ab6a8330bc4b4c24eeac82503"
+        }
+      ],
+      "title": "Where legitimate-user friction concentrates"
+    },
+    {
+      "filename": "pbrss_calibration.png",
+      "generated_from_frozen_evidence": true,
+      "generation_script": "scripts/generate_final_figures.py",
+      "metrics_used": {
+        "bins": [
+          {
+            "mean_predicted": 0.0158,
+            "observed_rate": 0.1454,
+            "weight": 3524.2922
+          },
+          {
+            "mean_predicted": 0.1394,
+            "observed_rate": 0.0756,
+            "weight": 250.6333
+          },
+          {
+            "mean_predicted": 0.2474,
+            "observed_rate": 0.089,
+            "weight": 138.2556
+          },
+          {
+            "mean_predicted": 0.3387,
+            "observed_rate": 0.1597,
+            "weight": 35.8
+          },
+          {
+            "mean_predicted": 0.4502,
+            "observed_rate": 0.256,
+            "weight": 37.3
+          },
+          {
+            "mean_predicted": 0.5489,
+            "observed_rate": 0.2322,
+            "weight": 43.9121
+          },
+          {
+            "mean_predicted": 0.6561,
+            "observed_rate": 0.2375,
+            "weight": 45.8333
+          },
+          {
+            "mean_predicted": 0.7481,
+            "observed_rate": 0.4162,
+            "weight": 52.1843
+          },
+          {
+            "mean_predicted": 0.8511,
+            "observed_rate": 0.5095,
+            "weight": 179.5628
+          },
+          {
+            "mean_predicted": 0.9245,
+            "observed_rate": 0.8042,
+            "weight": 692.2264
+          }
+        ],
+        "brier": 0.15603701503584233,
+        "ece": 0.14067900697104643
+      },
+      "model_rescored": false,
+      "pbrss_rescored": false,
+      "source_artifacts": [
+        {
+          "path": "artifacts/evaluation/pbrss_v1_calibration.csv",
+          "sha256": "54d28f87b3577e12ea1d56c38b82e5259158c2efd1f12b27c33cb0a05711f3e6"
+        },
+        {
+          "path": "artifacts/evaluation/pbrss_v1_metrics.json",
+          "sha256": "191bc653869db5c6ba349d1f5e644314ade9b391858709e67efb90c0396b1724"
+        }
+      ],
+      "title": "Calibration under shifted stress traffic"
+    },
+    {
+      "filename": "phase_4a_feature_shift.png",
+      "generated_from_frozen_evidence": true,
+      "generation_script": "scripts/generate_final_figures.py",
+      "metrics_used": [
+        {
+          "feature": "device_age_seconds",
+          "psi": 6.853574024
+        },
+        {
+          "feature": "seconds_since_last_payment",
+          "psi": 6.819984494
+        },
+        {
+          "feature": "customer_age_seconds",
+          "psi": 6.375403319
+        },
+        {
+          "feature": "seconds_since_last_success",
+          "psi": 6.073417241
+        },
+        {
+          "feature": "seconds_since_last_request",
+          "psi": 5.131382471
+        },
+        {
+          "feature": "sessions_24h",
+          "psi": 2.203826204
+        },
+        {
+          "feature": "median_gap_between_attempts",
+          "psi": 2.057001861
+        },
+        {
+          "feature": "ip_changes_24h",
+          "psi": 1.461743492
+        },
+        {
+          "feature": "session_churn_rate_24h",
+          "psi": 1.400313332
+        },
+        {
+          "feature": "amount_variation_24h",
+          "psi": 1.174931909
+        }
+      ],
+      "model_rescored": false,
+      "pbrss_rescored": false,
+      "source_artifacts": [
+        {
+          "path": "artifacts/analysis/phase_4a_ordinary_checkout_feature_shift.csv",
+          "sha256": "3fb3c0cdf5cf3d2dedfd05cc1a1ce5cf438ba4ba99fbae8f282870ac1aa3689c"
+        }
+      ],
+      "title": "Top covariate shifts in ordinary checkout traffic"
+    },
+    {
+      "filename": "phase_4c_latency.png",
+      "generated_from_frozen_evidence": true,
+      "generation_script": "scripts/generate_final_figures.py",
+      "metrics_used": {
+        "errors": 0,
+        "measured_requests": 500,
+        "p50": 33.830895999999996,
+        "p90": 87.77998690000001,
+        "p95": 110.73206905000005,
+        "p99": 183.18813249999988
+      },
+      "model_rescored": false,
+      "pbrss_rescored": false,
+      "source_artifacts": [
+        {
+          "path": "artifacts/runtime/phase_4c_precheck_latency.json",
+          "sha256": "20ab08f7f71a23de682c41b2322d2556d39c7a7d0735d9547279e4069f873006"
+        }
+      ],
+      "title": "Local /api/precheck latency"
+    },
+    {
+      "filename": "phase_4d_economic_scenarios.png",
+      "generated_from_frozen_evidence": true,
+      "generation_script": "scripts/generate_final_figures.py",
+      "metrics_used": {
+        "active_attack_campaign": 2971648.0,
+        "high_value_merchant": 2535480.0,
+        "quiet_day": -708697.6
+      },
+      "model_rescored": false,
+      "pbrss_rescored": false,
+      "source_artifacts": [
+        {
+          "path": "artifacts/economics/phase_4d_economic_scenarios.json",
+          "sha256": "ac28128fe2358f80c0d0695c07061805f33012ec774e6a727de653ba95a7dd96"
+        }
+      ],
+      "title": "Illustrative economics depend on merchant context"
+    }
+  ],
+  "generated_from_frozen_evidence": true,
+  "generation_script": "scripts/generate_final_figures.py",
+  "model_rescored": false,
+  "pbrss_rescored": false,
+  "skipped_figures": [],
+  "version": "phase-5a-v1"
+}
