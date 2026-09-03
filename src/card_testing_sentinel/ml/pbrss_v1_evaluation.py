@@ -71,7 +71,28 @@ def git_head(root: Path) -> str:
     return result.stdout.strip()
 
 
-def build_freeze_manifest(root: Path, destination: Path | None = None) -> dict:
+def require_clean_git(root: Path) -> str:
+    """Return HEAD only when machinery is committed and the tree is clean."""
+    result = subprocess.run(
+        ["git", "status", "--porcelain"],
+        cwd=root,
+        text=True,
+        capture_output=True,
+        check=True,
+    )
+    if result.stdout.strip():
+        raise PBRSSV1EvaluationError(
+            "PBRSS machinery must be committed in a clean tree before generation"
+        )
+    return git_head(root)
+
+
+def build_freeze_manifest(
+    root: Path,
+    destination: Path | None = None,
+    *,
+    machinery_freeze_commit: str,
+) -> dict:
     """Build the deterministic manifest after canonical generation.
 
     No clock value is included: identical inputs produce identical bytes.
@@ -118,6 +139,7 @@ def build_freeze_manifest(root: Path, destination: Path | None = None) -> dict:
         "spec_version": "pbrss-v1-frozen-spec",
         "generator_version": "pbrss-v1-generator-1",
         "pre_pbrss_model_freeze_commit": PRE_PBRSS_COMMIT,
+        "pbrss_machinery_freeze_commit": machinery_freeze_commit,
         "feature_contract_version": "merchant-visible-causal-3.1",
         "feature_contract_sha256": MODEL_FEATURES_V3_SHA256,
         "model_version": "model-v3.1",
@@ -169,6 +191,11 @@ def verify_pre_evaluation(root: Path) -> dict:
             raise PBRSSV1EvaluationError(f"freeze binding differs at {key}")
     if freeze.get("evaluated") or freeze.get("consumed"):
         raise PBRSSV1EvaluationError("PBRSS-v1 freeze is already consumed")
+    machinery_commit = str(freeze.get("pbrss_machinery_freeze_commit", ""))
+    if len(machinery_commit) != 40 or any(
+        character not in "0123456789abcdef" for character in machinery_commit
+    ):
+        raise PBRSSV1EvaluationError("PBRSS machinery freeze commit is invalid")
     verified = {}
     for key, record in freeze.get("files", {}).items():
         path = root / record["path"]
@@ -221,6 +248,7 @@ def reserve_consumption(root: Path, preflight: dict, scoring_started: str) -> di
         "calibration": "sigmoid",
         "policy": "validation-selected-v2",
         "pre_pbrss_model_freeze_commit": PRE_PBRSS_COMMIT,
+        "pbrss_machinery_freeze_commit": freeze["pbrss_machinery_freeze_commit"],
         "stress_dataset_hashes": {
             key: value["sha256"]
             for key, value in freeze["files"].items()

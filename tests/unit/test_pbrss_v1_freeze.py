@@ -48,10 +48,12 @@ def test_freeze_manifest_is_deterministic_and_timestamp_free(tmp_path: Path) -> 
     }
     for relative, content in files.items():
         write(tmp_path / relative, content)
-    first = build_freeze_manifest(tmp_path)
-    second = build_freeze_manifest(tmp_path)
+    commit = "a" * 40
+    first = build_freeze_manifest(tmp_path, machinery_freeze_commit=commit)
+    second = build_freeze_manifest(tmp_path, machinery_freeze_commit=commit)
     assert first == second
     encoded = json.dumps(first, sort_keys=True)
     assert "created_at" not in encoded
     assert "timestamp" not in encoded
     assert first["counts"]["devices"] == 2
+    assert first["pbrss_machinery_freeze_commit"] == commit

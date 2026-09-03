@@ -3,6 +3,7 @@ from __future__ import annotations
 import inspect
 import json
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
@@ -21,6 +22,7 @@ def required_freeze(file_path: Path, digest: str) -> dict:
         "model_version": "model-v3.1",
         "calibration": "sigmoid",
         "policy_version": "validation-selected-v2",
+        "pbrss_machinery_freeze_commit": "a" * 40,
         "evaluated": False,
         "consumed": False,
         "files": {"fixture": {"path": str(file_path), "sha256": digest}},
@@ -69,6 +71,18 @@ def test_evaluator_binds_frozen_stack_and_contract() -> None:
     assert "RiskPolicyV2" in source
 
 
+def test_generation_requires_committed_clean_machinery(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(
+        evaluation.subprocess,
+        "run",
+        lambda *args, **kwargs: SimpleNamespace(stdout=" M generator.py\n"),
+    )
+    with pytest.raises(evaluation.PBRSSV1EvaluationError, match="clean tree"):
+        evaluation.require_clean_git(tmp_path)
+
+
 def test_atomic_consumption_reservation_fails_closed(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
@@ -77,12 +91,13 @@ def test_atomic_consumption_reservation_fails_closed(
     freeze_path.write_text(
         json.dumps(
             {
+                "pbrss_machinery_freeze_commit": "a" * 40,
                 "files": {
                     "foundation/model": {"sha256": "m"},
                     "foundation/feature_contract": {"sha256": "f"},
                     "foundation/policy": {"sha256": "p"},
                     "source/evaluation_pipeline": {"sha256": "e"},
-                }
+                },
             }
         )
     )

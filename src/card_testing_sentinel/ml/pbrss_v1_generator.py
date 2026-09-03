@@ -1,8 +1,8 @@
-"""Independent generator for the frozen PBRSS-v1 stress specification.
+"""Config-driven synthetic generator for the frozen PBRSS-v1 design.
 
-This module deliberately knows nothing about models, policies, thresholds,
-development metrics, or evaluation artifacts.  It emits lifecycle events and
-device labels; causal feature replay is a separate pipeline responsibility.
+This module emits lifecycle events and device labels only. It has no access to
+trained artifacts, scores, thresholds, evaluation results, or application
+decisions. Causal feature replay remains a separate pipeline responsibility.
 """
 
 from __future__ import annotations
@@ -36,25 +36,77 @@ LABEL_COLUMNS = (
     "counterfactual_pair_id",
     "counterfactual_role",
 )
+INSTRUMENT_SPEC = {
+    "methods": ["card"],
+    "method_weights": [1],
+    "last4_pool": 10000,
+    "networks": ["visa", "mastercard", "rupay"],
+    "network_weights": [4, 4, 2],
+    "types": ["credit", "debit"],
+    "type_weights": [6, 4],
+    "issuers": 30,
+    "international_rate": 0.08,
+}
 
 
 def _token(seed: int, namespace: str, number: int) -> str:
-    value = hashlib.sha256(f"{seed}:{namespace}:{number}".encode()).hexdigest()[:20]
-    return f"pbs_{value}"
+    digest = hashlib.sha256(f"{seed}:{namespace}:{number}".encode()).hexdigest()
+    return f"pbs_{digest[:20]}"
+
+
+def scenario_specs(config: dict) -> dict[str, dict]:
+    return {
+        **config["scenarios"]["held_out"],
+        **config["scenarios"]["background"],
+    }
+
+
+def validate_config(config: dict) -> None:
+    if config.get("spec_version") != SPEC_VERSION:
+        raise ValueError("unexpected PBRSS specification")
+    if config.get("generator_version") != GENERATOR_VERSION:
+        raise ValueError("unexpected PBRSS generator version")
+    target = int(config["population"]["devices"])
+    expected_attack = round(
+        target * float(config["population"]["attack_device_fraction"])
+    )
+    scenarios = scenario_specs(config)
+    totals = {"attack": 0, "legitimate": 0}
+    for name, spec in scenarios.items():
+        population = str(spec["population"])
+        if population not in totals:
+            raise ValueError(f"unknown population for {name}")
+        quota = int(spec["device_target"])
+        if quota < 1:
+            raise ValueError(f"scenario quota must be positive: {name}")
+        totals[population] += quota
+        available = config["outcome_profiles"][population]
+        unknown = set(spec["outcome_profiles"]) - set(available)
+        if unknown:
+            raise ValueError(f"unknown outcome profiles for {name}: {sorted(unknown)}")
+    if sum(totals.values()) != target:
+        raise ValueError("scenario device quotas do not equal total device target")
+    if totals["attack"] != expected_attack:
+        raise ValueError("scenario quotas do not equal the attack-device target")
+    hybrid = scenarios["hybrid_credential_stuffing_probe"]
+    if not hybrid.get("synthetic_defence_only"):
+        raise ValueError("hybrid scenario must remain synthetic defensive telemetry")
+    if int(config["merchants"]["count"]) != 16:
+        raise ValueError("PBRSS-v1 requires exactly 16 merchants")
 
 
 def build_merchants(config: dict) -> list[MerchantProfile]:
-    spec = config["merchants"]
-    if int(spec["count"]) != len(spec["archetypes"]) * int(spec["per_archetype"]):
+    merchant_spec = config["merchants"]
+    expected = len(merchant_spec["archetypes"]) * int(merchant_spec["per_archetype"])
+    if int(merchant_spec["count"]) != expected:
         raise ValueError("merchant allocation must cover every archetype equally")
     merchants = []
     seed = int(config["seed"])
-    for kind, values in sorted(spec["archetypes"].items()):
-        for slot in range(int(spec["per_archetype"])):
-            merchant_id = _token(seed, f"merchant-{kind}", slot)
+    for kind, values in sorted(merchant_spec["archetypes"].items()):
+        for slot in range(int(merchant_spec["per_archetype"])):
             merchants.append(
                 MerchantProfile(
-                    merchant_id=merchant_id,
+                    merchant_id=_token(seed, f"merchant-{kind}", slot),
                     kind=kind,
                     typical_amount=float(values["typical_amount"]),
                     amount_spread=float(values["amount_spread"]),
@@ -70,10 +122,7 @@ def build_merchants(config: dict) -> list[MerchantProfile]:
 
 class PBRSSV1Generator:
     def __init__(self, config: dict):
-        if config.get("spec_version") != SPEC_VERSION:
-            raise ValueError("unexpected PBRSS specification")
-        if config.get("generator_version") != GENERATOR_VERSION:
-            raise ValueError("unexpected PBRSS generator version")
+        validate_config(config)
         self.config = config
         self.seed = int(config["seed"])
         self.rng = np.random.default_rng(self.seed)
@@ -81,22 +130,25 @@ class PBRSSV1Generator:
         self.start = datetime.fromisoformat(str(config["window"]["start"]))
         self.events: list[dict] = []
         self.labels: list[dict] = []
-        self.counters = {
-            "actor": 0,
-            "device": 0,
-            "request": 0,
-            "event": 0,
-            "customer": 0,
-        }
+        self.counters = dict.fromkeys(
+            ("actor", "device", "request", "event", "customer", "session"), 0
+        )
+        self.merchant_cursor = {"attack": 0, "legitimate": 0}
 
     def _id(self, kind: str) -> str:
         self.counters[kind] += 1
         return _token(self.seed, kind, self.counters[kind])
 
+    def _outcome_probability(self, population: str, scenario: dict) -> float:
+        profiles = self.config["outcome_profiles"][population]
+        allowed = list(scenario["outcome_profiles"])
+        weights = np.asarray([float(profiles[name]["weight"]) for name in allowed])
+        selected = str(self.rng.choice(allowed, p=weights / weights.sum()))
+        return float(self.rng.uniform(*profiles[selected]["approval_probability"]))
+
     def _emit_attempt(
         self,
         *,
-        actor: str,
         device: str,
         merchant: MerchantProfile,
         customer: str | None,
@@ -123,11 +175,11 @@ class PBRSSV1Generator:
                 campaign_active=False,
             )
         )
+        population = self.config["population"]
         delay = float(
             np.clip(
-                (self.rng.pareto(float(self.config["population"]["pareto_shape"])) + 1)
-                * 1.5,
-                *self.config["population"]["network_delay_seconds"],
+                (self.rng.pareto(float(population["pareto_shape"])) + 1) * 1.5,
+                *population["network_delay_seconds"],
             )
         )
         outcome = moment + timedelta(seconds=delay)
@@ -158,92 +210,114 @@ class PBRSSV1Generator:
             )
         return outcome
 
+    def _generic_gap(self, attempt: int) -> float:
+        population = self.config["population"]
+        if attempt < 2:
+            return float(self.rng.uniform(*population["short_retry_seconds"]))
+        if attempt == 2 and self.rng.random() < 0.2:
+            return float(self.rng.uniform(*population["long_retry_days"]) * 86400)
+        low, high = population["attack_pause_hours"]
+        pause = float(self.rng.pareto(float(population["pareto_shape"])) + low)
+        return float(np.clip(pause, low, high) * 3600)
+
     def _actor(
         self,
         merchant: MerchantProfile,
-        population: str,
-        scenario: str,
+        scenario_name: str,
+        scenario: dict,
         *,
         device_count: int = 1,
-        attempts: int = 4,
         start_at: datetime | None = None,
     ) -> None:
+        population = str(scenario["population"])
         actor = self._id("actor")
-        guest_rate = float(
-            self.rng.uniform(*self.config["population"]["guest_checkout_rate"])
-        )
         shared_ip = f"100.64.{self.counters['actor'] % 250}.0/24"
-        devices = [self._id("device") for _ in range(device_count)]
-        primary_customer = (
-            None if self.rng.random() < guest_rate else self._id("customer")
+        guest_bounds = scenario.get(
+            "guest_rate", self.config["population"]["guest_checkout_rate"]
         )
+        approval_probability = self._outcome_probability(population, scenario)
         base = start_at or self.start + timedelta(
             days=float(self.rng.uniform(0, int(self.config["window"]["days"]) - 15))
         )
-        instruments = [
-            new_instrument(
-                self.rng,
-                {
-                    "methods": ["card"],
-                    "method_weights": [1],
-                    "last4_pool": 10000,
-                    "networks": ["visa", "mastercard", "rupay"],
-                    "network_weights": [4, 4, 2],
-                    "types": ["credit", "debit"],
-                    "type_weights": [6, 4],
-                    "issuers": 30,
-                    "international_rate": 0.08,
-                },
-                0.65 if population == "attack" else 0.82,
+        for device_index in range(device_count):
+            device = self._id("device")
+            customer = (
+                None
+                if self.rng.random() < float(self.rng.uniform(*guest_bounds))
+                else self._id("customer")
             )
-            for _ in range(max(attempts, 4))
-        ]
-
-        for device_index, device in enumerate(devices):
-            current = base + timedelta(seconds=device_index * 2)
-            customer = primary_customer
-            session = self._id("event")
+            session = self._id("session")
+            attempts = int(
+                self.rng.integers(
+                    int(scenario["attempts"][0]), int(scenario["attempts"][1]) + 1
+                )
+            )
+            instruments = [
+                new_instrument(self.rng, INSTRUMENT_SPEC, 0.75)
+                for _ in range(max(attempts, int(scenario.get("corporate_cards", 1))))
+            ]
+            if scenario_name == "charity_micro_donation_spike":
+                safe_window = max(float(scenario["burst_hours"]) * 3600 - 600, 0)
+                current = base + timedelta(
+                    seconds=float(self.rng.uniform(0, safe_window))
+                )
+            else:
+                current = base + timedelta(seconds=device_index * 2)
+            elapsed_hours = 0.0
+            last_customer = customer
             for attempt in range(attempts):
-                if scenario == "stealth_low_amount_drip":
-                    amount = self.rng.uniform(1, 5)
-                    gap = self.rng.uniform(18, 36) * 3600
-                    card = instruments[attempt % len(instruments)]
-                elif scenario == "charity_micro_donation_spike":
-                    amount = self.rng.uniform(50, 100)
-                    gap = self.rng.uniform(1.5, 3.0)
-                    card = instruments[0]
-                    customer = None
-                elif scenario == "b2b_multi_corporate_card":
-                    amount, gap = 120000.0, self.rng.uniform(45, 240)
-                    card = instruments[attempt % 4]
+                request_moment = current
+                if scenario_name == "stealth_low_amount_drip":
+                    amount = self.rng.uniform(*scenario["amount"])
+                    remaining = attempts - attempt - 2
+                    minimum = float(scenario["gap_hours"][0])
+                    budget = float(scenario["duration_days"]) * 24 - elapsed_hours
+                    upper = min(
+                        float(scenario["gap_hours"][1]),
+                        budget - max(0, remaining) * minimum,
+                    )
+                    gap = float(self.rng.uniform(minimum, max(minimum, upper))) * 3600
+                    card = instruments[attempt]
+                elif scenario_name == "charity_micro_donation_spike":
+                    amount = self.rng.uniform(*scenario["amount"])
+                    gap = float(
+                        self.rng.uniform(
+                            *self.config["population"]["short_retry_seconds"]
+                        )
+                    )
+                    card, customer = instruments[0], None
+                elif scenario_name == "b2b_multi_corporate_card":
+                    amount = float(scenario["amount"])
+                    gap = float(self.rng.uniform(*scenario["retry_gap_seconds"]))
+                    card = instruments[attempt % int(scenario["corporate_cards"])]
                 else:
                     amount = (
-                        self.rng.uniform(1, 5)
-                        if self.rng.random() < 0.1
+                        self.rng.uniform(*scenario["low_amount"])
+                        if self.rng.random() < float(scenario["low_amount_probability"])
                         else merchant.draw_amount(self.rng)
                     )
-                    if attempt < 2:
-                        gap = self.rng.uniform(1.5, 3.0)
-                    elif attempt == 2 and self.rng.random() < 0.2:
-                        gap = (
-                            self.rng.uniform(
-                                *self.config["population"]["long_retry_days"]
-                            )
-                            * 86400
-                        )
-                    else:
-                        pause = self.rng.pareto(2.2) + 1.0
-                        gap = np.clip(pause, 1.0, 48.0) * 3600
+                    gap = self._generic_gap(attempt)
                     card = (
-                        instruments[attempt % len(instruments)]
+                        instruments[attempt]
                         if population == "attack"
                         else instruments[0]
                     )
-                approved = bool(
-                    self.rng.random() < (0.35 if population == "attack" else 0.72)
-                )
+
+                approved = bool(self.rng.random() < approval_probability)
+                if (
+                    scenario_name == "charity_micro_donation_spike"
+                    and attempt == 0
+                    and bool(scenario["required_initial_failure"])
+                ):
+                    approved = False
+                if scenario_name == "b2b_multi_corporate_card":
+                    if attempt < int(scenario["required_initial_failures"]):
+                        approved = False
+                    elif attempt == attempts - 1 and bool(
+                        scenario["required_final_success"]
+                    ):
+                        approved = True
                 outcome = self._emit_attempt(
-                    actor=actor,
                     device=device,
                     merchant=merchant,
                     customer=customer,
@@ -254,19 +328,29 @@ class PBRSSV1Generator:
                     session=session,
                     ip_address=shared_ip,
                 )
-                if scenario == "hybrid_credential_stuffing_probe" and not approved:
+                if (
+                    scenario_name == "hybrid_credential_stuffing_probe"
+                    and not approved
+                    and bool(scenario["identity_switch_after_decline"])
+                ):
                     customer = self._id("customer")
-                current = outcome + timedelta(seconds=float(gap))
+                last_customer = customer
+                current = (
+                    request_moment + timedelta(seconds=gap)
+                    if scenario_name == "stealth_low_amount_drip"
+                    else outcome + timedelta(seconds=gap)
+                )
+                elapsed_hours += gap / 3600
             self.labels.append(
                 {
                     "device_id": device,
                     "actor_id": actor,
                     "leakage_group_id": actor,
-                    "customer_id": customer,
+                    "customer_id": last_customer,
                     "merchant_id": merchant.merchant_id,
                     "merchant_kind": merchant.kind,
                     "population": population,
-                    "scenario": scenario,
+                    "scenario": scenario_name,
                     "label": int(population == "attack"),
                     "split": self.config["split"],
                     "counterfactual_pair_id": None,
@@ -274,86 +358,89 @@ class PBRSSV1Generator:
                 }
             )
 
-    def generate(self) -> dict[str, pd.DataFrame | list[MerchantProfile]]:
-        target = int(self.config["population"]["devices"])
-        attack_target = round(
-            target * float(self.config["population"]["attack_device_fraction"])
-        )
-        # Coverage is deliberately symmetric at every new merchant.
-        for index, merchant in enumerate(self.merchants):
-            attack_scenario = (
-                "stealth_low_amount_drip"
-                if index == 0
-                else (
-                    "hybrid_credential_stuffing_probe"
-                    if index == 1
-                    else "mixed_card_probe"
-                )
-            )
-            legitimate_scenario = (
-                "charity_micro_donation_spike"
-                if merchant.kind == "donation_charity"
-                else (
-                    "b2b_multi_corporate_card"
-                    if merchant.kind == "b2b_wholesale"
-                    else "ordinary_checkout"
-                )
-            )
-            self._actor(
-                merchant, "attack", attack_scenario, attempts=7 if index == 0 else 4
-            )
-            self._actor(merchant, "legitimate", legitimate_scenario, attempts=4)
-        # The canonical-sized suite includes the predeclared viral charity
-        # cohort.  Actors are capped at the frozen 80-device CGNAT density.
-        if target >= 1000:
-            charity = next(
-                merchant
-                for merchant in self.merchants
-                if merchant.kind == "donation_charity"
-            )
-            remaining_charity = min(500, target // 8)
-            charity_start = self.start + timedelta(days=60)
-            while remaining_charity:
+    def _eligible_merchants(self, scenario_name: str) -> list[MerchantProfile]:
+        if scenario_name == "charity_micro_donation_spike":
+            return [m for m in self.merchants if m.kind == "donation_charity"]
+        if scenario_name == "b2b_multi_corporate_card":
+            return [m for m in self.merchants if m.kind == "b2b_wholesale"]
+        return self.merchants
+
+    def _generate_quota(self, scenario_name: str, scenario: dict) -> None:
+        remaining = int(scenario["device_target"])
+        merchants = self._eligible_merchants(scenario_name)
+        population = str(scenario["population"])
+        index = self.merchant_cursor[population] if len(merchants) == 16 else 0
+        common_start = self.start + timedelta(days=60)
+        while remaining:
+            cohort = 1
+            if scenario_name in {"charity_micro_donation_spike", "mixed_card_probe"}:
                 cohort = min(
+                    remaining,
                     int(self.config["population"]["cgnat_devices_per_subnet"]),
-                    remaining_charity,
                 )
-                self._actor(
-                    charity,
-                    "legitimate",
-                    "charity_micro_donation_spike",
-                    device_count=cohort,
-                    attempts=2,
-                    start_at=charity_start,
-                )
-                remaining_charity -= cohort
-            # Match the maximum shared-network density in an attack family so
-            # cohort size and IP fanout do not encode the class label.
             self._actor(
-                self.merchants[0],
-                "attack",
-                "mixed_card_probe",
-                device_count=int(self.config["population"]["cgnat_devices_per_subnet"]),
-                attempts=2,
-                start_at=self.start + timedelta(days=75),
+                merchants[index % len(merchants)],
+                scenario_name,
+                scenario,
+                device_count=cohort,
+                start_at=(
+                    common_start
+                    if scenario_name == "charity_micro_donation_spike"
+                    else None
+                ),
             )
-        while len(self.labels) < target:
-            attacks = sum(row["label"] for row in self.labels)
-            population = "attack" if attacks < attack_target else "legitimate"
-            merchant = self.merchants[len(self.labels) % len(self.merchants)]
-            scenario = (
-                "mixed_card_probe" if population == "attack" else "ordinary_checkout"
-            )
-            self._actor(
-                merchant, population, scenario, attempts=int(self.rng.integers(3, 6))
-            )
+            remaining -= cohort
+            index += 1
+        if len(merchants) == 16:
+            self.merchant_cursor[population] = index % len(merchants)
+
+    def generate(self) -> dict[str, pd.DataFrame | list[MerchantProfile]]:
+        for scenario_name, scenario in scenario_specs(self.config).items():
+            self._generate_quota(scenario_name, scenario)
         raw = pd.DataFrame(self.events, columns=EVENT_COLUMNS)
         raw = raw.sort_values("timestamp", kind="mergesort").reset_index(drop=True)
         raw["event_sequence"] = np.arange(1, len(raw) + 1)
         raw["timestamp"] = raw["timestamp"].map(lambda value: value.isoformat())
         raw["split"] = self.config["split"]
         labels = pd.DataFrame(self.labels, columns=LABEL_COLUMNS)
-        return {"raw_events": raw, "labels": labels, "merchants": self.merchants}
+        bundle = {"raw_events": raw, "labels": labels, "merchants": self.merchants}
+        validate_bundle(self.config, bundle)
+        return bundle
+
+
+def validate_bundle(config: dict, bundle: dict) -> None:
+    raw, labels = bundle["raw_events"], bundle["labels"]
+    target = int(config["population"]["devices"])
+    attack_target = round(
+        target * float(config["population"]["attack_device_fraction"])
+    )
+    counts = (
+        labels.device_id.nunique(),
+        labels.loc[labels.label.eq(1), "device_id"].nunique(),
+        labels.loc[labels.label.eq(0), "device_id"].nunique(),
+    )
+    if counts != (target, attack_target, target - attack_target):
+        raise ValueError("generated population counts differ from frozen allocation")
+    if labels.merchant_id.nunique() != int(config["merchants"]["count"]):
+        raise ValueError("generated merchant count differs from frozen allocation")
+    actual = labels.groupby("scenario").device_id.nunique().to_dict()
+    expected = {
+        name: int(spec["device_target"])
+        for name, spec in scenario_specs(config).items()
+    }
+    if actual != expected:
+        raise ValueError("generated scenario quotas differ from frozen allocation")
+    requests = int(raw.event_type.eq("authorization_request").sum())
+    request_target = int(config["population"]["target_requests"])
+    tolerance = float(config["population"]["request_target_tolerance_fraction"])
+    if (
+        not request_target * (1 - tolerance)
+        <= requests
+        <= request_target * (1 + tolerance)
+    ):
+        raise ValueError("authorization request count is outside frozen tolerance")
+    if not labels.groupby("merchant_id").label.nunique().eq(2).all():
+        raise ValueError("every merchant must contain both populations")
 
 
 def build_manifest(config: dict, bundle: dict) -> dict:
@@ -365,6 +452,10 @@ def build_manifest(config: dict, bundle: dict) -> dict:
         "seed": int(config["seed"]),
         "events": int(len(raw)),
         "authorization_requests": int(raw.event_type.eq("authorization_request").sum()),
+        "request_target": int(config["population"]["target_requests"]),
+        "request_target_tolerance_fraction": float(
+            config["population"]["request_target_tolerance_fraction"]
+        ),
         "devices": int(labels.device_id.nunique()),
         "attack_devices": int(labels.loc[labels.label.eq(1), "device_id"].nunique()),
         "legitimate_devices": int(

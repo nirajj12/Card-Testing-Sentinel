@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 
 import pandas as pd
+import pytest
 import yaml
 
 from card_testing_sentinel.features.batch_v3 import build_feature_table_v3
@@ -17,11 +18,33 @@ from card_testing_sentinel.ml.pbrss_v1_generator import (
 ROOT = Path(__file__).resolve().parents[2]
 
 
-def fixture_config(devices: int = 48) -> dict:
+def fixture_config(devices: int = 160) -> dict:
     config = yaml.safe_load((ROOT / "configs/post_blind_stress_v1.yaml").read_text())
     config["population"]["devices"] = devices
     config["population"]["target_requests"] = devices * 4
+    quotas = {
+        "stealth_low_amount_drip": 8,
+        "hybrid_credential_stuffing_probe": 8,
+        "charity_micro_donation_spike": 16,
+        "b2b_multi_corporate_card": 8,
+        "mixed_card_probe": 24,
+        "ordinary_checkout": 96,
+    }
+    for section in ("held_out", "background"):
+        for name, spec in config["scenarios"][section].items():
+            spec["device_target"] = quotas[name]
+    config["population"]["cgnat_devices_per_subnet"] = 8
     return config
+
+
+@pytest.fixture(scope="module")
+def canonical_config() -> dict:
+    return yaml.safe_load((ROOT / "configs/post_blind_stress_v1.yaml").read_text())
+
+
+@pytest.fixture(scope="module")
+def canonical_bundle(canonical_config: dict) -> dict:
+    return PBRSSV1Generator(canonical_config).generate()
 
 
 def csv_bytes(frame: pd.DataFrame) -> bytes:
@@ -79,6 +102,116 @@ def test_held_out_scenarios_and_group_coherence() -> None:
     raw = bundle["raw_events"]
     assert raw.event_sequence.is_monotonic_increasing
     assert raw.event_id.is_unique
+
+
+def test_canonical_population_quotas_and_request_invariant(
+    canonical_config: dict, canonical_bundle: dict
+) -> None:
+    labels = canonical_bundle["labels"]
+    raw = canonical_bundle["raw_events"]
+    assert labels.device_id.nunique() == 5000
+    assert labels.loc[labels.label.eq(1), "device_id"].nunique() == 1250
+    assert labels.loc[labels.label.eq(0), "device_id"].nunique() == 3750
+    assert labels.merchant_id.nunique() == 16
+    counts = labels.groupby("scenario").device_id.nunique().to_dict()
+    assert counts == {
+        "b2b_multi_corporate_card": 250,
+        "charity_micro_donation_spike": 500,
+        "hybrid_credential_stuffing_probe": 250,
+        "mixed_card_probe": 750,
+        "ordinary_checkout": 3000,
+        "stealth_low_amount_drip": 250,
+    }
+    requests = raw.event_type.eq("authorization_request").sum()
+    target = canonical_config["population"]["target_requests"]
+    tolerance = canonical_config["population"]["request_target_tolerance_fraction"]
+    assert target * (1 - tolerance) <= requests <= target * (1 + tolerance)
+
+
+def test_scenario_semantics_use_declared_config(
+    canonical_config: dict, canonical_bundle: dict
+) -> None:
+    raw = canonical_bundle["raw_events"]
+    labels = canonical_bundle["labels"]
+    request_rows = raw.loc[raw.event_type.eq("authorization_request")].merge(
+        labels[["device_id", "scenario"]], on="device_id", validate="many_to_one"
+    )
+    stealth_spec = canonical_config["scenarios"]["held_out"]["stealth_low_amount_drip"]
+    stealth = request_rows.loc[request_rows.scenario.eq("stealth_low_amount_drip")]
+    assert stealth.amount.between(*stealth_spec["amount"]).all()
+    attempts = stealth.groupby("device_id").size()
+    assert attempts.between(*stealth_spec["attempts"]).all()
+    timestamps = pd.to_datetime(stealth.timestamp, format="ISO8601")
+    gaps = (
+        timestamps.groupby(stealth.device_id).diff().dropna().dt.total_seconds() / 3600
+    )
+    assert gaps.between(*stealth_spec["gap_hours"]).all()
+    spans = timestamps.groupby(stealth.device_id).agg(
+        lambda values: values.max() - values.min()
+    )
+    assert spans.max() <= pd.Timedelta(days=stealth_spec["duration_days"])
+
+    charity = request_rows.loc[request_rows.scenario.eq("charity_micro_donation_spike")]
+    charity_spec = canonical_config["scenarios"]["held_out"][
+        "charity_micro_donation_spike"
+    ]
+    charity_times = pd.to_datetime(charity.timestamp, format="ISO8601")
+    assert charity.amount.between(*charity_spec["amount"]).all()
+    assert charity_times.max() - charity_times.min() <= pd.Timedelta(
+        hours=charity_spec["burst_hours"]
+    )
+
+
+def test_changed_fixture_declaration_changes_scenario_output() -> None:
+    config = fixture_config()
+    stealth = config["scenarios"]["held_out"]["stealth_low_amount_drip"]
+    stealth["amount"] = [3.25, 3.25]
+    stealth["attempts"] = [8, 8]
+    config["population"]["target_requests"] += stealth["device_target"]
+    bundle = PBRSSV1Generator(config).generate()
+    rows = (
+        bundle["raw_events"]
+        .loc[bundle["raw_events"].event_type.eq("authorization_request")]
+        .merge(
+            bundle["labels"][["device_id", "scenario"]],
+            on="device_id",
+            validate="many_to_one",
+        )
+    )
+    rows = rows.loc[rows.scenario.eq("stealth_low_amount_drip")]
+    assert rows.amount.eq(3.25).all()
+    assert rows.groupby("device_id").size().eq(8).all()
+
+
+def test_b2b_card_rotation_and_outcome_regimes_overlap(canonical_bundle: dict) -> None:
+    raw = canonical_bundle["raw_events"]
+    labels = canonical_bundle["labels"]
+    outcomes = raw.loc[raw.event_type.eq("authorization_outcome")].merge(
+        labels[["device_id", "label", "scenario"]],
+        on="device_id",
+        validate="many_to_one",
+    )
+    b2b = outcomes.loc[outcomes.scenario.eq("b2b_multi_corporate_card")]
+    assert b2b.groupby("device_id").card_last4.nunique().eq(4).all()
+    b2b_success = b2b.authorization_result.eq("approved").groupby(b2b.device_id).mean()
+    assert b2b_success.between(0.01, 0.99).all()
+
+    outcome_rate = (
+        outcomes.authorization_result.eq("approved")
+        .groupby([outcomes.device_id, outcomes.label])
+        .mean()
+        .reset_index(name="approval_rate")
+    )
+    attack = outcome_rate.loc[outcome_rate.label.eq(1), "approval_rate"]
+    legitimate = outcome_rate.loc[outcome_rate.label.eq(0), "approval_rate"]
+    assert attack.max() >= legitimate.quantile(0.25)
+    assert legitimate.min() <= attack.quantile(0.75)
+    assert (
+        outcomes.loc[outcomes.label.eq(1), "authorization_result"].eq("approved").any()
+    )
+    assert (
+        outcomes.loc[outcomes.label.eq(0), "authorization_result"].eq("declined").any()
+    )
 
 
 def test_frozen_replay_has_exact_contract_and_no_metadata() -> None:
