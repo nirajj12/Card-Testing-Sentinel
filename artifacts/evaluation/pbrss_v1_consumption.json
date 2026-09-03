@@ -1,0 +1,27 @@
+{
+  "calibration": "sigmoid",
+  "consumed": true,
+  "consumed_at": "2026-09-03T01:38:05.731601+00:00",
+  "evaluated": true,
+  "evaluation_runner_hash": "c6086713683a1bc473be846c027c3e5a1b1095eec167f146cecadcac052c377e",
+  "feature_contract": "merchant-visible-causal-3.1",
+  "feature_contract_hash": "522aa6327617bfed687bd2f0955405b5f63f6595fb0c86da9077b4442af554a8",
+  "freeze_manifest_sha256": "674268d2d7ac3c313b2d2ca8cd4c16a20f70c65c2e1887d4d8fbaaba0d6f3f78",
+  "git_commit": "de7281934363310fa71c946d9192ff9bb8aaaf87",
+  "model": "model-v3.1",
+  "model_hash": "093254b63674f50b62caf5eddeaeba47d79f9327902e2567ffed75418a59b1e4",
+  "pbrss_machinery_freeze_commit": "5941689847ed7a44f2db02fc86607dc619e6167c",
+  "policy": "validation-selected-v2",
+  "policy_hash": "8e874ef83085b9bac063c3b0ac3044bb3c171071d00bf2db44c0390d944fe74c",
+  "post_stress_tuning": false,
+  "pre_pbrss_model_freeze_commit": "1c9dab4ed2902b4207e6758f1c929fee1b8a08dc",
+  "scoring_started_utc": "2026-09-03T01:38:05.600494+00:00",
+  "status": "consumed",
+  "stress_dataset_hashes": {
+    "dataset/features_v3_1.csv": "b810cf0e7ff9c363267a653be11651d8351ca672b591b63c2c90e59ec795a3c4",
+    "dataset/labels.csv": "79f60ba2eccdef71e673bd70479681f70c04e90e2fb22232b96f2bbb2b9bd056",
+    "dataset/manifest.json": "673eaaf921e85f0ada71028e4bcc94d8ab1d869d429c10fb413cfec8e553012b",
+    "dataset/raw_events.csv": "21f1c0db7c370e42a95866fcec4743209e462b452a7f0f66b257e4c35214a570"
+  },
+  "suite": "post-blind-remediation-stress-v1"
+}

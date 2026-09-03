@@ -1,0 +1,15 @@
+{
+  "brier": 0.15603701503584233,
+  "ece": 0.14067900697104643,
+  "log_loss": 0.6538091380519909,
+  "policy": {
+    "attack_block_rate": 0.5912,
+    "attack_review_or_higher_rate": 0.964,
+    "false_positives_per_10000_legitimate_devices": 2072.0,
+    "legitimate_block_rate": 0.0016,
+    "legitimate_review_or_higher_rate": 0.2072
+  },
+  "positive_rate": 0.25,
+  "pr_auc": 0.6469762178054731,
+  "roc_auc": 0.7261889167036668
+}

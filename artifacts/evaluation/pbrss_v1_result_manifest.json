@@ -1,0 +1,14 @@
+{
+  "dataset_freeze_commit": "de7281934363310fa71c946d9192ff9bb8aaaf87",
+  "files": {
+    "artifacts/evaluation/pbrss_v1_calibration.csv": "54d28f87b3577e12ea1d56c38b82e5259158c2efd1f12b27c33cb0a05711f3e6",
+    "artifacts/evaluation/pbrss_v1_consumption.json": "b8238bb4fc8f0d2bc577f382a7e45067792baf6a5b1175d79c24b5f29f099bcf",
+    "artifacts/evaluation/pbrss_v1_counterfactual.json": "05940e12d9792c87c465ee9961daa36c639d560d6bea63ddc9a3e55b47823df0",
+    "artifacts/evaluation/pbrss_v1_detection_delay.json": "f798d4047534f5cc34df52ec998a4ea77f55515659f1d560059d927a8e1bf26d",
+    "artifacts/evaluation/pbrss_v1_family_metrics.csv": "43410d31927e509356982c18e2e169daa25c9a3ab6a8330bc4b4c24eeac82503",
+    "artifacts/evaluation/pbrss_v1_metrics.json": "191bc653869db5c6ba349d1f5e644314ade9b391858709e67efb90c0396b1724",
+    "reports/phase_3c_pbrss_v1_one_score_evaluation.md": "90f67e893f18407df592f1c8db525a213084ad8369fd07ca5fb1c46a21510e25",
+    "reports/post_blind_stress_v1_evaluation_report.md": "e395a385fc6f9907b25621d6d3e9e1c7ff10e8a2a950fbc5bf1c6d72ab76e5cf"
+  },
+  "suite": "post-blind-remediation-stress-v1"
+}
