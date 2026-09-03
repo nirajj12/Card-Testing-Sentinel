@@ -1,22 +1,75 @@
-# Card-Testing Sentinel
+<div align="center">
 
-**Built for the [Razorpay AI Buildathon](https://razorpay.com/buildathon/)**
+<h1>Card-Testing Sentinel</h1>
 
-> Pre-authorization behavioral risk detection for Razorpay Checkout.
+<h2>Stop card testing before payment begins.</h2>
 
-Card-Testing Sentinel detects repeated card-testing behavior before a Razorpay
-order is created. It scores only merchant-visible request data and behavioral
-history available before authorization, avoiding current-card and future-outcome
-leakage. The result is an `ALLOW`, `REVIEW`, or `BLOCK` decision at the point
-where a merchant can still suppress payment initiation.
+<p><strong>Pre-authorization behavioral protection for Razorpay Checkout.</strong></p>
+
+<p>
+Sentinel watches repeated checkout behavior and decides whether to
+<code>ALLOW</code>, <code>REVIEW</code>, or <code>BLOCK</code> an attempt before a
+Razorpay order is created.<br/>
+The current card result cannot influence its own risk decision; only previously
+verified gateway outcomes become trusted history.
+</p>
+
+<p>
+<strong>Built for the <a href="https://razorpay.com/buildathon/">Razorpay AI Buildathon</a></strong><br/>
+Track 02 — AI Risk Manager
+</p>
+
+<p>
+<img alt="Python 3.11" src="https://img.shields.io/badge/Python-3.11-3776AB?logo=python&amp;logoColor=white"/>
+<img alt="FastAPI 0.141.1" src="https://img.shields.io/badge/FastAPI-0.141.1-009688?logo=fastapi&amp;logoColor=white"/>
+<img alt="React 19.1.1" src="https://img.shields.io/badge/React-19.1.1-61DAFB?logo=react&amp;logoColor=111827"/>
+<img alt="Model v3.1" src="https://img.shields.io/badge/Model-v3.1-4F46E5"/>
+<br/>
+<img alt="44 causal features" src="https://img.shields.io/badge/Causal_Features-44-2563EB"/>
+<img alt="277 Python tests passing" src="https://img.shields.io/badge/Python_Tests-277_passing-16A34A"/>
+<img alt="69 frontend tests passing" src="https://img.shields.io/badge/Frontend_Tests-69_passing-16A34A"/>
+<img alt="Razorpay Test Mode" src="https://img.shields.io/badge/Razorpay-Test_Mode-0C63E4?logo=razorpay&amp;logoColor=white"/>
+</p>
+
+<p>
+<a href="#one-decision-layer-between-checkout-and-razorpay">Architecture</a>
+&nbsp;•&nbsp;
+<a href="#what-the-evaluation-actually-showed">Evaluation</a>
+&nbsp;•&nbsp;
+<a href="#run-it-locally">Run Locally</a>
+&nbsp;•&nbsp;
+<a href="#want-to-verify-the-numbers">Evidence</a>
+</p>
+
+</div>
 
 ![Card-Testing Sentinel — pre-authorization Razorpay risk protection interface](docs/screenshots/sentinel-final-hero.png)
 
-| Pre-authorization decision | Causal feature contract | Payment enforcement | Local precheck latency |
-|---|---:|---|---:|
-| `ALLOW` / `REVIEW` / `BLOCK` | **44 features** | Razorpay Test Mode order gating | **33.83 ms p50** |
+| Decision point | Behavior model | Sequential detection | Local latency |
+|---|---:|---:|---:|
+| Before Razorpay order creation | **44 causal features** | **92.16%** of attack devices by attempt 3 | **33.83 ms p50** |
 
-## The problem
+> **Evaluation status: PBRSS-v1 — MIXED.** Strong attack coverage, but
+> legitimate review friction remains too high for production.
+> `production_ready=false`
+
+## Table of contents
+
+- [Why card testing is hard to catch](#why-card-testing-is-hard-to-catch)
+- [How Sentinel protects the payment flow](#sentinel-decides-before-razorpay-creates-the-order)
+- [Architecture](#one-decision-layer-between-checkout-and-razorpay)
+- [What Sentinel knows — and what it refuses to use](#what-sentinel-knows--and-what-it-refuses-to-use)
+- [Razorpay Test Mode integration](#this-is-connected-to-a-real-razorpay-test-mode-flow)
+- [Dataset and model](#how-sentinel-learns-card-testing-behavior)
+- [Evaluation results](#what-the-evaluation-actually-showed)
+- [Evaluation journey](#how-each-failed-test-changed-the-next-version)
+- [Where Sentinel still fails](#where-sentinel-still-fails)
+- [Engineering and security](#duplicate-clicks-restarts-and-late-webhooks-should-not-break-payment-state)
+- [Run locally](#run-it-locally)
+- [Verify the project](#how-to-verify-the-project-yourself)
+- [Evidence](#want-to-verify-the-numbers)
+
+## Why card testing is hard to catch
 
 A single failed low-value payment can look ordinary. Card testing becomes more
 visible across a sequence: rapid retries, changing cards, rotating sessions or
@@ -30,7 +83,17 @@ actually knows at that moment.
 > Can suspicious card-testing behavior be detected before authorization without
 > using information that does not exist yet?
 
-## What Sentinel does
+## Why this matters for payment checkout
+
+Card testing and legitimate payment retries can look similar. A real customer
+may retry because an OTP or payment failed, the network dropped, a card was
+temporarily declined, or another card was tried. An attacker may also retry
+rapidly, change cards, rotate sessions, or spread attempts across devices.
+
+Simply blocking repeated failures would hurt legitimate customers. Sentinel
+tries to distinguish the behavioral pattern before creating the Razorpay order.
+
+## Sentinel decides before Razorpay creates the order
 
 ```text
 Merchant checkout
@@ -53,7 +116,7 @@ The decision controls the payment boundary:
 `REVIEW` is a Sentinel policy state. It is not Razorpay manual review, 3DS,
 OTP, issuer review, or evidence that a bank was contacted.
 
-## Architecture
+## One decision layer between checkout and Razorpay
 
 ```mermaid
 flowchart LR
@@ -84,7 +147,7 @@ The risk decision is persisted before any Razorpay order is requested. Only the
 `ALLOW` branch crosses the gateway boundary; `REVIEW` and `BLOCK` suppress order
 creation entirely.
 
-## Trust boundary and causal direction
+## What Sentinel knows — and what it refuses to use
 
 Sentinel deliberately separates decision-time facts from post-authorization
 facts.
@@ -100,6 +163,12 @@ facts.
 | Historical card diversity | Post-authorization gateway metadata |
 | Historical IP/network behavior | Data learned after the decision |
 
+### The current card cannot influence its own risk decision
+
+Sentinel scores the checkout before authorization. At that moment it does not
+know the current card network, current card type, authorization result, decline
+reason, or payment status.
+
 Safe card metadata can become historical evidence only after a signed Razorpay
 webhook has been verified by the backend. It can then affect a future request,
 never the request that introduced it.
@@ -108,10 +177,19 @@ never the request that introduced it.
 precheck → decision → payment → signed outcome → historical state → future precheck
 ```
 
-## Real Razorpay integration
+## This is connected to a real Razorpay Test Mode flow
 
-This is an online payment-flow prototype, not only an offline model study.
-End-to-end Razorpay Test Mode verification established that:
+Sentinel does not only show a risk score on a dashboard. The decision controls
+whether the Razorpay order is created.
+
+```text
+ALLOW  → Razorpay order created
+REVIEW → no Razorpay order
+BLOCK  → no Razorpay order
+```
+
+After an allowed payment begins, signed gateway events determine what becomes
+trusted history. End-to-end Razorpay Test Mode verification established that:
 
 - only `ALLOW` creates a real Razorpay order; `REVIEW` and `BLOCK` create none;
 - Razorpay Standard Checkout is opened only for an eligible persisted request;
@@ -131,7 +209,7 @@ historical card diversity: the second signed failed payment increased distinct
 historical cards and card networks only after its webhook was accepted. Full
 evidence is in the [real Razorpay failure lifecycle report](reports/phase_5b_1_real_razorpay_failure_lifecycle.md).
 
-## Active runtime
+## What is running now
 
 The evaluator-facing application uses the frozen selection declared in
 [`configs/runtime_v3_1.yaml`](configs/runtime_v3_1.yaml).
@@ -148,12 +226,12 @@ The evaluator-facing application uses the frozen selection declared in
 | Calibration | `sigmoid` |
 | Policy | `validation-selected-v2` |
 | Evaluation | `pbrss-v1` |
-| Conclusion | **MIXED** |
+| Conclusion | **MIXED — strong attack detection, but too much legitimate review friction** |
 
 Model v2 remains in the repository as frozen historical evidence. It is not the
 current runtime model.
 
-## Dataset and model
+## How Sentinel learns card-testing behavior
 
 Dataset v4.1 is a synthetic causal-development corpus designed around both
 card-testing attacks and difficult legitimate behavior.
@@ -190,26 +268,35 @@ The key partition checks are explicit:
 ### Feature families
 
 The 44-feature contract summarizes merchant-visible, causal signals rather than
-listing or accepting client-computed risk attributes. Its main families are:
+accepting client-computed risk attributes. Its main families are:
 
-- short- and long-window request velocity;
-- trusted authorization and checkout outcome history;
-- historical card diversity and card-change behavior;
-- identity, customer, and device trust continuity;
-- session age, churn, and cross-session dynamics;
-- IP rotation and network-sharing behavior;
-- temporal retry cadence and gap shape; and
-- current and historical amount behavior.
+- **Velocity:** How many attempts happened recently, across short and long
+  windows?
+- **Outcome history:** Did previous verified attempts fail repeatedly, or did
+  earlier checkouts succeed?
+- **Card diversity:** How many different cards appeared in trusted historical
+  outcomes, and did the card change after a decline?
+- **Identity continuity:** Is this a known returning customer or device, or a
+  new identity?
+- **Session behavior:** Is the shopper repeatedly creating or switching
+  sessions?
+- **Network behavior:** Is the device rapidly changing IP or network context,
+  or sharing it unusually?
+- **Temporal shape:** Do attempts resemble a burst, retry loop, or slow drip?
+- **Amount behavior:** Are amounts changing repeatedly or staying around low
+  testing values?
 
 Current-card attributes and future outcomes remain outside the decision-time
 feature contract.
 
 ### Model v3.1
 
-Model v3.1 is a scikit-learn Histogram Gradient Boosting classifier bound to the
-44-feature `merchant-visible-causal-3.1` contract and calibrated with sigmoid
-calibration. Thirteen candidates were evaluated using actor-safe grouped
-cross-validation; the frozen selection is `hist_gb_2`.
+Model v3.1 looks at the 44 behavioral signals together and estimates how risky
+the current attempt looks using only history available at that moment. It is a
+scikit-learn Histogram Gradient Boosting classifier bound to the
+`merchant-visible-causal-3.1` contract and calibrated with sigmoid calibration.
+Thirteen candidates were evaluated using actor-safe grouped cross-validation;
+the frozen selection is `hist_gb_2`.
 
 | Parameter | Frozen value |
 |---|---:|
@@ -220,12 +307,13 @@ cross-validation; the frozen selection is `hist_gb_2`.
 | Calibration | `sigmoid` |
 | Feature count | `44` |
 
-## Key results
+## What the evaluation actually showed
 
-### A. Synthetic development validation
+### Development test
 
-These are held-out Dataset v4.1 development results, not production Razorpay
-performance.
+On the synthetic development environment, Model v3.1 separated attacks and
+legitimate traffic well. These are held-out Dataset v4.1 development results,
+not production Razorpay performance.
 
 | Metric | Result |
 |---|---:|
@@ -239,10 +327,12 @@ performance.
 | Expected calibration error | **0.0214** |
 | Counterfactual Pair Ordering Accuracy | **100% (20/20 pairs)** |
 
-### B. Shifted synthetic stress — PBRSS-v1
+### Harder shifted stress test
 
-PBRSS-v1 is a predeclared, consumed post-Blind remediation stress suite. Its
-frozen conclusion is **MIXED**.
+When the traffic distribution changed, attack detection stayed strong, but too
+many legitimate checkouts were sent to `REVIEW`. PBRSS-v1 is a predeclared,
+consumed post-Blind remediation stress suite. Its frozen conclusion is **MIXED
+— strong attack detection, but too much legitimate review friction**.
 
 | Metric | Result |
 |---|---:|
@@ -255,7 +345,7 @@ frozen conclusion is **MIXED**.
 | Brier score | **0.156037** |
 | Expected calibration error | **0.140679** |
 | Log loss | **0.6538091381** |
-| Conclusion | **MIXED** |
+| Conclusion | **MIXED — strong attack detection, but too much legitimate review friction** |
 
 Attack coverage remained strong, but legitimate review friction and calibration
 degraded substantially under shift.
@@ -275,18 +365,19 @@ These are different synthetic distributions with different purposes. They are
 not an apples-to-apples leaderboard or a controlled estimate of production
 generalization.
 
-## Evaluation journey
+## How each failed test changed the next version
 
 The project evolved through evidence, including results that invalidated prior
 assumptions.
 
-| Stage | What changed | Evaluation and result | What was learned |
-|---|---|---|---|
-| v1 baseline | Initial causal behavioral model and policy | Blind v1.1, historical baseline | Patient and warmed-up attacks exposed gaps in short-window behavior and permanent trust credit |
-| v2 | Expanded causal history, identity continuity, frozen Model v2 and Policy v2 | Blind v2: **WEAK** | Attack coverage improved, but legitimate dunning and retry friction failed acceptance targets |
-| v3 redesign | Added relationship, diversity, continuity, and interaction concepts | Development experiment: **REJECTED** | Strong-looking metrics were invalidated by actor/group leakage and pseudo-features |
-| v3.1 + Dataset v4.1 | Removed pseudo-features; introduced actor-safe/group-safe partitions and a 44-feature contract | Development validation: strong discrimination and low friction | Correct partitioning and causal relationship features materially changed the evidence quality |
-| PBRSS-v1 | Froze Model v3.1 and tested a shifted post-remediation distribution once | **MIXED** | Attack coverage held, but ordinary-checkout review friction and calibration degraded |
+| Stage | Result | What changed or was learned |
+|---|---|---|
+| v1 | First behavioral baseline | Established the causal pre-authorization approach |
+| v2 | More historical behavior | Added stronger history and identity continuity |
+| Blind v2 | **WEAK — attack coverage existed, but legitimate friction was unacceptable** | Exposed dunning and retry friction |
+| v3 | **REJECTED** despite stronger-looking metrics | Audit found grouping leakage and ungrounded pseudo-features |
+| v3.1 | Rebuilt with actor-safe evaluation | Used group-safe partitions and 44 causal features |
+| PBRSS-v1 | **MIXED — strong attack detection, but too much legitimate review friction** | Shifted stress exposed calibration and ordinary-checkout friction |
 
 ### Historical Blind v2 result
 
@@ -303,7 +394,7 @@ evaluation.
 | ROC-AUC | **0.735120** |
 | Brier score | **0.152069** |
 | Expected calibration error | **0.117139** |
-| Verdict | **WEAK** |
+| Verdict | **WEAK — attack coverage existed, but legitimate friction was unacceptable** |
 
 Its frozen governance state is `evaluated=true`, `consumed=true`, and
 `post_blind_tuning=false`.
@@ -311,12 +402,12 @@ Its frozen governance state is `evaluated=true`, `consumed=true`, and
 ```mermaid
 flowchart LR
     A[v1 baseline] --> B[v2]
-    B --> C[Blind v2<br/>WEAK]
+    B --> C[Blind v2<br/>WEAK: some attack coverage,<br/>unacceptable friction]
     C --> D[v3 redesign]
     D --> E[v3 REJECTED<br/>leakage + pseudo-features]
     E --> F[v3.1 + Dataset v4.1<br/>actor-safe development]
     F --> G[Strong development<br/>validation]
-    G --> H[PBRSS-v1<br/>MIXED]
+    G --> H[PBRSS-v1<br/>MIXED: strong detection,<br/>high review friction]
 
     classDef weak fill:#fff7ed,stroke:#ea580c;
     classDef rejected fill:#fef2f2,stroke:#dc2626;
@@ -326,12 +417,16 @@ flowchart LR
     class F,G current;
 ```
 
-The rejected v3 experiment and weak Blind v2 result are retained as provenance,
-not hidden as failed iterations.
+The v3 experiment produced stronger-looking metrics, but it was rejected after
+the audit found grouping leakage and ungrounded pseudo-features. The rejected v3
+experiment and weak Blind v2 result are retained as provenance, not hidden as
+failed iterations.
 
-## Visual results
+## The pattern becomes clear after repeated attempts
 
-### Detection delay
+### Behavioral history changes the decision
+
+**23.20% detected by attempt 1 → 92.16% by attempt 3 → 96.40% by attempt 5**
 
 ![PBRSS-v1 cumulative attack detection by attempt](artifacts/figures/pbrss_detection_delay.png)
 
@@ -342,15 +437,18 @@ not hidden as failed iterations.
 | 3 | **92.16%** |
 | 5 | **96.40%** |
 
-One attempt often provides too little evidence. The pattern becomes much clearer
-as trusted sequential behavior accumulates, with the largest gain at attempt 3.
+One transaction may not provide enough evidence. Repeated behavior reveals the
+card-testing pattern, with the largest gain at attempt 3.
 
-### Legitimate friction under shift
+### Where the current model becomes too cautious
 
 ![PBRSS-v1 legitimate friction by scenario](artifacts/figures/pbrss_legitimate_friction.png)
 
-The main product limitation is visible rather than averaged away: overall
-legitimate `REVIEW+` is **20.72%**, and ordinary checkout reaches **25.30%**.
+On PBRSS-v1, Sentinel hard-blocked only **0.16%** of legitimate devices, but sent
+**20.72%** to `REVIEW`. Ordinary checkout reached **25.30%** `REVIEW+`. That
+level of customer friction is too high for production, which is why
+`production_ready` remains **false**. The Brier and ECE results above also show
+that calibration degraded under this shifted distribution.
 
 ### Local HTTP performance
 
@@ -370,7 +468,7 @@ persistence.
 
 This is a **local benchmark**, not a production SLA.
 
-## Ablation summary
+## Which signals actually mattered
 
 - The relationship/entity feature family produced the largest measured
   performance loss when removed.
@@ -382,10 +480,17 @@ This is a **local benchmark**, not a production SLA.
 See the [full Model v3.1 ablation report](reports/phase_2_6_model_v3_1_ablations.md)
 for the controlled experiments and scenario-level results.
 
-## Engineering reliability
+## Duplicate clicks, restarts and late webhooks should not break payment state
 
-The runtime is designed as a stateful payment control, not a stateless model
-endpoint:
+These safeguards protect the behavioral record around a payment:
+
+- **Duplicate Pay click:** should not create another decision or order.
+- **Late webhook:** should not move a captured or failed payment backward.
+- **Backend restart:** should not forget previous behavioral history.
+- **Browser failure callback:** should not be trusted as a bank outcome.
+
+The runtime therefore behaves as a stateful payment control, not a stateless
+model endpoint:
 
 - exact retries return the persisted decision without rescoring;
 - changed-content identifier reuse returns a conflict;
@@ -397,7 +502,9 @@ endpoint:
 - runtime manifests verify the active feature, model, policy, and evaluation
   artifacts before readiness.
 
-## Security
+## What Sentinel trusts — and what it rejects
+
+Sentinel treats the browser as untrusted for payment outcomes.
 
 - HMAC-SHA256 protects persisted customer, device, session, card-reference, and
   IP identifiers.
@@ -443,7 +550,7 @@ archive/                      Superseded and historical development evidence
 `archive/` preserves meaningful provenance without presenting superseded work as
 part of the active system.
 
-## Local setup
+## Run it locally
 
 Requirements: Python 3.11 and Node.js 22.13.1 or newer.
 
@@ -509,7 +616,7 @@ docker run --rm \
 This describes the repository's container packaging; it is not a claim of
 production deployment or production readiness.
 
-## Testing and reproducibility
+## How to verify the project yourself
 
 ```bash
 ruff format --check .
@@ -543,25 +650,31 @@ The two verifiers serve different integrity boundaries:
 Slow regeneration, training, and ignored-data-dependent checks are retained
 behind the `slow` pytest marker and are not clean-clone release gates.
 
-## Limitations
+## Where Sentinel still fails
 
-- Development data is synthetic.
-- PBRSS-v1 is a synthetic shifted stress suite, not a fresh independent blind
-  benchmark and not production traffic.
-- Historical Blind v2 concluded **WEAK**; active PBRSS-v1 concluded **MIXED**.
-- PBRSS-v1 legitimate `REVIEW+` is **20.72%**, including **25.30%** on ordinary
-  checkout.
-- Calibration degraded materially under the shifted stress distribution.
-- Distributed attacks remain difficult to hard-block consistently.
-- Razorpay verification is Test Mode only; no real card network was charged.
-- There is no production traffic validation.
-- SQLite and the transition lock are a single-process design.
-- Production authentication, tenant isolation, distributed state, queue
-  reconciliation, rate limiting, and drift monitoring are not implemented.
+- **Synthetic evidence:** Development data and PBRSS-v1 are synthetic. PBRSS-v1
+  is a shifted stress suite, not a fresh independent blind benchmark or
+  production traffic.
+- **Earlier failure:** Historical Blind v2 was **WEAK — attack coverage existed,
+  but legitimate friction was unacceptable**.
+- **Current mixed result:** PBRSS-v1 was **MIXED — strong attack detection, but
+  too much legitimate review friction**.
+- **Customer friction:** PBRSS-v1 sent **20.72%** of legitimate devices to
+  `REVIEW+`, including **25.30%** in ordinary checkout.
+- **Calibration shift:** The probabilities learned on development traffic did
+  not transfer cleanly to the shifted stress traffic.
+- **Distributed attacks:** These remain difficult to hard-block consistently.
+- **Test Mode only:** No real card network was charged, and there is no
+  production traffic validation.
+- **Single-process state:** SQLite and the transition lock are not a distributed
+  storage design.
+- **Missing production controls:** Production authentication, tenant isolation,
+  distributed state, queue reconciliation, rate limiting, and drift monitoring
+  are not implemented.
 
 These constraints are why `production_ready` remains **false**.
 
-## Evaluator evidence
+## Want to verify the numbers?
 
 - [Dataset v4.1 audit](reports/phase_2_6_dataset_v4_1_audit.md)
 - [Model v3.1 development validation](reports/phase_2_6_model_v3_1_development.md)
@@ -574,7 +687,7 @@ These constraints are why `production_ready` remains **false**.
 
 Additional technical evidence is available in [`reports/`](reports/).
 
-## Project status
+## Final project status
 
 | Field | Final status |
 |---|---|
@@ -583,7 +696,7 @@ Additional technical evidence is available in [`reports/`](reports/).
 | Features | **44** |
 | Policy | Policy v2 |
 | Evaluation | PBRSS-v1 |
-| Conclusion | **MIXED** |
+| Conclusion | **MIXED — strong attack detection, but too much legitimate review friction** |
 | Production ready | **false** |
 
 Card-Testing Sentinel demonstrates how behavioral risk can be evaluated before
