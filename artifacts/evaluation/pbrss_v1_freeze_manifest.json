@@ -1,0 +1,93 @@
+{
+  "calibration": "sigmoid",
+  "consumed": false,
+  "counts": {
+    "attack_devices": 1250,
+    "authorization_requests": 20714,
+    "devices": 5000,
+    "events": 52462,
+    "legitimate_devices": 3750,
+    "merchants": 16,
+    "scenarios": {
+      "b2b_multi_corporate_card": 250,
+      "charity_micro_donation_spike": 500,
+      "hybrid_credential_stuffing_probe": 250,
+      "mixed_card_probe": 750,
+      "ordinary_checkout": 3000,
+      "stealth_low_amount_drip": 250
+    }
+  },
+  "evaluated": false,
+  "feature_contract_sha256": "af66f693eee5043f0e97dfef1c31b1773ae480e38228f47612575d336abe2ce0",
+  "feature_contract_version": "merchant-visible-causal-3.1",
+  "files": {
+    "dataset/features_v3_1.csv": {
+      "path": "data/generated/post_blind_stress_v1/features_v3_1.csv",
+      "sha256": "b810cf0e7ff9c363267a653be11651d8351ca672b591b63c2c90e59ec795a3c4"
+    },
+    "dataset/labels.csv": {
+      "path": "data/generated/post_blind_stress_v1/labels.csv",
+      "sha256": "79f60ba2eccdef71e673bd70479681f70c04e90e2fb22232b96f2bbb2b9bd056"
+    },
+    "dataset/manifest.json": {
+      "path": "data/generated/post_blind_stress_v1/manifest.json",
+      "sha256": "673eaaf921e85f0ada71028e4bcc94d8ab1d869d429c10fb413cfec8e553012b"
+    },
+    "dataset/raw_events.csv": {
+      "path": "data/generated/post_blind_stress_v1/raw_events.csv",
+      "sha256": "21f1c0db7c370e42a95866fcec4743209e462b452a7f0f66b257e4c35214a570"
+    },
+    "foundation/feature_contract": {
+      "path": "artifacts/model_v3_1/feature_contract.json",
+      "sha256": "522aa6327617bfed687bd2f0955405b5f63f6595fb0c86da9077b4442af554a8"
+    },
+    "foundation/model": {
+      "path": "artifacts/model_v3_1/risk_model_v3_1.joblib",
+      "sha256": "093254b63674f50b62caf5eddeaeba47d79f9327902e2567ffed75418a59b1e4"
+    },
+    "foundation/model_metadata": {
+      "path": "artifacts/model_v3_1/metadata.json",
+      "sha256": "0c6c4f1f30b4e585022189bfdb10e4bf7c6d1efbe646abd1ec5fbdd4dca3592f"
+    },
+    "foundation/policy": {
+      "path": "artifacts/policy_v2/operational_policy_v2.json",
+      "sha256": "8e874ef83085b9bac063c3b0ac3044bb3c171071d00bf2db44c0390d944fe74c"
+    },
+    "source/config": {
+      "path": "configs/post_blind_stress_v1.yaml",
+      "sha256": "6a7030cda45ab1228f63e1297d0a418a15ca07063c603d3df12e08da59c1b99f"
+    },
+    "source/evaluation_pipeline": {
+      "path": "pipelines/evaluate_pbrss_v1_once.py",
+      "sha256": "c6086713683a1bc473be846c027c3e5a1b1095eec167f146cecadcac052c377e"
+    },
+    "source/evaluator": {
+      "path": "src/card_testing_sentinel/ml/pbrss_v1_evaluation.py",
+      "sha256": "ecc27d8a7e3a53b6f6f3e088fb3bab6fe0044359fc270aa2a7d3aa59826049ce"
+    },
+    "source/feature_engine": {
+      "path": "src/card_testing_sentinel/features/engine_v3.py",
+      "sha256": "bf3d564b1ed696eef937dac7259dba6ad964fe1737115808e0107e22130e6a50"
+    },
+    "source/feature_replay": {
+      "path": "src/card_testing_sentinel/features/batch_v3.py",
+      "sha256": "a70cc497cf39e7b4cb64437a6918a703b4f31918baf5bdb69996e4568d004849"
+    },
+    "source/generation_pipeline": {
+      "path": "pipelines/generate_post_blind_stress_v1.py",
+      "sha256": "455b3fce8e97a281eb36cd220421b89c67a60bcc27fa08d7213928c51316dff9"
+    },
+    "source/generator": {
+      "path": "src/card_testing_sentinel/ml/pbrss_v1_generator.py",
+      "sha256": "914d766b3e8f174875e9bc08da7788f88aaf9a24b43096ed4be1ac190ed42725"
+    }
+  },
+  "generator_version": "pbrss-v1-generator-1",
+  "model_version": "model-v3.1",
+  "one_score_only": true,
+  "pbrss_machinery_freeze_commit": "5941689847ed7a44f2db02fc86607dc619e6167c",
+  "policy_version": "validation-selected-v2",
+  "pre_pbrss_model_freeze_commit": "1c9dab4ed2902b4207e6758f1c929fee1b8a08dc",
+  "spec_version": "pbrss-v1-frozen-spec",
+  "suite_id": "pbrss-v1"
+}
