@@ -1,0 +1,37 @@
+version: phase-4d-v1
+
+evaluation_basis:
+  evaluation: pbrss-v1
+  unit: device_profile
+  attack_review_or_higher_rate: 0.964
+  attack_block_rate: 0.5912
+  legitimate_review_or_higher_rate: 0.2072
+  legitimate_block_rate: 0.0016
+
+scenarios:
+  quiet_day:
+    title: Quiet day
+    total_profiles: 100000
+    attack_prevalence: 0.001
+    costs_inr:
+      missed_attack: 2000
+      legitimate_review: 40
+      legitimate_block: 500
+
+  active_attack_campaign:
+    title: Active attack campaign
+    total_profiles: 100000
+    attack_prevalence: 0.02
+    costs_inr:
+      missed_attack: 2000
+      legitimate_review: 40
+      legitimate_block: 500
+
+  high_value_merchant:
+    title: High-value merchant
+    total_profiles: 100000
+    attack_prevalence: 0.005
+    costs_inr:
+      missed_attack: 10000
+      legitimate_review: 100
+      legitimate_block: 1500

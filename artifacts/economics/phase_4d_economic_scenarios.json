@@ -1,0 +1,98 @@
+{
+  "baseline": {
+    "assumption": "all modeled attack profiles proceed",
+    "formula": "attack_profiles * missed_attack_cost",
+    "name": "no_sentinel"
+  },
+  "disclaimer": "All monetary assumptions in this analysis are illustrative merchant-side scenario inputs. They are not measured Razorpay economics, production savings, or observed merchant losses.",
+  "evaluation_basis": {
+    "attack_block_rate": 0.5912,
+    "attack_review_or_higher_rate": 0.964,
+    "evaluation": "pbrss-v1",
+    "legitimate_block_rate": 0.0016,
+    "legitimate_review_only_rate": 0.2056,
+    "legitimate_review_or_higher_rate": 0.2072,
+    "pbrss_rescored": false,
+    "synthetic_evaluation_basis": true,
+    "unit": "device_profile"
+  },
+  "purpose": "illustrative_device_profile_expected_value_analysis",
+  "scenarios": {
+    "active_attack_campaign": {
+      "attack_missed": 72.0,
+      "attack_prevalence": 0.02,
+      "attack_profiles": 2000.0,
+      "attack_surfaced": 1928.0,
+      "break_even_attack_prevalence": 0.004658692922751603,
+      "break_even_position": "above_break_even",
+      "costs_inr": {
+        "legitimate_block": 500.0,
+        "legitimate_review": 40.0,
+        "missed_attack": 2000.0
+      },
+      "false_block_cost_inr": 78400.0,
+      "legitimate_hard_block": 156.8,
+      "legitimate_profiles": 98000.0,
+      "legitimate_review_only": 20148.8,
+      "net_illustrative_value_inr": 2971648.0,
+      "no_sentinel_attack_cost_inr": 4000000.0,
+      "protected_attack_value_inr": 3856000.0,
+      "review_friction_cost_inr": 805952.0,
+      "sentinel_missed_attack_cost_inr": 144000.0,
+      "title": "Active attack campaign",
+      "total_profiles": 100000.0,
+      "total_sentinel_cost_inr": 1028352.0
+    },
+    "high_value_merchant": {
+      "attack_missed": 18.0,
+      "attack_prevalence": 0.005,
+      "attack_profiles": 500.0,
+      "attack_surfaced": 482.0,
+      "break_even_attack_prevalence": 0.0023760835189217387,
+      "break_even_position": "above_break_even",
+      "costs_inr": {
+        "legitimate_block": 1500.0,
+        "legitimate_review": 100.0,
+        "missed_attack": 10000.0
+      },
+      "false_block_cost_inr": 238800.00000000003,
+      "legitimate_hard_block": 159.20000000000002,
+      "legitimate_profiles": 99500.0,
+      "legitimate_review_only": 20457.2,
+      "net_illustrative_value_inr": 2535480.0,
+      "no_sentinel_attack_cost_inr": 5000000.0,
+      "protected_attack_value_inr": 4820000.0,
+      "review_friction_cost_inr": 2045720.0,
+      "sentinel_missed_attack_cost_inr": 180000.0,
+      "title": "High-value merchant",
+      "total_profiles": 100000.0,
+      "total_sentinel_cost_inr": 2464520.0
+    },
+    "quiet_day": {
+      "attack_missed": 3.6000000000000085,
+      "attack_prevalence": 0.001,
+      "attack_profiles": 100.0,
+      "attack_surfaced": 96.39999999999999,
+      "break_even_attack_prevalence": 0.004658692922751603,
+      "break_even_position": "below_break_even",
+      "costs_inr": {
+        "legitimate_block": 500.0,
+        "legitimate_review": 40.0,
+        "missed_attack": 2000.0
+      },
+      "false_block_cost_inr": 79920.0,
+      "legitimate_hard_block": 159.84,
+      "legitimate_profiles": 99900.0,
+      "legitimate_review_only": 20539.44,
+      "net_illustrative_value_inr": -708697.6,
+      "no_sentinel_attack_cost_inr": 200000.0,
+      "protected_attack_value_inr": 192799.99999999997,
+      "review_friction_cost_inr": 821577.6,
+      "sentinel_missed_attack_cost_inr": 7200.000000000017,
+      "title": "Quiet day",
+      "total_profiles": 100000.0,
+      "total_sentinel_cost_inr": 908697.6
+    }
+  },
+  "version": "phase-4d-v1"
+}
