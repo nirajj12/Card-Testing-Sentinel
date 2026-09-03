@@ -22,6 +22,7 @@ RUN python -m pip install --upgrade pip==26.2.1 setuptools==84.0.0 \
 COPY src ./src
 COPY configs ./configs
 COPY artifacts ./artifacts
+COPY reports ./reports
 COPY --from=frontend-build /build/frontend/dist ./frontend/dist
 COPY scripts/run_app.py ./scripts/run_app.py
 RUN python -m pip install --no-deps --no-build-isolation . \
