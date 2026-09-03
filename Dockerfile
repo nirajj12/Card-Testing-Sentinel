@@ -31,7 +31,7 @@ RUN python -m pip install --no-deps --no-build-isolation . \
     && chown -R sentinel:sentinel /app/data/runtime
 
 USER sentinel
-VOLUME ["/app/data/runtime"]
+
 EXPOSE 8000
 
 HEALTHCHECK --interval=10s --timeout=3s --start-period=20s --retries=3 \
