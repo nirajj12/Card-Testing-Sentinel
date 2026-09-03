@@ -493,3 +493,10 @@ Card-Testing-Sentinel/
 Card-Testing Sentinel demonstrates a straightforward payment-risk principle:
 
 > **Make the risk decision before Razorpay order creation, learn only from authoritative gateway outcomes after payment lifecycle completion, and evaluate both fraud detection and legitimate-customer cost under distribution shift.**
+
+---
+
+## Author
+
+**Niraj Kumar**<br>
+[GitHub](https://github.com/nirajj12) · [LinkedIn](https://www.linkedin.com/in/niraj-kumar-8255111b8/)
