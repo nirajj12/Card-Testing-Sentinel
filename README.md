@@ -19,7 +19,7 @@
 <a href="docs/dataset.md"><img src="https://img.shields.io/badge/Dataset-v4.1%20Story-FFA500?style=for-the-badge" alt="Dataset Story"></a>
 <a href="reports/README.md"><img src="https://img.shields.io/badge/Evidence-Technical%20Index-333333?style=for-the-badge" alt="Technical Evidence"></a>
 
-<br><br>
+<br>
 
 [![Python 3.11](https://img.shields.io/badge/Python-3.11-3776AB?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688?style=flat-square&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
@@ -31,37 +31,13 @@
 
 </div>
 
-<br>
-
 <div align="center">
   <img src="docs/screenshots/sentinel-ui-hero.png" alt="Card-Testing Sentinel — Pre-Authorization Protection Interface" width="95%">
 </div>
 
 ---
 
-## Table of Contents
-
-* [Evaluator Snapshot](#evaluator-snapshot)
-* [The Card-Testing Problem](#the-card-testing-problem)
-* [What Sentinel Does](#what-sentinel-does)
-* [How It Works](#how-it-works)
-* [Trust & Causality](#trust--causality)
-* [Why Synthetic Sequential Data?](#why-synthetic-sequential-data)
-* [How the Project Evolved](#how-the-project-evolved)
-* [Risk Signals & Current Model](#risk-signals--current-model)
-* [Evaluation](#evaluation)
-* [What Worked / What Needs Improvement](#what-worked--what-needs-improvement)
-* [Merchant Economics](#merchant-economics)
-* [Razorpay Integration](#razorpay-integration)
-* [Reliability & Verification](#reliability--verification)
-* [Limitations](#limitations)
-* [Quick Start](#quick-start)
-* [Documentation Directory](#documentation-directory)
-* [Project Structure](#project-structure)
-
----
-
-## Evaluator Snapshot
+## Project Snapshot
 
 Card-Testing Sentinel is a behavioral risk layer that evaluates checkout risk **before** a Razorpay payment order is created. Instead of waiting for an authorization failure, Sentinel examines trusted history from earlier attempts on a device, converts that history into 44 causal behavioral signals, and decides whether Razorpay order creation should be permitted.
 
@@ -79,6 +55,28 @@ Card-Testing Sentinel is a behavioral risk layer that evaluates checkout risk **
 | **Stress PR-AUC** | **0.6470** |
 | **Final stress verdict** | **`MIXED`** |
 | **Production ready** | **`false`** |
+
+---
+
+## Table of Contents
+
+* [Project Snapshot](#project-snapshot)
+* [The Card-Testing Problem](#the-card-testing-problem)
+* [What Sentinel Does](#what-sentinel-does)
+* [How It Works](#how-it-works)
+* [Trust & Causality](#trust--causality)
+* [Why Synthetic Sequential Data?](#why-synthetic-sequential-data)
+* [How the Project Evolved](#how-the-project-evolved)
+* [Risk Signals & Current Model](#risk-signals--current-model)
+* [Evaluation](#evaluation)
+* [What Worked / What Needs Improvement](#what-worked--what-needs-improvement)
+* [Merchant Economics](#merchant-economics)
+* [Razorpay Integration](#razorpay-integration)
+* [Reliability & Verification](#reliability--verification)
+* [Limitations](#limitations)
+* [Quick Start](#quick-start)
+* [Documentation Directory](#documentation-directory)
+* [Project Structure](#project-structure)
 
 ---
 
