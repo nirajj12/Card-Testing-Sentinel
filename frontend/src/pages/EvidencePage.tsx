@@ -56,6 +56,10 @@ export function EvidencePage() {
         </aside>
       </header>
 
+      <aside className="evidence-scope page-width" aria-label="Evaluation evidence scope">
+        <strong>Evidence scope</strong><span>Frozen PBRSS-v1 shifted stress</span><i /><span>Development validation reported separately</span><i /><span>Conclusion: MIXED</span><i /><span>production_ready=false</span>
+      </aside>
+
       <section className="results-overview page-width" aria-labelledby="overview-title">
         <header className="results-section-heading">
           <span>Buildathon metrics at a glance</span>

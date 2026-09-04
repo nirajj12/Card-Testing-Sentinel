@@ -46,10 +46,15 @@ describe("EvidencePage", () => {
     expect(screen.getByText(/not measured Razorpay economics, observed savings/)).toBeVisible();
   });
 
-  it("does not expose internal development or artifact terminology", () => {
+  it("makes evaluation scope explicit without exposing implementation artifacts", () => {
     const { container } = render(<EvidencePage />);
     const visible = container.textContent || "";
-    expect(visible).not.toMatch(/PBRSS|Model v(?:1|2|3)|Blind v|MIXED/);
+    const scope = screen.getByLabelText("Evaluation evidence scope");
+    expect(scope).toHaveTextContent("Frozen PBRSS-v1 shifted stress");
+    expect(scope).toHaveTextContent("Development validation reported separately");
+    expect(scope).toHaveTextContent("Conclusion: MIXED");
+    expect(scope).toHaveTextContent("production_ready=false");
+    expect(visible).not.toMatch(/Model v(?:1|2|3)|Blind v/);
     expect(visible).not.toMatch(/artifact(?:s)?\//i);
     expect(visible).not.toMatch(/\bSHA\b|freeze commit|post_blind|post_stress/i);
   });

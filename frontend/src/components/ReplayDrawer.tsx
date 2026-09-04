@@ -77,6 +77,16 @@ function lifecycleValue(operation: Operation, field: "outcome_status" | "checkou
   return operation.authorization === "suppressed" ? "NOT CREATED" : field === "checkout_status" ? "NOT COMPLETED" : "NOT RECORDED";
 }
 
+function comparisonCopy(scenario: string) {
+  if (scenario === "burst_attacker") {
+    return <><strong>Best comparison: Flash-Sale Hard Retry</strong> — five fast legitimate retries remained ALLOW. Repeated payment failure alone is not card testing.</>;
+  }
+  if (scenario === "flash_hard_retry") {
+    return <><strong>Compare with Burst Card Testing</strong> — similar repeated checkout pressure can produce very different risk and policy behavior when the broader behavioral pattern changes.</>;
+  }
+  return <><strong>Compare with Genuine Retry:</strong> several payment declines can remain ALLOW when the surrounding behavior stays normal.</>;
+}
+
 export function ReplayDrawer({ open, onClose, onAttempt, system, initialScenario }: { open: boolean; onClose: () => void; onAttempt: (attempt: ActivityAttempt) => void; system: SystemStatus | null; initialScenario?: string }) {
   const [scenarios, setScenarios] = useState<Scenario[]>([]);
   const [selected, setSelected] = useState("normal_customer");
@@ -90,6 +100,7 @@ export function ReplayDrawer({ open, onClose, onAttempt, system, initialScenario
   const [message, setMessage] = useState("Select a scenario. Decisions are not predefined.");
   const playingRef = useRef(false);
   const closeRef = useRef<HTMLButtonElement>(null);
+  const dialogRef = useRef<HTMLElement>(null);
   const previousFocus = useRef<HTMLElement | null>(null);
   const onCloseRef = useRef(onClose);
   onCloseRef.current = onClose;
@@ -103,10 +114,49 @@ export function ReplayDrawer({ open, onClose, onAttempt, system, initialScenario
   useEffect(() => {
     if (!open) return;
     previousFocus.current = document.activeElement as HTMLElement;
+    const backgroundState: Array<{ element: HTMLElement; inert: boolean; inertAttribute: boolean; ariaHidden: string | null }> = [];
+    let branch = dialogRef.current;
+    while (branch?.parentElement && branch.parentElement !== document.body) {
+      const parent = branch.parentElement;
+      Array.from(parent.children).forEach((sibling) => {
+        if (!(sibling instanceof HTMLElement) || sibling === branch || sibling.classList.contains("drawer-backdrop")) return;
+        backgroundState.push({ element: sibling, inert: sibling.inert, inertAttribute: sibling.hasAttribute("inert"), ariaHidden: sibling.getAttribute("aria-hidden") });
+        sibling.inert = true;
+        sibling.setAttribute("inert", "");
+        sibling.setAttribute("aria-hidden", "true");
+      });
+      branch = parent;
+    }
     const timer = window.setTimeout(() => closeRef.current?.focus(), 50);
-    function escape(event: KeyboardEvent) { if (event.key === "Escape") closeDialog(); }
-    document.addEventListener("keydown", escape);
-    return () => { window.clearTimeout(timer); document.removeEventListener("keydown", escape); };
+    function containFocus(event: FocusEvent) {
+      if (!dialogRef.current?.contains(event.target as Node)) closeRef.current?.focus();
+    }
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") { closeDialog(); return; }
+      if (event.key !== "Tab" || !dialogRef.current) return;
+      const controls = Array.from(dialogRef.current.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+      ));
+      if (!controls.length) return;
+      const first = controls[0];
+      const last = controls[controls.length - 1];
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+      else if (!dialogRef.current.contains(document.activeElement)) { event.preventDefault(); (event.shiftKey ? last : first).focus(); }
+    }
+    document.addEventListener("focusin", containFocus);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.clearTimeout(timer);
+      document.removeEventListener("focusin", containFocus);
+      document.removeEventListener("keydown", handleKeyDown);
+      backgroundState.forEach(({ element, inert, inertAttribute, ariaHidden }) => {
+        element.inert = inert;
+        if (!inertAttribute) element.removeAttribute("inert");
+        if (ariaHidden === null) element.removeAttribute("aria-hidden");
+        else element.setAttribute("aria-hidden", ariaHidden);
+      });
+    };
   }, [open]);
 
   useEffect(() => { if (initialScenario && scenarioPresentations[initialScenario]) setSelected(initialScenario); }, [initialScenario]);
@@ -141,7 +191,6 @@ export function ReplayDrawer({ open, onClose, onAttempt, system, initialScenario
       };
       setSteps((current) => { setCursor(current.length); return [...current, item]; });
       setComplete(result.complete); onAttempt(item);
-      setMessage(`${scenarioPresentations[selected]?.label || selected} · backend returned ${result.operations.decision.toUpperCase()}`);
       return !result.complete;
     } catch (error) { setMessage(friendlyError(error)); return false; }
     finally { setBusy(false); }
@@ -185,16 +234,23 @@ export function ReplayDrawer({ open, onClose, onAttempt, system, initialScenario
   const riskDelta = active ? deltaText(active.operation.risk_score, previous?.operation.risk_score) : null;
   const evidence = active ? Object.entries(active.operation.evidence || {}).filter(([key]) => key in evidenceLabels) : [];
   const changedEvidence = active && previous ? evidence.filter(([key, value]) => previous.operation.evidence?.[key] !== value) : [];
+  const presentation = scenarioPresentations[selected];
+  const selectedStatus = active ? `${presentation?.label || selected} · selected attempt ${active.attempt} · ${active.operation.decision.toUpperCase()}` : message;
 
   return <AnimatePresence>{open && <>
-    <motion.button className="drawer-backdrop" onClick={closeDialog} aria-label="Close Sentinel Demo" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}/>
-    <motion.aside className="replay-drawer" role="dialog" aria-modal="true" aria-labelledby="replay-title" initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "100%" }}>
+    <motion.button type="button" tabIndex={-1} aria-hidden="true" className="drawer-backdrop" onClick={closeDialog} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}/>
+    <motion.aside ref={dialogRef} className="replay-drawer" role="dialog" aria-modal="true" aria-labelledby="replay-title" initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "100%" }}>
       <div className="drawer-head"><div><span>Controlled simulation</span><h2 id="replay-title">Replay Lab</h2></div><button ref={closeRef} type="button" onClick={closeDialog} aria-label="Close replay dialog"><X/></button></div>
       <aside className="replay-authenticity"><strong>Runtime-scored, not scripted decisions</strong><p>Replay Lab generates controlled behavior, but ALLOW / REVIEW / BLOCK is not predefined. Each attempt uses the same RiskService, FeatureEngineV3, Model v3.1, Policy v2 and state path as live prechecks.</p><small>Replay uses simulated lifecycle events, not Razorpay traffic.</small></aside>
 
-      <div className="scenario-groups"><span>Legitimate customer behavior</span><div className="scenario-grid">{scenarioButtons("legitimate")}</div><span>Suspicious behavior</span><div className="scenario-grid">{scenarioButtons("suspicious")}</div>{system?.model_status === "degraded_rules_only" && <p className="demo-notice">The model is unavailable; this run will use the published fallback rules.</p>}</div>
-      <p className="genuine-contrast"><strong>Compare with Genuine Retry:</strong> several payment declines can remain ALLOW when the surrounding behavior stays normal.</p>
-      <button className="primary-cta full" type="button" onClick={start} disabled={busy || Boolean(demoId)}>Start selected scenario <span>→</span></button>
+      {!demoId ? <>
+        <div className="scenario-groups"><span>Legitimate customer behavior</span><div className="scenario-grid">{scenarioButtons("legitimate")}</div><span>Suspicious behavior</span><div className="scenario-grid">{scenarioButtons("suspicious")}</div>{system?.model_status === "degraded_rules_only" && <p className="demo-notice">The model is unavailable; this run will use the published fallback rules.</p>}</div>
+        <p className="genuine-contrast">{comparisonCopy(selected)}</p>
+        <button className="primary-cta full" type="button" onClick={start} disabled={busy}>Start selected scenario <span>→</span></button>
+      </> : <>
+        <section className="active-scenario" aria-label="Active scenario"><div><strong>{presentation?.label || selected}</strong><span className={presentation?.group}>{presentation?.group.toUpperCase()}</span><small>{total} attempts</small></div><button type="button" onClick={reset} disabled={busy}><RotateCcw/>Reset demo</button></section>
+        <p className="genuine-contrast">{comparisonCopy(selected)}</p>
+      </>}
 
       <div className="replay-progress"><div><span>Selected attempt</span><strong>{active?.attempt || 0} / {total || "—"}</strong></div><div className="timeline"><i style={{ width: total ? `${((active?.attempt || 0) / total) * 100}%` : "0%" }}/></div></div>
       {steps.length > 0 && <ol className="replay-timeline" aria-label="Scenario attempts">{steps.map((item, index) => <li key={item.id}><button type="button" className={index === cursor ? "active" : ""} aria-pressed={index === cursor} aria-label={`Inspect attempt ${item.attempt}, ${item.operation.decision}`} onClick={() => setCursor(index)}><b>{item.attempt}</b><span>{item.operation.decision.toUpperCase()}<small>{scoreText(item.operation.risk_score)}</small></span><i>{index === 0 ? "Start" : deltaText(item.operation.risk_score, steps[index - 1].operation.risk_score)}</i></button></li>)}</ol>}
@@ -214,8 +270,8 @@ export function ReplayDrawer({ open, onClose, onAttempt, system, initialScenario
       </div> : <div className="replay-result"><p>{message}</p></div>}
 
       <div className="replay-controls"><button type="button" disabled={busy || cursor <= 0} onClick={() => setCursor(cursor - 1)}><ChevronLeft/>Previous</button><button type="button" disabled={(!playing && busy) || !demoId || complete} onClick={togglePlay}>{playing ? <Pause/> : <Play/>}{playing ? "Pause" : "Play"}</button><button type="button" disabled={busy || !demoId || (complete && cursor >= steps.length - 1)} onClick={next}>Next<StepForward/></button></div>
-      <p className="replay-message" aria-live="polite">{message}</p>
-      <button className="reset-demo" type="button" onClick={reset} disabled={busy}><RotateCcw/>Reset demo</button>
+      <p className="replay-message" aria-live="polite">{selectedStatus}</p>
+      {!demoId && <button className="reset-demo" type="button" onClick={reset} disabled={busy}><RotateCcw/>Reset demo</button>}
     </motion.aside>
   </>}</AnimatePresence>;
 }

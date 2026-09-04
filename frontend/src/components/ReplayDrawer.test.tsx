@@ -82,6 +82,57 @@ describe("ReplayDrawer", () => {
     expect(document.body.textContent).not.toMatch(/SHAP|contribution percentage|Razorpay webhook/i);
   });
 
+  it("collapses the catalog after start, shows scenario-aware comparison, and restores it on reset", async () => {
+    mockCatalog();
+    vi.spyOn(api, "demoStart").mockResolvedValue({ demo_id: "flash-demo", total_attempts: 5 });
+    render(<ReplayDrawer open onClose={vi.fn()} onAttempt={vi.fn()} system={{ ready: true, model_status: "ready" }}/>);
+
+    fireEvent.click(await screen.findByRole("button", { name: /Flash-Sale Hard Retry/ }));
+    expect(screen.getByText(/Compare with Burst Card Testing/)).toBeVisible();
+    fireEvent.click(screen.getByRole("button", { name: /Start selected scenario/ }));
+
+    const summary = await screen.findByRole("region", { name: "Active scenario" });
+    expect(summary).toHaveTextContent("Flash-Sale Hard Retry");
+    expect(summary).toHaveTextContent("LEGITIMATE");
+    expect(summary).toHaveTextContent("5 attempts");
+    expect(screen.queryByRole("button", { name: /Everyday Checkout/ })).not.toBeInTheDocument();
+    expect(screen.getByText(/similar repeated checkout pressure can produce very different risk and policy behavior/)).toBeVisible();
+
+    fireEvent.click(within(summary).getByRole("button", { name: /Reset demo/ }));
+    expect(await screen.findByRole("button", { name: /Everyday Checkout/ })).toBeVisible();
+    expect(screen.getByRole("button", { name: /Burst Card Testing/ })).toBeVisible();
+  });
+
+  it("keeps the completed Burst footer aligned with the selected attempt", async () => {
+    mockCatalog();
+    vi.spyOn(api, "demoStart").mockResolvedValue({ demo_id: "burst-demo", total_attempts: 10 });
+    const decisions: Operation["decision"][] = ["allow", "allow", "review", "allow", "review", "allow", "block", "allow", "allow", "review"];
+    let stepCall = 0;
+    vi.spyOn(api, "demoStep").mockImplementation(async () => {
+      const attempt = ++stepCall;
+      return step(attempt, operation({ decision: decisions[attempt - 1], risk_score: attempt / 10 }), attempt === 10);
+    });
+    render(<ReplayDrawer open onClose={vi.fn()} onAttempt={vi.fn()} system={{ ready: true, model_status: "ready" }}/>);
+
+    fireEvent.click(await screen.findByRole("button", { name: /Burst Card Testing/ }));
+    expect(screen.getByText(/five fast legitimate retries remained ALLOW/)).toBeVisible();
+    fireEvent.click(screen.getByRole("button", { name: /Start selected scenario/ }));
+    for (let attempt = 1; attempt <= 10; attempt += 1) {
+      await waitFor(() => expect(screen.getByRole("button", { name: /Next/ })).toBeEnabled());
+      fireEvent.click(screen.getByRole("button", { name: /Next/ }));
+      await screen.findByRole("button", { name: new RegExp(`Inspect attempt ${attempt},`) });
+    }
+
+    fireEvent.click(screen.getByRole("button", { name: /Inspect attempt 7, block/ }));
+    expect(within(screen.getByLabelText("Selected attempt decision")).getByText("BLOCK")).toBeVisible();
+    expect(screen.getByText("Burst Card Testing · selected attempt 7 · BLOCK")).toBeVisible();
+    expect(screen.queryByText(/backend returned REVIEW/)).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: /Inspect attempt 10, review/ }));
+    expect(within(screen.getByLabelText("Selected attempt decision")).getByText("REVIEW")).toBeVisible();
+    expect(screen.getByText("Burst Card Testing · selected attempt 10 · REVIEW")).toBeVisible();
+  });
+
   it("shows precise model risk, no first delta, first-attempt REVIEW truth, policy evidence and suppression", async () => {
     mockCatalog();
     vi.spyOn(api, "demoStep").mockResolvedValue(step(1, operation({
@@ -181,5 +232,27 @@ describe("ReplayDrawer", () => {
     fireEvent.keyDown(document, { key: "Escape" });
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
     expect(trigger).toHaveFocus();
+  });
+
+  it("traps keyboard focus inside Replay and keeps the backdrop out of the tab order", async () => {
+    mockCatalog();
+    function Harness() { return <><button type="button">Background action</button><ReplayDrawer open onClose={vi.fn()} onAttempt={vi.fn()} system={{ ready: true, model_status: "ready" }}/></>; }
+    const { container } = render(<Harness/>);
+    const background = screen.getByText("Background action");
+    const close = await screen.findByRole("button", { name: "Close replay dialog" });
+    await waitFor(() => expect(close).toHaveFocus());
+    const reset = screen.getByRole("button", { name: /Reset demo/ });
+
+    fireEvent.keyDown(document, { key: "Tab", shiftKey: true });
+    expect(reset).toHaveFocus();
+    fireEvent.keyDown(document, { key: "Tab" });
+    expect(close).toHaveFocus();
+
+    background.focus();
+    expect(close).toHaveFocus();
+    expect(background).toHaveAttribute("inert");
+    expect(background).toHaveAttribute("aria-hidden", "true");
+    expect(container.querySelector(".drawer-backdrop")).toHaveAttribute("tabindex", "-1");
+    expect(container.querySelector(".drawer-backdrop")).toHaveAttribute("aria-hidden", "true");
   });
 });
