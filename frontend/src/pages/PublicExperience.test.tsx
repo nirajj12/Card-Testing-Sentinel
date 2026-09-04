@@ -15,6 +15,7 @@ describe("public navigation and home", () => {
     expect(screen.getAllByRole("link", { name: "Try protected checkout" })[0]).toHaveAttribute("href", "/checkout");
     expect(screen.getAllByRole("link", { name: "Run attack simulation" })[0]).toHaveAttribute("href", "/checkout?demo=burst_attacker");
     expect(screen.getByText(/Razorpay Test Mode/)).toBeVisible();
+    expect(screen.getByText("Illustrative sequence — Replay decisions are runtime-scored and may rise or fall.")).toBeVisible();
   });
 
   it("exposes mobile navigation state and closes with Escape", () => {
