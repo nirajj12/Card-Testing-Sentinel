@@ -224,6 +224,7 @@ class RiskService:
         try:
             self.repository.save_request(record)
         except Exception:
+            LOGGER.error("precheck persistence failed; rebuilding runtime state")
             self.rebuild_from_persistence()
             raise
         LOGGER.info(
@@ -397,6 +398,10 @@ class RiskService:
                 )
             )
         except Exception:
+            LOGGER.error(
+                "lifecycle persistence failed event_type=%s; rebuilding runtime state",
+                event_type,
+            )
             self.rebuild_from_persistence()
             raise
         return TransitionResponse(

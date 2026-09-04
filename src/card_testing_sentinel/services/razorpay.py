@@ -12,6 +12,7 @@ import base64
 import hashlib
 import hmac
 import json
+import logging
 import os
 import urllib.error
 import urllib.request
@@ -36,6 +37,7 @@ from card_testing_sentinel.security.identifiers import IdentifierProtector
 from card_testing_sentinel.services.risk_service import RiskService
 
 RAZORPAY_ORDERS_URL = "https://api.razorpay.com/v1/orders"
+LOGGER = logging.getLogger("card_testing_sentinel.razorpay")
 PAYMENT_STATE_TRANSITIONS = {
     "signature_verified": {
         "signature_verified",
@@ -71,6 +73,11 @@ FAILURE_REASONS = {
     "international_blocked": "international_blocked",
     "international_transaction_not_allowed": "international_blocked",
 }
+
+
+def _safe_reference(value: str) -> str:
+    """Return a short non-reversible reference suitable for logs."""
+    return hashlib.sha256(value.encode()).hexdigest()[:12]
 
 
 def _trusted_payment_metadata(payment: dict) -> dict:
@@ -186,10 +193,12 @@ class RazorpayClient:
             ) as response:
                 result = json.loads(response.read().decode())
         except urllib.error.HTTPError as error:
+            LOGGER.warning("Razorpay order rejected http_status=%s", error.code)
             raise PaymentGatewayError(
                 f"Razorpay rejected order creation with HTTP {error.code}"
             ) from None
         except (urllib.error.URLError, TimeoutError, json.JSONDecodeError):
+            LOGGER.warning("Razorpay order request failed upstream_status=unavailable")
             raise PaymentGatewayError(
                 "Razorpay Test Mode order creation is temporarily unavailable"
             ) from None
@@ -294,6 +303,11 @@ class RazorpayCheckoutService:
                 status=str(remote.get("status", "created")),
             )
             self.repository.save_gateway_order(order)
+            LOGGER.info(
+                "Razorpay order created request_ref=%s order_ref=%s",
+                _safe_reference(request_id),
+                _safe_reference(order.razorpay_order_id),
+            )
             return self._order_response(order, client, idempotent_replay=False)
 
     async def mark_checkout_opened(
@@ -419,6 +433,10 @@ class RazorpayCheckoutService:
         self, *, raw_body: bytes, signature: str, delivery_id: str
     ) -> dict:
         if not signature or not self._verify_webhook_signature(raw_body, signature):
+            LOGGER.warning(
+                "Razorpay webhook rejected reason=invalid_signature delivery_ref=%s",
+                _safe_reference(delivery_id),
+            )
             raise PaymentSignatureError("Razorpay webhook signature is invalid")
         digest = hashlib.sha256(raw_body).hexdigest()
         async with self.lock:
@@ -451,6 +469,11 @@ class RazorpayCheckoutService:
             result = await self._apply_webhook_event(event_type, payload)
             self.repository.save_webhook_delivery(
                 StoredWebhookDelivery(delivery_id, digest, event_type)
+            )
+            LOGGER.info(
+                "trusted webhook accepted event_type=%s delivery_ref=%s",
+                event_type,
+                _safe_reference(delivery_id),
             )
             return {"accepted": True, "duplicate": False, **result}
 

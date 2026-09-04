@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 import os
 import time
 import uuid
@@ -43,6 +44,7 @@ from card_testing_sentinel.services.razorpay import (
 from card_testing_sentinel.services.risk_service import RiskService
 
 PROJECT_ROOT = project_root()
+LOGGER = logging.getLogger("card_testing_sentinel.app")
 
 
 def create_app(
@@ -96,9 +98,21 @@ def create_app(
             if bool(config.get("demo_mode")):
                 runtime.demo = DemoManager(service, protector)
             runtime.ready = True
+            LOGGER.info(
+                "application ready runtime=%s state_store=%s",
+                registry.runtime.get("version", "unknown"),
+                config.get("state_store", "unknown"),
+            )
         except Exception as error:
+            # Do not attach exception text or a traceback here: startup errors
+            # can originate in environment-backed integrations.
+            LOGGER.error(
+                "application startup failed error_type=%s", type(error).__name__
+            )
             runtime.ready = False
-            runtime.startup_error = f"{type(error).__name__}: {error}"
+            runtime.startup_error = (
+                f"{type(error).__name__}: runtime initialization failed"
+            )
         yield
         if runtime.demo is not None:
             runtime.demo.reset()
