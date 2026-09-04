@@ -49,11 +49,17 @@ export type Operation = {
   decision: Decision;
   risk_score: number | null;
   risk_band?: string;
+  risk_score_label?: string;
+  rule_score?: number;
   reason_codes: string[];
   latency_ms?: number;
   evidence?: Record<string, number | string>;
   protected_reference?: string;
   state_version?: number;
+  idempotent_replay?: boolean;
+  authorization?: "sent" | "suppressed";
+  outcome_status?: "approved" | "declined" | null;
+  checkout_status?: "completed" | null;
 };
 
 export type ActivityAttempt = {
@@ -62,6 +68,8 @@ export type ActivityAttempt = {
   amount: number;
   currency: string;
   timestamp?: string;
+  elapsed_seconds?: number;
+  campaign_active?: boolean;
   requestId?: string;
   source: "razorpay_test" | "replay";
   operation: Operation;
