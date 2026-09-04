@@ -21,12 +21,14 @@
 <br>
 
 [![Python 3.11](https://img.shields.io/badge/Python-3.11-3776AB?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688?style=flat-square&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
-[![React 18](https://img.shields.io/badge/React-18.3-61DAFB?style=flat-square&logo=react&logoColor=black)](https://react.dev/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.6-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.141.1-009688?style=flat-square&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![React 19](https://img.shields.io/badge/React-19.1.1-61DAFB?style=flat-square&logo=react&logoColor=black)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9.2-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Razorpay Test Mode](https://img.shields.io/badge/Razorpay-Standard%20Checkout%20(Test%20Mode)-0C2340?style=flat-square&logo=razorpay&logoColor=white)](https://razorpay.com/docs/)
 [![Model v3.1](https://img.shields.io/badge/Model-v3.1%20(HistGB%20%2B%20Sigmoid)-orange?style=flat-square)](reports/phase_2_6_model_v3_1_development.md)
-[![Tests Passing](https://img.shields.io/badge/Tests-280%20Python%20%7C%2069%20Frontend%20Passed-brightgreen?style=flat-square)](tests/)
+[![Tests Passing](https://img.shields.io/badge/Tests-282%20Python%20%7C%2076%20Frontend%20Passed-brightgreen?style=flat-square)](tests/)
+
+**Most fraud classifiers score a transaction that already exists. Sentinel decides whether suspicious checkout behavior should reach the payment gateway at all.**
 
 </div>
 
@@ -38,7 +40,9 @@
 
 ## Project Snapshot
 
-Card-Testing Sentinel is a behavioral risk layer that evaluates checkout risk **before** a Razorpay payment order is created. Instead of waiting for an authorization failure, Sentinel examines trusted history from earlier attempts on a device, converts that history into 44 causal behavioral signals, and decides whether Razorpay order creation should be permitted.
+Card-Testing Sentinel is a pre-authorization behavioral risk layer. It combines merchant-visible context from the current checkout with trusted history from earlier attempts, converts that information into 44 causal behavioral signals, and decides whether Razorpay order creation should be permitted.
+
+I chose this problem because card testing is a real merchant abuse pattern that can be automated at scale, and I wanted to explore stopping suspicious checkout behavior before payment processing begins.
 
 | Item | Current System |
 |---|---|
@@ -64,6 +68,7 @@ Card-Testing Sentinel is a behavioral risk layer that evaluates checkout risk **
 * [What Sentinel Does](#what-sentinel-does)
 * [How It Works](#how-it-works)
 * [Trust & Causality](#trust--causality)
+* [Three Proof Layers](#three-proof-layers)
 * [Why Synthetic Sequential Data?](#why-synthetic-sequential-data)
 * [How the Project Evolved](#how-the-project-evolved)
 * [Risk Signals & Current Model](#risk-signals--current-model)
@@ -94,9 +99,11 @@ Card A  →  Payment succeeds                Card C  →  Payment fails
                                            Card D  →  Payment fails …
 ```
 
-> **One failed payment doesn't look suspicious. The sequence does.**
+> **A payment failure alone is not card testing. Sentinel evaluates the surrounding behavior and the sequence that follows.**
 
-A single payment decline is normal e-commerce friction. But rapid card switching across consecutive declines, session churning, and coordinated bot probing form distinct behavioral sequences. Sentinel intercepts these multi-attempt patterns before the gateway processes the charge.
+A strong current signal, such as unusual micro-value intent, can raise suspicion on the first observed checkout. Later trusted evidence—such as repeated failures, velocity, historical card switching, session churn, or network movement—can corroborate or weaken that concern. Legitimate customers also experience declines, so failure history is evidence, not a fraud label.
+
+A genuine customer may encounter a card decline, retry, and even encounter another temporary failure while still receiving `ALLOW` decisions when the surrounding behavior remains normal.
 
 ---
 
@@ -104,26 +111,34 @@ A single payment decline is normal e-commerce friction. But rapid card switching
 
 Sentinel operates as an intelligent gatekeeper positioned between customer checkout and Razorpay order creation:
 
+```text
+Completed-transaction classification: Transaction exists → transaction features → fraud prediction
+Sentinel: Checkout intent → behavioral precheck → risk score → policy action → Razorpay order only after ALLOW
+```
+
 ```mermaid
 flowchart TD
     A[Customer Checkout] --> B[Sentinel Precheck]
-    B --> C{Risk Decision}
+    B --> B2[Model v3.1 Risk Score]
+    B2 --> C{Policy v2 Action}
     C -->|ALLOW| D[Create Razorpay Test Mode Order]
     C -->|REVIEW| E[Suppress Order Creation<br/>HTTP 409 Conflict]
     C -->|BLOCK| F[Suppress Order Creation<br/>HTTP 409 Conflict]
     D --> G[Open Razorpay Standard Checkout Modal]
 ```
 
+Model v3.1 produces a behavioral risk score. Policy v2 then maps that score and any required corroborating evidence to one of three actions:
+
 ### `ALLOW`
-Risk score is below the review gate (`< 0.75`). A persisted decision permits creation of a real Razorpay Test Mode order, allowing the customer to enter payment details in the standard Razorpay checkout modal.
+Policy v2 permits creation of a real Razorpay Test Mode order, allowing the customer to enter payment details in the standard Razorpay checkout modal. `ALLOW` is permission to begin payment processing—not a payment approval.
 
 ### `REVIEW`
-Risk score is elevated (`>= 0.75`). Razorpay order creation is **suppressed** (HTTP 409 `payment_order_not_allowed`).
+The score is elevated, but the policy may not have enough corroborating evidence for a hard block. Razorpay order creation is **suppressed** (HTTP 409 `payment_order_not_allowed`).
 
 > **Important Boundary:** In this prototype, `REVIEW` is an automated policy state that stops order creation. It does not represent manual Razorpay merchant review, human review queues, SMS OTP, or 3D Secure step-up.
 
 ### `BLOCK`
-Risk score is very high (`>= 0.90`) **and** accompanied by at least two qualifying behavioral evidence signals (such as consecutive decline streaks and multiple card changes). Order creation is strictly rejected.
+The score is very high and accompanied by at least two qualifying behavioral evidence signals. Sentinel suppresses this attempt before Razorpay order creation; this is not a permanent customer/card ban or a decision made by Razorpay. The frozen thresholds and evidence rules are defined in [`configs/policy_v2.yaml`](configs/policy_v2.yaml).
 
 ---
 
@@ -136,9 +151,11 @@ flowchart TD
     subgraph Decision_Phase ["1. Decision Phase (Pre-Authorization)"]
         A[Customer Initiates Checkout] --> B[Sentinel Precheck API]
         C[(Previously Trusted History)] --> B
+        C2[Merchant-Visible Current Context] --> B
         B --> D[Compute 44 Causal Features]
-        D --> E[Model v3.1 + Sigmoid Calibration]
-        E --> F[Policy v2 Evaluation]
+        D --> E[Model v3.1]
+        E --> E2[Behavioral Risk Score]
+        E2 --> F[Policy v2 Evaluation]
         F --> G{Decision}
     end
 
@@ -146,10 +163,11 @@ flowchart TD
         G -->|ALLOW| H[Create Razorpay Test Mode Order]
         G -->|REVIEW or BLOCK| I[Suppress Order Creation]
         H --> J[Customer Enters Payment in Razorpay Modal]
+        J --> J2[Razorpay Payment Processing]
     end
 
     subgraph Outcome_Phase ["3. Outcome Verification (Asynchronous)"]
-        J --> K[Signed Razorpay Webhook]
+        J2 --> K[Signed Razorpay Webhook]
         K --> L[HMAC-SHA256 Verification & Deduplication]
         L --> M[Persist Verified Outcome to SQLite WAL]
         M -. Affects future checkouts only .-> C
@@ -160,15 +178,16 @@ flowchart TD
 
 Sentinel scores the transaction using only information visible before the payment order exists. Only `ALLOW` decisions reach the gateway. Payment results become trusted history only after the backend verifies Razorpay's signed webhook.
 
-### Example Attack Journey
+### How Behavior Changes Future Decisions
 
-To understand sequence detection in practice:
+Sentinel does not follow a predefined `ALLOW → REVIEW → BLOCK` script. Every checkout is scored at runtime from its current observable context and the trusted history available at that moment:
 
-* **Attempt 1:** Fresh device → little trusted history → `ALLOW` → Razorpay receives the payment → signed failure becomes trusted history.
-* **Attempt 2:** Another card fails → Sentinel now sees repeated failures and historical card switching.
-* **Attempt 3:** Failure history + card diversity + velocity raise risk → `REVIEW/BLOCK` → no Razorpay order is created.
+* A strong current signal can produce high risk even when the device has little history. Policy v2 may still choose `REVIEW` rather than `BLOCK` when corroborating evidence is absent.
+* `REVIEW` and `BLOCK` suppress order creation, so those attempts produce no payment result or current-card history.
+* An `ALLOW` attempt can later add a verified success, failure, or historical card identifier—but only after a valid signed Razorpay webhook.
+* A later score may rise or fall as velocity windows expire and the mix of trusted evidence changes. Failure alone is never treated as proof of attack.
 
-*The current card is never available to Sentinel during its own precheck decision; card information can become historical evidence only after a verified Razorpay webhook. This journey is illustrative; exact decisions depend on the device's full behavioral history.*
+The current card and current payment result are never available during their own precheck decision.
 
 ---
 
@@ -179,23 +198,39 @@ The model is only allowed to use information that really exists before the decis
 | Available to Sentinel at Decision Time | Strictly Forbidden at Decision Time |
 |---|---|
 | Request velocity across short and long windows | Current PAN, CVV, or card expiry |
-| Prior attempt counts and timing intervals | Current card network, type, or issuing bank |
-| Device, customer, and session history | Current authorization outcome |
+| Prior attempt counts and timing intervals | Current card number/last4, network, type, or issuing bank |
+| Current merchant, amount, device, session, IP reference, customer identifier (if present), and timing context | Current authorization outcome |
 | Previously verified payment failures | Current gateway decline reason |
 | Previously verified successful checkouts | Future webhook metadata |
 | Historical card diversity (distinct past last4s) | Client-asserted payment status |
 | Historical IP and network movement | Metadata learned after the decision |
-| Current transaction amount and merchant context | Ground-truth fraud labels |
+| Previously trusted checkout context | Ground-truth fraud labels |
 
-> **The current payment cannot influence its own current risk decision.**
+> **The current card and current payment result cannot influence their own current precheck.**
 
 In standard checkout flows, the frontend receives callback notifications when a payment completes or fails. Sentinel **never** updates trusted payment history from browser callbacks because client requests can be spoofed or manipulated. Only authoritative, HMAC-SHA256-signed Razorpay webhooks (`payment.failed`, `order.paid`) processed by the backend write to live state, affecting *later* attempts only.
 
 ---
 
+## Three Proof Layers
+
+The project separates interactive product behavior from aggregate ML evidence:
+
+| Proof Layer | What It Runs | What It Demonstrates |
+|---|---|---|
+| **Protected Checkout** | Real Razorpay Standard Checkout in Test Mode after an `ALLOW` decision | The gate executes before order creation; ordinary allowed checkouts can reach Razorpay, while `REVIEW` and `BLOCK` cannot. |
+| **Replay Lab** | Seven controlled synthetic scenarios through the real `RiskService`, `FeatureEngineV3`, Model v3.1, Policy v2, and shared state transitions | Decisions are computed at runtime rather than predefined by a scenario script. Controlled synthetic outcomes are not Razorpay traffic or webhooks. |
+| **Evaluation** | Frozen development and shifted-stress benchmarks | Aggregate detection, friction, precision-recall, calibration, counterfactual, and stress evidence. These results are separate from the interactive demo. |
+
+This separation prevents a polished replay from being mistaken for model evaluation or real payment traffic.
+
+---
+
 ## Why Synthetic Sequential Data?
 
-Most public fraud datasets describe completed payments and often contain information learned after authorization. Sentinel must decide before Razorpay creates the payment order, and card testing depends on sequences of attempts across devices, sessions, cards, and time. We therefore generated deterministic multi-attempt development data using only information available at the decision point; this remains synthetic evidence and does not replace validation on real production traffic.
+Real labeled pre-authorization card-testing sequences are not readily available in public datasets, and payment data carries substantial privacy, security, and access constraints. Most public fraud datasets instead describe completed payments and often contain information learned after authorization.
+
+Sentinel therefore uses deterministic synthetic sequences built only from information available at the decision point. Development data and shifted evaluation data were kept separate, PBRSS-v1 was frozen before its one authorized score, and no synthetic result is presented as proof of production performance.
 
 **[Full dataset methodology → docs/dataset.md](docs/dataset.md)**
 
@@ -224,7 +259,7 @@ Sentinel was not built by training one model and reporting the best score. Earli
 Sentinel uses **44 causal behavioral features** covering velocity, verified failure history, historical card diversity, identity continuity, session behavior, network behavior, timing patterns, and amount behavior:
 
 ```text
-Trusted History → 44 Causal Features → Model v3.1 (Histogram Gradient Boosting) → Sigmoid Calibration → Policy v2 → ALLOW / REVIEW / BLOCK
+Current Checkout Context + Trusted Prior History → 44 Causal Features → Model v3.1 → Behavioral Risk Score → Policy v2 → ALLOW / REVIEW / BLOCK
 ```
 
 **13 candidate models were evaluated using 5-fold actor-safe grouped cross-validation on 8,500 training devices.** Related users and attack groups were kept in the same fold so the model could not appear better by seeing similar actors during both training and validation. scikit-learn Histogram Gradient Boosting (`hist_gb_2`) won with out-of-fold PR-AUC of **0.9384** and ROC-AUC of **0.9790**. Sigmoid calibration (Platt scaling) reduced Expected Calibration Error from 0.0554 to 0.0147 with zero PR-AUC ranking loss.
@@ -245,13 +280,15 @@ Sentinel was evaluated first on a held-out development validation split, and the
 |---|---:|---:|
 | **Evaluation Population** | 3,500 devices (630 attack / 2,870 legitimate) | 5,000 devices (1,250 attack / 3,750 legitimate) |
 | **Benchmark Attack Prevalence** | 18.0% | 25.0% |
-| **Attack `REVIEW+` Recall** | **93.49%** (589 / 630) | **96.40%** (1,205 / 1,250) |
-| **Attack `BLOCK` Recall** | **67.46%** (425 / 630) | **59.12%** (739 / 1,250) |
-| **Legitimate `REVIEW+` Friction** | **3.14%** (90 / 2,870) | **20.72%** (777 / 3,750) |
-| **Legitimate `BLOCK` Rate** | **0.14%** (4 / 2,870) | **0.16%** (6 / 3,750) |
+| **Attack `REVIEW+` Recall** | **93.4921%** (589 / 630) | **96.40%** (1,205 / 1,250) |
+| **Attack `BLOCK` Recall** | **67.4603%** (425 / 630) | **59.12%** (739 / 1,250) |
+| **Legitimate `REVIEW+` Friction** | **3.1359%** (90 / 2,870) | **20.72%** (777 / 3,750) |
+| **Legitimate `BLOCK` Rate** | **0.1394%** (4 / 2,870) | **0.16%** (6 / 3,750) |
 | **Ordinary Checkout Review Rate** | ~3.0% | **25.30%** (759 / 3,000) |
-| **PR-AUC (Device-Weighted)** | **0.9169** | **0.6470** |
-| **Expected Calibration Error (ECE)** | **0.0214** | **0.1407** |
+| **PR-AUC (Device-Weighted)** | **0.916860** | **0.646976** |
+| **ROC-AUC (Device-Weighted)** | **0.969254** | **0.726189** |
+| **Brier Score** | **0.041004** | **0.156037** |
+| **Expected Calibration Error (ECE)** | **0.021435** | **0.140679** |
 | **Benchmark Precision (`REVIEW+`)** | — | **60.80%** (1,205 / 1,982) |
 | **Benchmark Precision (`BLOCK`)** | — | **99.19%** (739 / 745) |
 | **Counterfactual Pair Ordering (CPOA)** | **100.0% (20 / 20 pairs)** | — |
@@ -259,6 +296,8 @@ Sentinel was evaluated first on a held-out development validation split, and the
 > **Benchmark Precision Note:** The 99.19% BLOCK precision and 60.80% REVIEW+ precision are device-level, policy-level, and conditional on the synthetic benchmark's 25% attack prevalence. They are not expected production precision or a production guarantee.
 
 > **Evaluation Discipline:** Model v3.1, the 44-feature contract, calibration, and Policy v2 were frozen before PBRSS-v1. The shifted benchmark was scored once, and no post-stress model, feature, calibration, or policy tuning was performed.
+
+> **Closed-Loop Limitation:** PBRSS-v1 is an offline detector benchmark over generated lifecycle histories. Post-intervention trajectories should not be interpreted as a fully closed-loop production simulation.
 
 ### Evaluation Charts
 
@@ -343,9 +382,9 @@ Sentinel integrates directly with the Razorpay API:
 ## Reliability & Verification
 
 ### Test Suite & Cryptographic Verifiers
-* **280 default Python tests passed.**
+* **282 default Python tests passed.**
 * **262 expensive deterministic dataset-regeneration tests are maintained separately.**
-* **69 frontend tests passed.**
+* **76 frontend tests passed.**
 * Both release and runtime v3.1 verifiers passed.
 
 ### Local HTTP Benchmark Latency
@@ -365,13 +404,14 @@ Sequential benchmarking across 500 local loopback `/api/precheck` HTTP requests 
 Card-Testing Sentinel is an **evaluated Buildathon prototype**, not a certified production fraud platform:
 
 1. **Synthetic Evidence Only:** All machine learning performance metrics are derived from synthetic datasets and benchmarks; no live Razorpay production gateway traffic was evaluated.
-2. **Elevated Review Friction Under Distribution Shift:** Legitimate customer review friction reached 20.72% under shifted stress (25.30% in ordinary checkout).
-3. **Probability Calibration Drift:** Expected Calibration Error increased from 0.0214 to 0.1407 under distribution shift.
-4. **No Step-Up Challenge Flow:** The prototype suppresses order creation on `REVIEW`; an automated challenge mechanism (such as 3DS or SMS OTP) is not implemented.
-5. **Gateway Scope:** Razorpay integration is verified in **Test Mode** only; no real payment cards were processed.
-6. **Prototype Concurrency Architecture:** Persistence uses local SQLite WAL mode and an in-memory transition lock, suitable for single-instance evaluation but not distributed horizontal scaling.
-7. **No Production Multi-Tenancy:** Production authentication, merchant tenant isolation, distributed rate-limiting, and drift monitoring are not implemented.
-8. **Final System Status:** **`production_ready=false`** under declared evaluation governance.
+2. **Offline Stress Benchmark:** PBRSS-v1 uses generated lifecycle histories and is not a fully closed-loop simulation of post-intervention production behavior.
+3. **Elevated Review Friction Under Distribution Shift:** Legitimate customer review friction reached 20.72% under shifted stress (25.30% in ordinary checkout).
+4. **Probability Calibration Drift:** Expected Calibration Error increased from 0.021435 to 0.140679 under distribution shift.
+5. **No Step-Up Challenge Flow:** The prototype suppresses order creation on `REVIEW`; an automated challenge mechanism (such as 3DS or SMS OTP) is not implemented.
+6. **Gateway Scope:** Razorpay integration is verified in **Test Mode** only; no real payment cards were processed.
+7. **Prototype Concurrency Architecture:** Persistence uses local SQLite WAL mode and an in-memory transition lock, suitable for single-instance evaluation but not distributed horizontal scaling.
+8. **No Production Multi-Tenancy:** Production authentication, merchant tenant isolation, distributed rate-limiting, and drift monitoring are not implemented.
+9. **Final System Status:** **`production_ready=false`** under declared evaluation governance.
 
 ---
 
@@ -464,7 +504,7 @@ python scripts/verify_runtime_v3_1.py
 
 ```text
 Card-Testing-Sentinel/
-├── frontend/                     React 18 TypeScript application
+├── frontend/                     React 19 TypeScript application
 ├── src/card_testing_sentinel/    Core runtime (FastAPI, feature engine, ML, policy)
 │   ├── api/                      REST endpoints and webhook routes
 │   ├── features/                 Causal feature extractors (v3.1)

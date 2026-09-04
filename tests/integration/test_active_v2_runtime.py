@@ -87,8 +87,10 @@ def test_contract_mismatch_prevents_application_readiness(tmp_path):
         assert "does not match Feature Contract v2" in ready["error"]
 
 
-def test_docker_builds_and_serves_the_react_bundle_as_non_root():
+def test_docker_builds_and_serves_the_react_bundle_with_external_persistence():
     dockerfile = (ROOT / "Dockerfile").read_text()
+    app_config = yaml.safe_load((ROOT / "configs/app.yaml").read_text())
+
     assert "FROM node:22.13.1-alpine AS frontend-build" in dockerfile
     assert "RUN npm ci" in dockerfile
     assert "RUN npm run build" in dockerfile
@@ -96,6 +98,12 @@ def test_docker_builds_and_serves_the_react_bundle_as_non_root():
         "COPY --from=frontend-build /build/frontend/dist ./frontend/dist" in dockerfile
     )
     assert "FROM python:3.11.15-slim AS runtime" in dockerfile
+    assert app_config["database_path"] == "data/runtime/live_state_v3_1.sqlite3"
+    assert "mkdir -p /app/data/runtime" in dockerfile
+    assert "chown -R sentinel:sentinel /app/data/runtime" in dockerfile
     assert "USER sentinel" in dockerfile
-    assert 'VOLUME ["/app/data/runtime"]' in dockerfile
+    # Railway supplies the persistent mount externally. Declaring VOLUME in
+    # the image is neither required for SQLite correctness nor compatible with
+    # the deployed architecture; the writable mount point is the real contract.
+    assert 'VOLUME ["/app/data/runtime"]' not in dockerfile
     assert "HEALTHCHECK" in dockerfile
