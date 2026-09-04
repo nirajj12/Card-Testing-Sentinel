@@ -29,4 +29,21 @@ describe("public navigation and home", () => {
     expect(screen.getByText(/44 merchant-visible behavioural signals/)).toBeVisible();
     expect(screen.queryByText(/39 behavioural signals/i)).not.toBeInTheDocument();
   });
+
+  it("contrasts an ordinary checkout with a card-testing burst", () => {
+    render(<MemoryRouter><LandingPage/></MemoryRouter>);
+    expect(screen.getByText("Order path open")).toBeVisible();
+    fireEvent.click(screen.getByRole("button", { name: "Testing burst" }));
+    expect(screen.getByText("Stopped before Razorpay")).toBeVisible();
+    expect(screen.getByText("Changing cards")).toBeVisible();
+  });
+
+  it("explains each boundary outcome and clearly links to How It Works", () => {
+    render(<MemoryRouter><LandingPage/></MemoryRouter>);
+    expect(screen.getByRole("link", { name: /See the complete How It Works page/i })).toHaveAttribute("href", "/how-it-works");
+    expect(screen.getByText("A normal purchase continues")).toBeVisible();
+    fireEvent.click(screen.getByRole("button", { name: /REVIEW.*Uncertain pattern/i }));
+    expect(screen.getByText("An uncertain pattern is held")).toBeVisible();
+    expect(screen.getByText(/This prototype creates no Razorpay order/)).toBeVisible();
+  });
 });
