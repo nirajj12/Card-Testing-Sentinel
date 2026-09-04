@@ -189,7 +189,7 @@ function rawGroupAttempts(items) {
 }
 
 function lifecycleText(action, events) {
-  if (action === "block") return "Authorization suppressed. Bank not contacted. No outcome event created.";
+  if (action === "block" || action === "review") return "Authorization suppressed. Bank not contacted. No outcome event created.";
   const outcome = events.find((event) => event.authorization_result);
   const checkout = events.find((event) => event.event_type === "checkout_completion");
   const prefix = action === "review" ? "Sent for authorization (under review)." : "Sent for authorization.";

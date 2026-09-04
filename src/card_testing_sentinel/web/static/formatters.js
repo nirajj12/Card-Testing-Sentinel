@@ -221,7 +221,7 @@ export function virtualDay(seconds) {
    later. Saying "awaiting" is accurate; inventing a result is not. */
 export function lifecycleSummary(operations) {
   if (!operations) return "—";
-  if (operations.decision === "block") return "Suppressed before authorization";
+  if (operations.decision === "block" || operations.decision === "review") return "Suppressed before authorization";
   if (operations.checkout_status === "completed") return "Approved · checkout completed";
   if (operations.outcome_status === "approved") return "Approved by bank";
   if (operations.outcome_status === "declined") return "Declined by bank";

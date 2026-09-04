@@ -186,9 +186,9 @@ class DemoManager:
         )
         response, evidence = await self.service.precheck_with_evidence(precheck_request)
 
-        blocked = response.decision == "block"
+        allowed = response.decision == "allow"
         follow_ups: list[tuple[int, dict]] = []
-        if not blocked:
+        if allowed:
             follow_ups.append(
                 (
                     offset_seconds + _OUTCOME_LAG_SECONDS,
@@ -231,7 +231,7 @@ class DemoManager:
             state_version=response.device_state_version,
             latency_ms=response.latency_ms,
             idempotent_replay=response.idempotent_replay,
-            authorization="suppressed" if blocked else "sent",
+            authorization="sent" if allowed else "suppressed",
             outcome_status=None,
             checkout_status=None,
             evidence=evidence,

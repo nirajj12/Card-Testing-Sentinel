@@ -90,3 +90,69 @@ def test_restart_recovers_demo_decisions(registry, tmp_path):
     second = _service(registry, path)
     recovered = [row["decision"] for row in second.decisions(len(decisions))][::-1]
     assert recovered == decisions
+    second.close()
+
+
+def test_demo_lifecycle_semantics_by_decision(registry, tmp_path):
+    """ALLOW attempts schedule synthetic outcome/checkout events; REVIEW and
+    BLOCK suppress authorization and schedule zero outcomes."""
+    service = _service(registry, tmp_path / "demo.sqlite3")
+    demo = DemoManager(service, service.protector)
+    _, results = asyncio.run(_run_scenario(demo, "burst_attacker"))
+
+    allow_results = [r for r in results if r["operations"]["decision"] == "allow"]
+    review_results = [r for r in results if r["operations"]["decision"] == "review"]
+    block_results = [r for r in results if r["operations"]["decision"] == "block"]
+
+    assert len(allow_results) > 0
+    assert len(review_results) > 0
+    assert len(block_results) > 0
+
+    for res in allow_results:
+        ops = res["operations"]
+        assert ops["authorization"] == "sent"
+        assert ops["outcome_status"] in {"approved", "declined"}
+
+    for res in review_results:
+        ops = res["operations"]
+        assert ops["authorization"] == "suppressed"
+        assert ops["outcome_status"] is None
+        assert ops["checkout_status"] is None
+
+    for res in block_results:
+        ops = res["operations"]
+        assert ops["authorization"] == "suppressed"
+        assert ops["outcome_status"] is None
+        assert ops["checkout_status"] is None
+
+    service.close()
+
+
+def test_demo_review_attempt_produces_no_outcome_event_or_card_history(registry, tmp_path):
+    """When an attempt is REVIEW, no synthetic outcome is recorded in repository,
+    so subsequent attempts inherit zero card/decline history from that attempt."""
+    service = _service(registry, tmp_path / "demo.sqlite3")
+    demo = DemoManager(service, service.protector)
+
+    started = demo.start("burst_attacker")
+    demo_id = started["demo_id"]
+
+    events_before = service.repository.status()["events"]
+    assert events_before == 0
+
+    # Step 1 evaluates to REVIEW
+    res1 = asyncio.run(demo.step(demo_id))
+    assert res1["operations"]["decision"] == "review"
+    assert res1["operations"]["authorization"] == "suppressed"
+    assert res1["operations"]["outcome_status"] is None
+    # No outcome event created for reviewed attempt
+    assert service.repository.status()["events"] == 0
+
+    # Step 2 evaluates to ALLOW
+    res2 = asyncio.run(demo.step(demo_id))
+    assert res2["operations"]["decision"] == "allow"
+    assert res2["operations"]["authorization"] == "sent"
+    # Exactly one outcome event created now (from Step 2)
+    assert service.repository.status()["events"] == 1
+
+    service.close()
