@@ -492,6 +492,7 @@ python scripts/verify_runtime_v3_1.py
 
 | Document | Purpose |
 |---|---|
+| **[Simple-English Guides](docs/simple/README.md)** | A short learning path covering the product, runtime, dataset/model, and evaluation without research-report language. |
 | **[Dataset & Feature Methodology](docs/dataset.md)** | Why synthetic data was necessary, Dataset v4.1 design, `leakage_group_id` partition safety, and 44 causal feature families. |
 | **[Evaluation & Technical Evidence](reports/README.md)** | The complete evaluation narrative: Model v2 Blind failure, rejected Model v3, Model v3.1 results, PBRSS stress benchmark, and full report index. |
 | **[System Architecture](docs/architecture.md)** | Pre-authorization decision boundary, payment state machine, and webhook verification. |
