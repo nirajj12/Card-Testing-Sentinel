@@ -27,6 +27,8 @@ jobs:
       - run: npm run lint
       - run: npm test
       - run: npm run build
+      - name: Prepare Dataset v4.1 for Python tests
+        run: python pipelines/generate_dataset_v4.py
       - run: pytest --cov-report=term-missing --cov-fail-under=80
       - run: python scripts/verify_release.py
       - run: python scripts/verify_runtime_v3_1.py
