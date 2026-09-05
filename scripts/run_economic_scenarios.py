@@ -48,19 +48,12 @@ def _number(value: Any, field: str, *, positive: bool = False) -> float:
 
 def legitimate_review_only_rate(rates: dict[str, float]) -> float:
     """Return REVIEW-only, excluding genuine profiles already hard-blocked."""
-    return (
-        rates["legitimate_review_or_higher_rate"]
-        - rates["legitimate_block_rate"]
-    )
+    return rates["legitimate_review_or_higher_rate"] - rates["legitimate_block_rate"]
 
 
-def break_even_prevalence(
-    costs: dict[str, float], rates: dict[str, float]
-) -> float:
+def break_even_prevalence(costs: dict[str, float], rates: dict[str, float]) -> float:
     """Return the exact prevalence at which estimated net value is zero."""
-    attack_protection = rates["attack_review_or_higher_rate"] * costs[
-        "missed_attack"
-    ]
+    attack_protection = rates["attack_review_or_higher_rate"] * costs["missed_attack"]
     legitimate_friction = (
         legitimate_review_only_rate(rates) * costs["legitimate_review"]
         + rates["legitimate_block_rate"] * costs["legitimate_block"]
@@ -80,9 +73,7 @@ def analyze_scenario(
     total_profiles = _number(
         scenario.get("total_profiles"), f"{name}.total_profiles", positive=True
     )
-    prevalence = _number(
-        scenario.get("attack_prevalence"), f"{name}.attack_prevalence"
-    )
+    prevalence = _number(scenario.get("attack_prevalence"), f"{name}.attack_prevalence")
     if prevalence > 1:
         raise EconomicInputError(f"{name}.attack_prevalence must be between 0 and 1")
 

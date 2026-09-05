@@ -39,16 +39,23 @@ def main() -> None:
 
     bundle["raw_events"].to_csv(raw_path, index=False, lineterminator="\n")
     bundle["labels"].to_csv(labels_path, index=False, lineterminator="\n")
-    print(f"Wrote raw events ({len(bundle['raw_events'])} rows) and labels ({len(bundle['labels'])} rows).")
+    print(
+        f"Wrote raw events ({len(bundle['raw_events'])} rows) "
+        f"and labels ({len(bundle['labels'])} rows)."
+    )
 
     print("Replaying events through FeatureEngineV3...")
     raw = read_raw_events(raw_path)
     labels = pd.read_csv(labels_path)
     features = build_feature_table_v3(raw, labels)
     features.to_csv(features_path, index=False, lineterminator="\n")
-    print(f"Wrote features table ({len(features)} rows, {len(features.columns)} columns).")
+    print(
+        f"Wrote features table ({len(features)} rows, {len(features.columns)} columns)."
+    )
 
-    manifest_path.write_text(json.dumps(manifest, indent=2, sort_keys=True, default=str) + "\n")
+    manifest_path.write_text(
+        json.dumps(manifest, indent=2, sort_keys=True, default=str) + "\n"
+    )
     print("Dataset v4 generation complete!")
 
 

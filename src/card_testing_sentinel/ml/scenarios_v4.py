@@ -13,9 +13,6 @@ Dataset v4 is engineered to remediate the blind evaluation failures:
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any
-
-import numpy as np
 
 Range = tuple[float, float]
 
@@ -57,8 +54,11 @@ class ScenarioV4:
     amount_style_weights: dict[str, float]
     merchant_kinds: tuple[str, ...] | None = None
     prefers_campaign: bool = False
-    card_diversity_mode: str = "normal"  # "single_card" | "high_rotation" | "wallet_cycle" | "normal"
-    age_pairing: str = "natural"  # "natural" | "old_cust_new_dev" | "new_cust_old_dev" | "established_burst"
+    card_diversity_mode: str = (
+        "normal"  # "single_card" | "high_rotation" | "wallet_cycle" | "normal"
+    )
+    # "natural" | "old_cust_new_dev" | "new_cust_old_dev" | "established_burst"
+    age_pairing: str = "natural"
 
     @property
     def label(self) -> int:

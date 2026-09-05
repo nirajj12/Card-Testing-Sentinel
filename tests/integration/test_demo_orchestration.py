@@ -128,7 +128,9 @@ def test_demo_lifecycle_semantics_by_decision(registry, tmp_path):
     service.close()
 
 
-def test_demo_review_attempt_produces_no_outcome_event_or_card_history(registry, tmp_path):
+def test_demo_review_attempt_produces_no_outcome_event_or_card_history(
+    registry, tmp_path
+):
     """When an attempt is REVIEW, no synthetic outcome is recorded in repository,
     so subsequent attempts inherit zero card/decline history from that attempt."""
     service = _service(registry, tmp_path / "demo.sqlite3")

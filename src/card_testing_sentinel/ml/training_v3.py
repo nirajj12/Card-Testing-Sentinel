@@ -13,7 +13,7 @@ import json
 import platform
 import sys
 from dataclasses import dataclass
-from datetime import UTC, datetime
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
@@ -45,10 +45,8 @@ from card_testing_sentinel.ml.metrics import (
     balanced_training_weights,
     device_weights,
     probability_metrics,
-    reliability_bins,
 )
 from card_testing_sentinel.policy.engine_v2 import RiskPolicyV2
-from card_testing_sentinel.policy.evidence_v2 import evidence_codes_v2
 
 NON_FEATURE_COLUMNS = (
     "request_id",
@@ -144,7 +142,7 @@ def evaluate_policy_on_frame(
 ) -> dict[str, Any]:
     policy = RiskPolicyV2(policy_config)
     decisions: list[str] = []
-    
+
     records = frame.to_dict("records")
     for row, score in zip(records, scores, strict=True):
         ts = row["timestamp"]
@@ -176,7 +174,9 @@ def evaluate_policy_on_frame(
         )
         .reset_index()
     )
-    dev_agg["device_decision"] = dev_agg["max_rank"].map({0: "allow", 1: "review", 2: "block"})
+    dev_agg["device_decision"] = dev_agg["max_rank"].map(
+        {0: "allow", 1: "review", 2: "block"}
+    )
     dev_agg["is_review_plus"] = dev_agg["max_rank"] >= 1
     dev_agg["is_block"] = dev_agg["max_rank"] >= 2
 
@@ -184,7 +184,9 @@ def evaluate_policy_on_frame(
     attacks = dev_agg.loc[dev_agg.label.eq(1)]
     legit = dev_agg.loc[dev_agg.label.eq(0)]
 
-    attack_review_plus = float(attacks["is_review_plus"].mean()) if len(attacks) > 0 else 0.0
+    attack_review_plus = (
+        float(attacks["is_review_plus"].mean()) if len(attacks) > 0 else 0.0
+    )
     attack_block = float(attacks["is_block"].mean()) if len(attacks) > 0 else 0.0
     legit_review_plus = float(legit["is_review_plus"].mean()) if len(legit) > 0 else 0.0
     legit_block = float(legit["is_block"].mean()) if len(legit) > 0 else 0.0
@@ -211,7 +213,7 @@ def evaluate_policy_on_frame(
 
 def evaluate_counterfactual_pairs(dev_agg: pd.DataFrame) -> dict[str, Any]:
     """Calculate Counterfactual Pair Ordering Accuracy (CPOA).
-    
+
     A pair is correctly ordered if score(attack_twin) > score(legit_twin).
     """
     pairs = dev_agg.dropna(subset=["cf_pair"]).groupby("cf_pair")
@@ -230,13 +232,15 @@ def evaluate_counterfactual_pairs(dev_agg: pd.DataFrame) -> dict[str, Any]:
         correct = att_score > leg_score
         if correct:
             correct_order += 1
-        pair_details.append({
-            "pair_id": pair_id,
-            "attack_score": att_score,
-            "legit_score": leg_score,
-            "margin": att_score - leg_score,
-            "correct": correct,
-        })
+        pair_details.append(
+            {
+                "pair_id": pair_id,
+                "attack_score": att_score,
+                "legit_score": leg_score,
+                "margin": att_score - leg_score,
+                "correct": correct,
+            }
+        )
 
     cpoa = (correct_order / total_pairs) if total_pairs > 0 else 0.0
     return {
@@ -282,21 +286,26 @@ def train_and_evaluate_model_v3(
             cand, train_frame, folds, int(config["training"]["seed"])
         )
         oof_scores_by_id[cand.identifier] = oof_scores
-        candidate_results.append({
-            "candidate": cand.identifier,
-            "family": cand.family,
-            "pr_auc": metrics["pr_auc"],
-            "roc_auc": metrics["roc_auc"],
-            "brier": metrics["brier"],
-            "ece": metrics["ece"],
-            "log_loss": metrics["log_loss"],
-        })
+        candidate_results.append(
+            {
+                "candidate": cand.identifier,
+                "family": cand.family,
+                "pr_auc": metrics["pr_auc"],
+                "roc_auc": metrics["roc_auc"],
+                "brier": metrics["brier"],
+                "ece": metrics["ece"],
+                "log_loss": metrics["log_loss"],
+            }
+        )
 
     cand_table = pd.DataFrame(candidate_results).sort_values("pr_auc", ascending=False)
     best_cand_row = cand_table.iloc[0]
     best_cand_id = best_cand_row["candidate"]
     selected_candidate = next(c for c in candidates if c.identifier == best_cand_id)
-    print(f"Selected Best Candidate: {best_cand_id} (PR-AUC: {best_cand_row['pr_auc']:.4f})")
+    print(
+        f"Selected Best Candidate: {best_cand_id} "
+        f"(PR-AUC: {best_cand_row['pr_auc']:.4f})"
+    )
 
     # 2. Calibration study on selected candidate's OOF predictions
     best_oof_scores = oof_scores_by_id[best_cand_id]
@@ -310,21 +319,27 @@ def train_and_evaluate_model_v3(
         calibrators[method] = cal
         cal_scores = apply_calibrator(method, cal, best_oof_scores)
         m = probability_metrics(y_train, cal_scores, weights)
-        calib_rows.append({
-            "method": method,
-            "pr_auc": m["pr_auc"],
-            "roc_auc": m["roc_auc"],
-            "brier": m["brier"],
-            "ece": m["ece"],
-            "log_loss": m["log_loss"],
-        })
+        calib_rows.append(
+            {
+                "method": method,
+                "pr_auc": m["pr_auc"],
+                "roc_auc": m["roc_auc"],
+                "brier": m["brier"],
+                "ece": m["ece"],
+                "log_loss": m["log_loss"],
+            }
+        )
     calib_table = pd.DataFrame(calib_rows)
 
     # Pick calibration method: sigmoid if PR-AUC loss <= tolerance, else none
     sig_row = calib_table.loc[calib_table.method.eq("sigmoid")].iloc[0]
     uncal_row = calib_table.loc[calib_table.method.eq("none")].iloc[0]
     pr_loss = uncal_row["pr_auc"] - sig_row["pr_auc"]
-    chosen_method = "sigmoid" if pr_loss <= float(config["training"]["pr_auc_tolerance"]) else "none"
+    chosen_method = (
+        "sigmoid"
+        if pr_loss <= float(config["training"]["pr_auc_tolerance"])
+        else "none"
+    )
     chosen_calibrator = calibrators[chosen_method]
 
     # 3. Refit selected model on full TRAIN split
@@ -367,33 +382,44 @@ def train_and_evaluate_model_v3(
         ab_cal = apply_calibrator(chosen_method, ab_calibrator, ab_raw)
         m = probability_metrics(y_val, ab_cal, val_weights)
         policy_metrics = evaluate_policy_on_frame(
-            val_frame, ab_cal, {
-                "family": "evidence_gated_v2", "review_threshold": 0.75,
-                "block_threshold": 0.90, "block_evidence": 2,
-                "evidence_set": "v2_full", "trust_suppression": "none",
-                "block_ttl_seconds": 3600, "campaign_review_increment": 0.0,
+            val_frame,
+            ab_cal,
+            {
+                "family": "evidence_gated_v2",
+                "review_threshold": 0.75,
+                "block_threshold": 0.90,
+                "block_evidence": 2,
+                "evidence_set": "v2_full",
+                "trust_suppression": "none",
+                "block_ttl_seconds": 3600,
+                "campaign_review_increment": 0.0,
                 "campaign_block_increment": 0.0,
-                "degraded_review_rule_score": 4, "degraded_block_rule_score": 6,
+                "degraded_review_rule_score": 4,
+                "degraded_block_rule_score": 6,
+            },
+        )
+        ablation_results.append(
+            {
+                "ablation": ab_name,
+                "dropped_count": len(drop_features),
+                "remaining_features": len(kept_features),
+                "pr_auc": m["pr_auc"],
+                "roc_auc": m["roc_auc"],
+                "brier": m["brier"],
+                "ece": m["ece"],
+                "attack_review_plus": policy_metrics["attack_review_plus"],
+                "attack_block": policy_metrics["attack_block"],
+                "legitimate_review_plus": policy_metrics["legitimate_review_plus"],
+                "legitimate_block": policy_metrics["legitimate_block"],
+                "scenario_metrics": policy_metrics["scenario_metrics"],
             }
         )
-        ablation_results.append({
-            "ablation": ab_name,
-            "dropped_count": len(drop_features),
-            "remaining_features": len(kept_features),
-            "pr_auc": m["pr_auc"],
-            "roc_auc": m["roc_auc"],
-            "brier": m["brier"],
-            "ece": m["ece"],
-            "attack_review_plus": policy_metrics["attack_review_plus"],
-            "attack_block": policy_metrics["attack_block"],
-            "legitimate_review_plus": policy_metrics["legitimate_review_plus"],
-            "legitimate_block": policy_metrics["legitimate_block"],
-            "scenario_metrics": policy_metrics["scenario_metrics"],
-        })
-    ablation_table = pd.DataFrame([
-        {k: v for k, v in row.items() if k != "scenario_metrics"}
-        for row in ablation_results
-    ])
+    ablation_table = pd.DataFrame(
+        [
+            {k: v for k, v in row.items() if k != "scenario_metrics"}
+            for row in ablation_results
+        ]
+    )
 
     # 5. Evaluate Model v3 on held-out VALIDATION split
     val_raw_scores = predict_v3(full_model, selected_candidate, val_frame)
@@ -435,7 +461,7 @@ def train_and_evaluate_model_v3(
 
     # 8. Freeze Model v3 artifacts
     joblib.dump(artifact, output_dir / "risk_model_v3_1.joblib")
-    
+
     metadata = {
         "model_version": config["model_version"],
         "development_evidence_status": "corrected-actor-safe",
@@ -497,11 +523,14 @@ def train_and_evaluate_model_v3(
 
     (output_dir / "metadata.json").write_text(json.dumps(metadata, indent=2))
     (output_dir / "feature_contract.json").write_text(
-        json.dumps({
-            "version": FEATURE_CONTRACT_V3_VERSION,
-            "sha256": MODEL_FEATURES_V3_SHA256,
-            "features": list(MODEL_FEATURES_V3),
-        }, indent=2)
+        json.dumps(
+            {
+                "version": FEATURE_CONTRACT_V3_VERSION,
+                "sha256": MODEL_FEATURES_V3_SHA256,
+                "features": list(MODEL_FEATURES_V3),
+            },
+            indent=2,
+        )
     )
     cand_table.to_csv(output_dir / "candidate_metrics.csv", index=False)
     calib_table.to_csv(output_dir / "calibration_metrics.csv", index=False)
@@ -509,10 +538,19 @@ def train_and_evaluate_model_v3(
     (output_dir / "targeted_ablations.json").write_text(
         json.dumps(ablation_results, indent=2)
     )
-    scored = val_frame[[
-        "request_id", "device_id", "actor_id", "leakage_group_id", "scenario",
-        "population", "label", "counterfactual_pair_id", "counterfactual_role",
-    ]].copy()
+    scored = val_frame[
+        [
+            "request_id",
+            "device_id",
+            "actor_id",
+            "leakage_group_id",
+            "scenario",
+            "population",
+            "label",
+            "counterfactual_pair_id",
+            "counterfactual_role",
+        ]
+    ].copy()
     scored["score"] = val_scores
     scored.to_csv(output_dir / "development_validation_scores.csv", index=False)
 

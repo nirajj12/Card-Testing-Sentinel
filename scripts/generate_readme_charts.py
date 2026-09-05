@@ -15,6 +15,7 @@ import json
 from pathlib import Path
 
 import matplotlib
+
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
@@ -58,13 +59,18 @@ def generate_pr_curve(df: pd.DataFrame, weights: np.ndarray, output_path: Path) 
     y_score = df["score"].to_numpy(dtype=float)
 
     # Recompute and verify device-weighted PR-AUC
-    recomputed_pr_auc = float(average_precision_score(y_true, y_score, sample_weight=weights))
+    recomputed_pr_auc = float(
+        average_precision_score(y_true, y_score, sample_weight=weights)
+    )
     if abs(recomputed_pr_auc - TARGET_PR_AUC) > 1e-9:
         raise ValueError(
-            f"PR-AUC mismatch: recomputed={recomputed_pr_auc:.16f} vs target={TARGET_PR_AUC:.16f}"
+            f"PR-AUC mismatch: recomputed={recomputed_pr_auc:.16f} "
+            f"vs target={TARGET_PR_AUC:.16f}"
         )
 
-    precision, recall, _ = precision_recall_curve(y_true, y_score, sample_weight=weights)
+    precision, recall, _ = precision_recall_curve(
+        y_true, y_score, sample_weight=weights
+    )
     prevalence = float(np.average(y_true, weights=weights))
 
     fig, ax = plt.subplots(figsize=(8, 6), dpi=300)
@@ -86,15 +92,23 @@ def generate_pr_curve(df: pd.DataFrame, weights: np.ndarray, output_path: Path) 
     ax.set_xlim([0.0, 1.02])
     ax.set_ylim([0.0, 1.02])
     ax.set_xlabel("Recall (Attack Device Coverage)", fontsize=11, fontweight="bold")
-    ax.set_ylabel("Precision (Attacks / Flagged Requests)", fontsize=11, fontweight="bold")
-    ax.set_title("Model v3.1 Precision-Recall Curve (Development Validation)", fontsize=13, fontweight="bold", pad=12)
+    ax.set_ylabel(
+        "Precision (Attacks / Flagged Requests)", fontsize=11, fontweight="bold"
+    )
+    ax.set_title(
+        "Model v3.1 Precision-Recall Curve (Development Validation)",
+        fontsize=13,
+        fontweight="bold",
+        pad=12,
+    )
     ax.grid(True, linestyle=":", alpha=0.6)
     ax.legend(loc="lower left", fontsize=10, framealpha=0.95)
 
     fig.text(
         0.5,
         0.01,
-        "Actor-safe synthetic development validation • device-weighted • not production performance",
+        "Actor-safe synthetic development validation • device-weighted "
+        "• not production performance",
         ha="center",
         fontsize=8.5,
         color="#555555",
@@ -108,7 +122,9 @@ def generate_pr_curve(df: pd.DataFrame, weights: np.ndarray, output_path: Path) 
 
 def generate_candidate_chart(candidate_df: pd.DataFrame, output_path: Path) -> None:
     # Sort by PR-AUC ascending for horizontal bar chart
-    df_sorted = candidate_df.sort_values("pr_auc", ascending=True).reset_index(drop=True)
+    df_sorted = candidate_df.sort_values("pr_auc", ascending=True).reset_index(
+        drop=True
+    )
 
     fig, ax = plt.subplots(figsize=(10, 6.5), dpi=300)
     colors = []
@@ -120,26 +136,57 @@ def generate_candidate_chart(candidate_df: pd.DataFrame, output_path: Path) -> N
         else:
             colors.append("#7f7f7f")
 
-    bars = ax.barh(df_sorted["candidate"], df_sorted["pr_auc"], color=colors, height=0.7)
+    bars = ax.barh(
+        df_sorted["candidate"], df_sorted["pr_auc"], color=colors, height=0.7
+    )
 
     # Highlight winner value
-    for bar, val, cand in zip(bars, df_sorted["pr_auc"], df_sorted["candidate"], strict=True):
+    for bar, val, cand in zip(
+        bars, df_sorted["pr_auc"], df_sorted["candidate"], strict=True
+    ):
         label_text = f" {val:.4f}"
         if cand == "hist_gb_2":
             label_text += " (Selected Winner)"
-            ax.text(val, bar.get_y() + bar.get_height() / 2, label_text, va="center", ha="left", fontsize=9, fontweight="bold", color="#1b5e20")
+            ax.text(
+                val,
+                bar.get_y() + bar.get_height() / 2,
+                label_text,
+                va="center",
+                ha="left",
+                fontsize=9,
+                fontweight="bold",
+                color="#1b5e20",
+            )
         else:
-            ax.text(val, bar.get_y() + bar.get_height() / 2, label_text, va="center", ha="left", fontsize=8, color="#333333")
+            ax.text(
+                val,
+                bar.get_y() + bar.get_height() / 2,
+                label_text,
+                va="center",
+                ha="left",
+                fontsize=8,
+                color="#333333",
+            )
 
     ax.set_xlim([0.80, 0.98])
-    ax.set_xlabel("Actor-Safe Out-Of-Fold PR-AUC (5-Fold CV on TRAIN)", fontsize=11, fontweight="bold")
-    ax.set_title("Model Candidate Selection (TRAIN Out-of-Fold Cross-Validation)", fontsize=13, fontweight="bold", pad=12)
+    ax.set_xlabel(
+        "Actor-Safe Out-Of-Fold PR-AUC (5-Fold CV on TRAIN)",
+        fontsize=11,
+        fontweight="bold",
+    )
+    ax.set_title(
+        "Model Candidate Selection (TRAIN Out-of-Fold Cross-Validation)",
+        fontsize=13,
+        fontweight="bold",
+        pad=12,
+    )
     ax.grid(True, axis="x", linestyle=":", alpha=0.6)
 
     fig.text(
         0.5,
         0.01,
-        "Selection criterion: TRAIN out-of-fold PR-AUC • Grouped by actor correlation unit • Validation unseen",
+        "Selection criterion: TRAIN out-of-fold PR-AUC "
+        "• Grouped by actor correlation unit • Validation unseen",
         ha="center",
         fontsize=8.5,
         color="#555555",
@@ -151,7 +198,9 @@ def generate_candidate_chart(candidate_df: pd.DataFrame, output_path: Path) -> N
     plt.close(fig)
 
 
-def generate_calibration_chart(df: pd.DataFrame, weights: np.ndarray, output_path: Path) -> None:
+def generate_calibration_chart(
+    df: pd.DataFrame, weights: np.ndarray, output_path: Path
+) -> None:
     y_true = df["label"].to_numpy(dtype=int)
     y_score = df["score"].to_numpy(dtype=float)
 
@@ -169,7 +218,14 @@ def generate_calibration_chart(df: pd.DataFrame, weights: np.ndarray, output_pat
                 obs_rate.append(float(np.average(y_true[mask], weights=w)))
 
     fig, ax = plt.subplots(figsize=(7.5, 6), dpi=300)
-    ax.plot([0, 1], [0, 1], linestyle="--", color="#7f7f7f", lw=1.5, label="Perfect Calibration (y = x)")
+    ax.plot(
+        [0, 1],
+        [0, 1],
+        linestyle="--",
+        color="#7f7f7f",
+        lw=1.5,
+        label="Perfect Calibration (y = x)",
+    )
     ax.plot(
         mean_pred,
         obs_rate,
@@ -182,16 +238,24 @@ def generate_calibration_chart(df: pd.DataFrame, weights: np.ndarray, output_pat
 
     ax.set_xlim([0.0, 1.0])
     ax.set_ylim([0.0, 1.0])
-    ax.set_xlabel("Mean Predicted Risk Score (10 Deciles)", fontsize=11, fontweight="bold")
+    ax.set_xlabel(
+        "Mean Predicted Risk Score (10 Deciles)", fontsize=11, fontweight="bold"
+    )
     ax.set_ylabel("Observed Device Attack Rate", fontsize=11, fontweight="bold")
-    ax.set_title("Model v3.1 Reliability Diagram (Sigmoid Calibration)", fontsize=13, fontweight="bold", pad=12)
+    ax.set_title(
+        "Model v3.1 Reliability Diagram (Sigmoid Calibration)",
+        fontsize=13,
+        fontweight="bold",
+        pad=12,
+    )
     ax.grid(True, linestyle=":", alpha=0.6)
     ax.legend(loc="upper left", fontsize=10, framealpha=0.95)
 
     fig.text(
         0.5,
         0.01,
-        "Actor-safe synthetic development validation • device-weighted • development ECE = 0.0214",
+        "Actor-safe synthetic development validation • device-weighted "
+        "• development ECE = 0.0214",
         ha="center",
         fontsize=8.5,
         color="#555555",
@@ -206,7 +270,12 @@ def generate_calibration_chart(df: pd.DataFrame, weights: np.ndarray, output_pat
 def generate_policy_outcomes_chart(metadata: dict, output_path: Path) -> None:
     pol = metadata["policy_experiments"]["experiment_a_unchanged_policy_v2"]
 
-    labels = ["Attack REVIEW+", "Attack BLOCK", "Legitimate REVIEW+", "Legitimate BLOCK"]
+    labels = [
+        "Attack REVIEW+",
+        "Attack BLOCK",
+        "Legitimate REVIEW+",
+        "Legitimate BLOCK",
+    ]
     values = [
         pol["attack_review_plus"] * 100.0,
         pol["attack_block"] * 100.0,
@@ -220,23 +289,58 @@ def generate_policy_outcomes_chart(metadata: dict, output_path: Path) -> None:
 
     for bar, val in zip(bars, values, strict=True):
         y = bar.get_height()
-        ax.text(bar.get_x() + bar.get_width() / 2, y + 1.2, f"{val:.2f}%", ha="center", va="bottom", fontsize=10, fontweight="bold")
+        ax.text(
+            bar.get_x() + bar.get_width() / 2,
+            y + 1.2,
+            f"{val:.2f}%",
+            ha="center",
+            va="bottom",
+            fontsize=10,
+            fontweight="bold",
+        )
 
     # Product constraints
-    ax.axhline(70.0, color="#1f77b4", linestyle=":", lw=1.2, alpha=0.8, label="Attack REVIEW+ Gate (≥ 70%)")
-    ax.axhline(6.0, color="#d62728", linestyle=":", lw=1.2, alpha=0.8, label="Legitimate REVIEW+ Gate (≤ 6%)")
-    ax.axhline(1.0, color="#8b0000", linestyle="--", lw=1.2, alpha=0.8, label="Legitimate BLOCK Gate (≤ 1%)")
+    ax.axhline(
+        70.0,
+        color="#1f77b4",
+        linestyle=":",
+        lw=1.2,
+        alpha=0.8,
+        label="Attack REVIEW+ Gate (≥ 70%)",
+    )
+    ax.axhline(
+        6.0,
+        color="#d62728",
+        linestyle=":",
+        lw=1.2,
+        alpha=0.8,
+        label="Legitimate REVIEW+ Gate (≤ 6%)",
+    )
+    ax.axhline(
+        1.0,
+        color="#8b0000",
+        linestyle="--",
+        lw=1.2,
+        alpha=0.8,
+        label="Legitimate BLOCK Gate (≤ 1%)",
+    )
 
     ax.set_ylim([0.0, 105.0])
     ax.set_ylabel("Outcome Rate (%)", fontsize=11, fontweight="bold")
-    ax.set_title("Policy v2 Operating Outcomes Under Model v3.1", fontsize=13, fontweight="bold", pad=12)
+    ax.set_title(
+        "Policy v2 Operating Outcomes Under Model v3.1",
+        fontsize=13,
+        fontweight="bold",
+        pad=12,
+    )
     ax.grid(True, axis="y", linestyle=":", alpha=0.6)
     ax.legend(loc="center right", fontsize=9, framealpha=0.95)
 
     fig.text(
         0.5,
         0.01,
-        "Policy v2 unchanged (review ≥ 0.75, block ≥ 0.90, evidence ≥ 2) • Development validation",
+        "Policy v2 unchanged (review ≥ 0.75, block ≥ 0.90, evidence ≥ 2) "
+        "• Development validation",
         ha="center",
         fontsize=8.5,
         color="#555555",
@@ -252,48 +356,95 @@ def generate_critical_scenario_chart(metadata: dict, output_path: Path) -> None:
     perf = metadata["scenario_performance"]
 
     attack_scenarios = [
-        ("cross_device_partial", perf["cross_device_partial"]["review_plus_rate"] * 100.0),
-        ("cross_device_weak_guest", perf["cross_device_weak_guest"]["review_plus_rate"] * 100.0),
-        ("distributed_bot_campaign", perf["distributed_bot_campaign"]["review_plus_rate"] * 100.0),
+        (
+            "cross_device_partial",
+            perf["cross_device_partial"]["review_plus_rate"] * 100.0,
+        ),
+        (
+            "cross_device_weak_guest",
+            perf["cross_device_weak_guest"]["review_plus_rate"] * 100.0,
+        ),
+        (
+            "distributed_bot_campaign",
+            perf["distributed_bot_campaign"]["review_plus_rate"] * 100.0,
+        ),
     ]
     legit_scenarios = [
-        ("persistent_card_problem_hard", perf["persistent_card_problem_hard"]["review_plus_rate"] * 100.0),
-        ("network_retry_storm_hard", perf["network_retry_storm_hard"]["review_plus_rate"] * 100.0),
-        ("cgnat_mobile_ip_storm", perf["cgnat_mobile_ip_storm"]["review_plus_rate"] * 100.0),
-        ("shared_household_device", perf["shared_household_device"]["review_plus_rate"] * 100.0),
-        ("subscription_dunning_hard", perf["subscription_dunning_hard"]["review_plus_rate"] * 100.0),
+        (
+            "persistent_card_problem_hard",
+            perf["persistent_card_problem_hard"]["review_plus_rate"] * 100.0,
+        ),
+        (
+            "network_retry_storm_hard",
+            perf["network_retry_storm_hard"]["review_plus_rate"] * 100.0,
+        ),
+        (
+            "cgnat_mobile_ip_storm",
+            perf["cgnat_mobile_ip_storm"]["review_plus_rate"] * 100.0,
+        ),
+        (
+            "shared_household_device",
+            perf["shared_household_device"]["review_plus_rate"] * 100.0,
+        ),
+        (
+            "subscription_dunning_hard",
+            perf["subscription_dunning_hard"]["review_plus_rate"] * 100.0,
+        ),
     ]
 
     all_items = attack_scenarios + legit_scenarios
     names = [item[0] for item in all_items]
     rates = [item[1] for item in all_items]
 
-    # Red/crimson for attacks (higher is better); Green/teal for legitimate (lower is better)
+    # Red/crimson for attacks (higher is better);
+    # Green/teal for legitimate (lower is better).
     colors = ["#d62728"] * len(attack_scenarios) + ["#2ca02c"] * len(legit_scenarios)
 
     fig, ax = plt.subplots(figsize=(11, 6), dpi=300)
     bars = ax.barh(names[::-1], rates[::-1], color=colors[::-1], height=0.65)
 
     for bar, val in zip(bars, rates[::-1], strict=True):
-        ax.text(val + 1.0, bar.get_y() + bar.get_height() / 2, f"{val:.1f}%", va="center", ha="left", fontsize=9, fontweight="bold")
+        ax.text(
+            val + 1.0,
+            bar.get_y() + bar.get_height() / 2,
+            f"{val:.1f}%",
+            va="center",
+            ha="left",
+            fontsize=9,
+            fontweight="bold",
+        )
 
     ax.set_xlim([0.0, 110.0])
-    ax.set_xlabel("REVIEW+ Rate (%) Under Unchanged Policy v2", fontsize=11, fontweight="bold")
-    ax.set_title("Critical Scenario REVIEW+ Rates (Attacks vs. Legitimate)", fontsize=13, fontweight="bold", pad=12)
+    ax.set_xlabel(
+        "REVIEW+ Rate (%) Under Unchanged Policy v2", fontsize=11, fontweight="bold"
+    )
+    ax.set_title(
+        "Critical Scenario REVIEW+ Rates (Attacks vs. Legitimate)",
+        fontsize=13,
+        fontweight="bold",
+        pad=12,
+    )
     ax.grid(True, axis="x", linestyle=":", alpha=0.6)
 
     # Custom legend
     from matplotlib.patches import Patch
+
     legend_elements = [
         Patch(facecolor="#d62728", label="Attack Scenarios (Higher Recall is Desired)"),
-        Patch(facecolor="#2ca02c", label="Hard Legitimate Scenarios (Lower Friction is Desired)"),
+        Patch(
+            facecolor="#2ca02c",
+            label="Hard Legitimate Scenarios (Lower Friction is Desired)",
+        ),
     ]
-    ax.legend(handles=legend_elements, loc="center right", fontsize=9.5, framealpha=0.95)
+    ax.legend(
+        handles=legend_elements, loc="center right", fontsize=9.5, framealpha=0.95
+    )
 
     fig.text(
         0.5,
         0.01,
-        "Note: Both attack recall and legitimate friction are shown on the same percentage scale.",
+        "Note: Both attack recall and legitimate friction "
+        "are shown on the same percentage scale.",
         ha="center",
         fontsize=8.5,
         color="#555555",
@@ -306,7 +457,11 @@ def generate_critical_scenario_chart(metadata: dict, output_path: Path) -> None:
 
 
 def generate_ablation_chart(ablations: list[dict], output_path: Path) -> None:
-    ab_df = pd.DataFrame(ablations).sort_values("pr_auc", ascending=True).reset_index(drop=True)
+    ab_df = (
+        pd.DataFrame(ablations)
+        .sort_values("pr_auc", ascending=True)
+        .reset_index(drop=True)
+    )
 
     fig, ax = plt.subplots(figsize=(10.5, 6.5), dpi=300)
 
@@ -322,16 +477,35 @@ def generate_ablation_chart(ablations: list[dict], output_path: Path) -> None:
     bars = ax.barh(ab_df["ablation"], ab_df["pr_auc"], color=colors, height=0.68)
 
     baseline_pr = float(ab_df.loc[ab_df["ablation"] == "full_v3_1", "pr_auc"].iloc[0])
-    ax.axvline(baseline_pr, color="#2ca02c", linestyle="--", lw=1.5, alpha=0.8, label=f"Full Model v3.1 Baseline ({baseline_pr:.4f})")
+    ax.axvline(
+        baseline_pr,
+        color="#2ca02c",
+        linestyle="--",
+        lw=1.5,
+        alpha=0.8,
+        label=f"Full Model v3.1 Baseline ({baseline_pr:.4f})",
+    )
 
     for bar, val, name in zip(bars, ab_df["pr_auc"], ab_df["ablation"], strict=True):
         delta = val - baseline_pr
         delta_str = f" ({delta:+.4f})" if name != "full_v3_1" else " (Baseline)"
-        ax.text(val + 0.0005, bar.get_y() + bar.get_height() / 2, f"{val:.4f}{delta_str}", va="center", ha="left", fontsize=8.5)
+        ax.text(
+            val + 0.0005,
+            bar.get_y() + bar.get_height() / 2,
+            f"{val:.4f}{delta_str}",
+            va="center",
+            ha="left",
+            fontsize=8.5,
+        )
 
     ax.set_xlim([0.885, 0.930])
     ax.set_xlabel("Development Validation PR-AUC", fontsize=11, fontweight="bold")
-    ax.set_title("Model v3.1 Targeted Feature Family Ablation Study", fontsize=13, fontweight="bold", pad=12)
+    ax.set_title(
+        "Model v3.1 Targeted Feature Family Ablation Study",
+        fontsize=13,
+        fontweight="bold",
+        pad=12,
+    )
     ax.grid(True, axis="x", linestyle=":", alpha=0.6)
     ax.legend(loc="lower right", fontsize=9.5, framealpha=0.95)
 
@@ -354,7 +528,9 @@ def main() -> int:
     print("Loading frozen Model v3.1 artifacts...")
     metadata = json.loads((ARTIFACTS_DIR / "metadata.json").read_text())
     candidate_df = pd.read_csv(ARTIFACTS_DIR / "candidate_metrics.csv")
-    targeted_ablations = json.loads((ARTIFACTS_DIR / "targeted_ablations.json").read_text())
+    targeted_ablations = json.loads(
+        (ARTIFACTS_DIR / "targeted_ablations.json").read_text()
+    )
     val_scores_df = pd.read_csv(ARTIFACTS_DIR / "development_validation_scores.csv")
 
     device_counts = val_scores_df.groupby("device_id")["device_id"].transform("count")
@@ -366,19 +542,29 @@ def main() -> int:
     generate_pr_curve(val_scores_df, weights, FIGURES_DIR / "pr_curve_model_v3_1.png")
 
     print("2. Generating candidate_pr_auc_model_v3_1.png...")
-    generate_candidate_chart(candidate_df, FIGURES_DIR / "candidate_pr_auc_model_v3_1.png")
+    generate_candidate_chart(
+        candidate_df, FIGURES_DIR / "candidate_pr_auc_model_v3_1.png"
+    )
 
     print("3. Generating calibration_reliability_model_v3_1.png...")
-    generate_calibration_chart(val_scores_df, weights, FIGURES_DIR / "calibration_reliability_model_v3_1.png")
+    generate_calibration_chart(
+        val_scores_df, weights, FIGURES_DIR / "calibration_reliability_model_v3_1.png"
+    )
 
     print("4. Generating policy_outcomes_model_v3_1.png...")
-    generate_policy_outcomes_chart(metadata, FIGURES_DIR / "policy_outcomes_model_v3_1.png")
+    generate_policy_outcomes_chart(
+        metadata, FIGURES_DIR / "policy_outcomes_model_v3_1.png"
+    )
 
     print("5. Generating critical_scenario_review_rates.png...")
-    generate_critical_scenario_chart(metadata, FIGURES_DIR / "critical_scenario_review_rates.png")
+    generate_critical_scenario_chart(
+        metadata, FIGURES_DIR / "critical_scenario_review_rates.png"
+    )
 
     print("6. Generating ablation_pr_auc_model_v3_1.png...")
-    generate_ablation_chart(targeted_ablations, FIGURES_DIR / "ablation_pr_auc_model_v3_1.png")
+    generate_ablation_chart(
+        targeted_ablations, FIGURES_DIR / "ablation_pr_auc_model_v3_1.png"
+    )
 
     print("Generating readme_chart_manifest.json...")
     input_hashes = {name: sha256_file(ARTIFACTS_DIR / name) for name in INPUT_FILES}
@@ -386,7 +572,10 @@ def main() -> int:
 
     manifest = {
         "manifest_version": "readme-figures-v1",
-        "description": "Cryptographic reproducibility manifest for Model v3.1 publication figures",
+        "description": (
+            "Cryptographic reproducibility manifest "
+            "for Model v3.1 publication figures"
+        ),
         "input_artifacts": input_hashes,
         "output_figures": output_hashes,
         "validation_check": {

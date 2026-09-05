@@ -1,4 +1,6 @@
-"""Integration test for Model v3 artifact loading, inference, and contract verification."""
+"""Integration test for Model v3 artifact loading, inference,
+and contract verification.
+"""
 
 from __future__ import annotations
 
@@ -6,9 +8,7 @@ import json
 from pathlib import Path
 
 import joblib
-import numpy as np
 import pandas as pd
-import pytest
 
 from card_testing_sentinel.features.specification_v3 import (
     FEATURE_CONTRACT_V3_VERSION,

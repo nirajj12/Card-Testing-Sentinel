@@ -84,9 +84,7 @@ def test_contract_mismatch_prevents_application_readiness(tmp_path):
         ready = response.json()
         assert response.status_code == 503
         assert ready["ready"] is False
-        assert ready["error"] == (
-            "RuntimeManifestError: runtime initialization failed"
-        )
+        assert ready["error"] == ("RuntimeManifestError: runtime initialization failed")
         assert str(bad_runtime) not in ready["error"]
 
 

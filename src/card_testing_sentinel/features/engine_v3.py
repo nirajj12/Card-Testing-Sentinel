@@ -21,8 +21,6 @@ from collections import defaultdict
 from datetime import datetime, timedelta
 from statistics import mean, median, pstdev
 
-import numpy as np
-
 from card_testing_sentinel.domain.events import (
     ConflictingDuplicateError,
     EventContractError,
@@ -73,7 +71,9 @@ class FeatureEngineV3:
         self.pending: dict[str, PendingRequestV2] = {}
         # IP velocity is merchant-scoped: one merchant may not consume another
         # merchant's traffic history at precheck time.
-        self.ip_requests: dict[tuple[str, str], list[tuple[datetime, int, str]]] = defaultdict(list)
+        self.ip_requests: dict[tuple[str, str], list[tuple[datetime, int, str]]] = (
+            defaultdict(list)
+        )
         self._digests: dict[str, str] = {}
         self._results: dict[str, dict | None] = {}
         self._request_customer: dict[str, str | None] = {}
@@ -101,16 +101,20 @@ class FeatureEngineV3:
         order = self._order(event)
         if state.last_order is not None and order <= state.last_order:
             raise CausalOrderingError(
-                f"device {event.device_id}: event {order} arrived after {state.last_order}"
+                f"device {event.device_id}: event {order} "
+                f"arrived after {state.last_order}"
             )
         if key is not None:
             account = self.customers[key]
             if account.last_order is not None and order <= account.last_order:
                 raise CausalOrderingError(
-                    f"customer {key[:8]}..: event {order} arrived after {account.last_order}"
+                    f"customer {key[:8]}..: event {order} "
+                    f"arrived after {account.last_order}"
                 )
 
-    def _remember(self, event: LifecycleEvent, result: dict | None, key: str | None) -> None:
+    def _remember(
+        self, event: LifecycleEvent, result: dict | None, key: str | None
+    ) -> None:
         self._digests[event.event_id] = self._digest(event)
         self._results[event.event_id] = result
         order = self._order(event)
@@ -142,11 +146,13 @@ class FeatureEngineV3:
 
     def _gaps_in_window(self, state: DeviceStateV2, now: datetime) -> list[float]:
         window_start = now - _GAP_WINDOW
-        times = [r.timestamp for r in state.requests if r.timestamp >= window_start] + [now]
+        times = [r.timestamp for r in state.requests if r.timestamp >= window_start] + [
+            now
+        ]
         times.sort()
         return [
             (t2 - t1).total_seconds()
-            for t1, t2 in zip(times[:-1], times[1:])
+            for t1, t2 in zip(times[:-1], times[1:], strict=False)
             if (t2 - t1).total_seconds() > 0.0
         ]
 
@@ -163,10 +169,16 @@ class FeatureEngineV3:
         seven_days = now - _7D
         thirty_days = now - _30D
         devices_7d = {
-            device_id for timestamp, device_id, _ in account.devices if timestamp >= seven_days
+            device_id
+            for timestamp, device_id, _ in account.devices
+            if timestamp >= seven_days
         }
-        failures_7d = sum(1 for timestamp in account.failures if timestamp >= seven_days)
-        checkouts_30d = sum(1 for timestamp in account.checkouts if timestamp >= thirty_days)
+        failures_7d = sum(
+            1 for timestamp in account.failures if timestamp >= seven_days
+        )
+        checkouts_30d = sum(
+            1 for timestamp in account.checkouts if timestamp >= thirty_days
+        )
         age = (now - account.first_seen).total_seconds() if account.first_seen else 0.0
         return {
             "customer_id_present": 1.0,
@@ -213,7 +225,9 @@ class FeatureEngineV3:
         retried = 0
         for decline in declines_24h:
             after = [
-                r for r in prior if decline.timestamp < r.timestamp <= decline.timestamp + RETRY_WINDOW
+                r
+                for r in prior
+                if decline.timestamp < r.timestamp <= decline.timestamp + RETRY_WINDOW
             ]
             if after:
                 retried += 1
@@ -259,7 +273,9 @@ class FeatureEngineV3:
         # 1. Card Diversity Ratio (7d): distinct cards / total requests
         distinct_cards_7d = len(set(cards_7d))
         total_requests_7d = len(req_7d) + 1
-        card_diversity_ratio_7d = float(distinct_cards_7d) / max(1.0, float(total_requests_7d))
+        card_diversity_ratio_7d = float(distinct_cards_7d) / max(
+            1.0, float(total_requests_7d)
+        )
 
         # 2. Card Change After Decline Ratio (7d): card changes / total failures
         card_change_after_decline_ratio_7d = (
@@ -272,14 +288,16 @@ class FeatureEngineV3:
             | {event.session_id}
         )
         total_requests_24h = len(req_24h) + 1
-        session_churn_rate_24h = float(distinct_sessions_24h) / max(1.0, float(total_requests_24h))
+        session_churn_rate_24h = float(distinct_sessions_24h) / max(
+            1.0, float(total_requests_24h)
+        )
 
         # 4. Gap Coefficient of Variation (24h): std(gaps) / mean(gaps)
         times_24h = [r.timestamp for r in req_24h] + [now]
         times_24h.sort()
         gaps_24h = [
             (t2 - t1).total_seconds()
-            for t1, t2 in zip(times_24h[:-1], times_24h[1:])
+            for t1, t2 in zip(times_24h[:-1], times_24h[1:], strict=False)
             if (t2 - t1).total_seconds() > 0.0
         ]
         if len(gaps_24h) >= 2:

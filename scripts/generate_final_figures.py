@@ -147,8 +147,7 @@ def load_frozen_inputs(
         "calibration": load_calibration(calibration_path),
         "calibration_path": calibration_path,
         "feature_shift": [
-            {"feature": row["feature"], "psi": float(row["psi"])}
-            for row in shift_rows
+            {"feature": row["feature"], "psi": float(row["psi"])} for row in shift_rows
         ],
         "latency": _read_json(paths["latency"]),
         "economics": _read_json(paths["economics"]),
@@ -562,8 +561,7 @@ def generate_final_figures(
     filename = "phase_4c_latency.png"
     plot_latency(data["latency"], output_dir / filename)
     latency_values = {
-        key: data["latency"]["latency_ms"][key]
-        for key in ("p50", "p90", "p95", "p99")
+        key: data["latency"]["latency_ms"][key] for key in ("p50", "p90", "p95", "p99")
     }
     figures.append(
         _manifest_entry(

@@ -106,13 +106,9 @@ def test_above_and_below_break_even_classification(config):
     results = calculate(config)["scenarios"]
     assert results["quiet_day"]["break_even_position"] == "below_break_even"
     assert (
-        results["active_attack_campaign"]["break_even_position"]
-        == "above_break_even"
+        results["active_attack_campaign"]["break_even_position"] == "above_break_even"
     )
-    assert (
-        results["high_value_merchant"]["break_even_position"]
-        == "above_break_even"
-    )
+    assert results["high_value_merchant"]["break_even_position"] == "above_break_even"
 
 
 def test_zero_attack_prevalence_has_only_legitimate_friction(config):

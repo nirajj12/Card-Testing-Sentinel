@@ -5,13 +5,12 @@ Implements all audit checks declared in docs/dataset_v4_audit_spec.md:
 2. Critical scenario minimum quotas (>= 250 devices per critical family).
 3. Counterfactual twin pair completeness.
 4. Hard leakage tests (no target labels, no future outcome fields, no scenario strings).
-5. Single-feature PR-AUC diagnostic guardrail audit (with lift, stability, and diagnostic status).
+5. Single-feature PR-AUC diagnostic guardrail audit
+   (with lift, stability, and diagnostic status).
 """
 
 from __future__ import annotations
 
-import json
-from pathlib import Path
 from typing import Any
 
 import numpy as np
@@ -19,7 +18,6 @@ import pandas as pd
 from sklearn.metrics import average_precision_score, roc_auc_score
 
 from card_testing_sentinel.features.specification_v3 import (
-    CUSTOMER_FEATURES,
     FORBIDDEN_EXEMPT,
     FORBIDDEN_TERMS,
     MODEL_FEATURES_V3,
@@ -59,7 +57,8 @@ def audit_dataset_v4(
 
     report.require(
         transacting_devices == labelled_devices,
-        f"Device mismatch: {len(transacting_devices - labelled_devices)} unlabelled transacting devices, "
+        f"Device mismatch: {len(transacting_devices - labelled_devices)} "
+        "unlabelled transacting devices, "
         f"{len(labelled_devices - transacting_devices)} silent devices",
     )
 
@@ -72,7 +71,9 @@ def audit_dataset_v4(
     if "leakage_group_id" in labels.columns:
         train_groups = set(labels.loc[labels.split.eq("train"), "leakage_group_id"])
         val_groups = set(labels.loc[labels.split.eq("validation"), "leakage_group_id"])
-        report.require(not (train_groups & val_groups), "leakage groups overlap train/validation")
+        report.require(
+            not (train_groups & val_groups), "leakage groups overlap train/validation"
+        )
         group_sizes = labels.groupby("leakage_group_id").device_id.nunique()
         report.summary["group_integrity"] = {
             "unique_groups": int(len(group_sizes)),
@@ -81,8 +82,12 @@ def audit_dataset_v4(
             "train_validation_overlap": int(len(train_groups & val_groups)),
         }
     train_customers = set(labels.loc[labels.split.eq("train"), "customer_id"].dropna())
-    val_customers = set(labels.loc[labels.split.eq("validation"), "customer_id"].dropna())
-    report.require(not (train_customers & val_customers), "customers overlap train/validation")
+    val_customers = set(
+        labels.loc[labels.split.eq("validation"), "customer_id"].dropna()
+    )
+    report.require(
+        not (train_customers & val_customers), "customers overlap train/validation"
+    )
     report.summary["customer_overlap"] = int(len(train_customers & val_customers))
 
     # 2. Critical scenario quotas (>= 250 devices per critical family)
@@ -117,7 +122,8 @@ def audit_dataset_v4(
     feature_cols = [c for c in features.columns if c in MODEL_FEATURES_V3]
     report.require(
         len(feature_cols) == len(MODEL_FEATURES_V3),
-        f"Expected {len(MODEL_FEATURES_V3)} features in table, found {len(feature_cols)}",
+        f"Expected {len(MODEL_FEATURES_V3)} features in table, "
+        f"found {len(feature_cols)}",
     )
 
     # Check forbidden terms
@@ -126,7 +132,8 @@ def audit_dataset_v4(
             for term in FORBIDDEN_TERMS:
                 report.require(
                     term not in f,
-                    f"Hard leakage: feature '{f}' contains forbidden substring '{term}'",
+                    f"Hard leakage: feature '{f}' "
+                    f"contains forbidden substring '{term}'",
                 )
 
     # Check target label or scenario strings in feature values
@@ -135,8 +142,15 @@ def audit_dataset_v4(
             col not in MODEL_FEATURES_V3,
             f"Hard leakage: label column '{col}' declared as a model feature",
         )
-    for col in ("actor_id", "leakage_group_id", "counterfactual_pair_id", "counterfactual_role"):
-        report.require(col not in MODEL_FEATURES_V3, f"metadata '{col}' entered feature contract")
+    for col in (
+        "actor_id",
+        "leakage_group_id",
+        "counterfactual_pair_id",
+        "counterfactual_role",
+    ):
+        report.require(
+            col not in MODEL_FEATURES_V3, f"metadata '{col}' entered feature contract"
+        )
 
     # 5. Diagnostic Single-Feature PR-AUC Audit
     base_prevalence = float(features["label"].mean())
@@ -170,7 +184,9 @@ def audit_dataset_v4(
         train_mask = features["split"].eq("train").values
         val_mask = features["split"].eq("validation").values
         try:
-            pr_auc_train = float(average_precision_score(y[train_mask], vals[train_mask]))
+            pr_auc_train = float(
+                average_precision_score(y[train_mask], vals[train_mask])
+            )
             pr_auc_val = float(average_precision_score(y[val_mask], vals[val_mask]))
             stability = abs(pr_auc_train - pr_auc_val)
         except Exception:
@@ -179,24 +195,37 @@ def audit_dataset_v4(
         # Diagnostic Guardrails
         if pr_auc > 0.92:
             verdict = "HARD_FAIL_SUSPICIOUS_SHORTCUT"
-            report.require(False, f"Feature '{f}' has extreme PR-AUC {pr_auc:.4f} > 0.92")
-        elif f in ("customer_id_present", "current_amount", "is_new_device", "customer_age_seconds"):
-            verdict = "REVIEW_METADATA_GUARDRAIL" if pr_auc >= 0.35 else "PASS_UNRESTRICTED"
+            report.require(
+                False, f"Feature '{f}' has extreme PR-AUC {pr_auc:.4f} > 0.92"
+            )
+        elif f in (
+            "customer_id_present",
+            "current_amount",
+            "is_new_device",
+            "customer_age_seconds",
+        ):
+            verdict = (
+                "REVIEW_METADATA_GUARDRAIL" if pr_auc >= 0.35 else "PASS_UNRESTRICTED"
+            )
         elif f in ("requests_60s", "requests_5m", "devices_per_ip_24h"):
-            verdict = "REVIEW_VELOCITY_GUARDRAIL" if pr_auc >= 0.65 else "PASS_UNRESTRICTED"
+            verdict = (
+                "REVIEW_VELOCITY_GUARDRAIL" if pr_auc >= 0.65 else "PASS_UNRESTRICTED"
+            )
         elif pr_auc >= 0.80:
             verdict = "REVIEW_DOMAIN_SIGNAL"
         else:
             verdict = "PASS_UNRESTRICTED"
 
-        single_feature_results.append({
-            "feature": f,
-            "pr_auc": round(pr_auc, 4),
-            "roc_auc": round(roc_auc, 4),
-            "lift_over_prevalence": round(lift, 2),
-            "train_val_stability_delta": round(stability, 4),
-            "diagnostic_verdict": verdict,
-        })
+        single_feature_results.append(
+            {
+                "feature": f,
+                "pr_auc": round(pr_auc, 4),
+                "roc_auc": round(roc_auc, 4),
+                "lift_over_prevalence": round(lift, 2),
+                "train_val_stability_delta": round(stability, 4),
+                "diagnostic_verdict": verdict,
+            }
+        )
 
     report.summary["device_counts_by_scenario"] = counts_by_scenario
     report.summary["single_feature_audit"] = single_feature_results

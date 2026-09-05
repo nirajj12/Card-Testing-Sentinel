@@ -32,9 +32,9 @@ def test_frozen_pbrss_values_are_read_from_family_and_delay_artifacts():
 
     legitimate = {row["scenario"]: row for row in data["legitimate_scenarios"]}
     assert legitimate["charity_micro_donation_spike"]["review_plus_pct"] == 0
-    assert legitimate["b2b_multi_corporate_card"][
-        "review_plus_pct"
-    ] == pytest.approx(7.2)
+    assert legitimate["b2b_multi_corporate_card"]["review_plus_pct"] == pytest.approx(
+        7.2
+    )
     assert legitimate["ordinary_checkout"]["review_plus_pct"] == 25.3
     delay = {row["attempt"]: row["surfaced_pct"] for row in data["detection_delay"]}
     assert delay == pytest.approx({1: 23.2, 2: 25.2, 3: 92.16, 5: 96.4})
@@ -48,9 +48,7 @@ def test_latency_and_economic_values_match_committed_artifacts():
     assert data["economics"]["scenarios"] == economic_source["scenarios"]
     assert data["latency"]["latency_ms"]["p50"] == pytest.approx(33.830896)
     assert (
-        data["economics"]["scenarios"]["quiet_day"][
-            "net_illustrative_value_inr"
-        ]
+        data["economics"]["scenarios"]["quiet_day"]["net_illustrative_value_inr"]
         == -708_697.6
     )
 
@@ -100,8 +98,7 @@ def test_all_figures_and_manifest_are_generated_from_frozen_sources(tmp_path):
         assert figure["model_rescored"] is False
         assert figure["pbrss_rescored"] is False
         assert all(
-            (ROOT / source["path"]).is_file()
-            and len(source["sha256"]) == 64
+            (ROOT / source["path"]).is_file() and len(source["sha256"]) == 64
             for source in figure["source_artifacts"]
         )
 

@@ -12,8 +12,6 @@ from __future__ import annotations
 
 from datetime import UTC, datetime, timedelta
 
-import pytest
-
 from card_testing_sentinel.domain.events import LifecycleEvent
 from card_testing_sentinel.features.engine_v3 import FeatureEngineV3
 from card_testing_sentinel.features.specification_v3 import (
@@ -116,7 +114,8 @@ def test_missing_customer_neutrality() -> None:
 
 
 def test_single_card_dunning_card_diversity_ratio() -> None:
-    """Subscription dunning with 4 declines on the same card must have card_diversity_ratio == 0.25 (1 card / 4 reqs)
+    """Subscription dunning with 4 declines on the same card must have
+    card_diversity_ratio == 0.25 (1 card / 4 reqs)
     and card_change_after_decline_ratio == 0.0."""
     stream = StreamV3()
     t = START
@@ -144,7 +143,9 @@ def test_single_card_dunning_card_diversity_ratio() -> None:
 
 
 def test_card_testing_high_rotation() -> None:
-    """Card testing where every decline leads to a new card must show high card diversity and card changes."""
+    """Card testing where every decline leads to a new card must show
+    high card diversity and card changes.
+    """
     stream = StreamV3()
     t = START
 

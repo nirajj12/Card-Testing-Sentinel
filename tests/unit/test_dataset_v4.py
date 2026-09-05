@@ -6,10 +6,11 @@ import json
 from pathlib import Path
 
 import pandas as pd
-import pytest
 import yaml
 
-from card_testing_sentinel.ml.generator_v4 import build_merchants_v4, generate_dataset_v4
+from card_testing_sentinel.ml.generator_v4 import (
+    build_merchants_v4,
+)
 
 ROOT = Path(__file__).resolve().parents[2]
 

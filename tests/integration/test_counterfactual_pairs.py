@@ -1,4 +1,6 @@
-"""Integration tests verifying the 20 counterfactual twin pairs evaluated under Model v3."""
+"""Integration tests verifying the 20 counterfactual twin pairs
+evaluated under Model v3.
+"""
 
 from __future__ import annotations
 
@@ -6,9 +8,6 @@ from pathlib import Path
 
 import joblib
 import pandas as pd
-import pytest
-
-from card_testing_sentinel.ml.training_v3 import RiskModelArtifactV3
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -28,11 +27,13 @@ def test_counterfactual_pairs_ordering() -> None:
         .reset_index()
     )
 
-    pairs = dev.dropna(subset=["counterfactual_pair_id"]).groupby("counterfactual_pair_id")
+    pairs = dev.dropna(subset=["counterfactual_pair_id"]).groupby(
+        "counterfactual_pair_id"
+    )
     correct = 0
     total = 0
 
-    for pair_id, grp in pairs:
+    for _pair_id, grp in pairs:
         att = grp.loc[grp.label.eq(1), "max_score"].mean()
         leg = grp.loc[grp.label.eq(0), "max_score"].mean()
         if pd.notna(att) and pd.notna(leg):

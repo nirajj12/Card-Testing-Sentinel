@@ -6,7 +6,6 @@ Usage:
 
 from __future__ import annotations
 
-import json
 from pathlib import Path
 
 from card_testing_sentinel.ml.training_v3 import train_and_evaluate_model_v3
@@ -52,9 +51,14 @@ def main() -> None:
     exp_a = results["exp_a"]
     exp_b = results["exp_b"]
     print("Experiment A (Model v3 + Unchanged Policy v2):")
-    print(f"  Attack REVIEW+   : {exp_a['attack_review_plus'] * 100:.2f}% (Gate >= 70%)")
+    print(
+        f"  Attack REVIEW+   : {exp_a['attack_review_plus'] * 100:.2f}% (Gate >= 70%)"
+    )
     print(f"  Attack BLOCK     : {exp_a['attack_block'] * 100:.2f}%")
-    print(f"  Legitimate REVIEW+: {exp_a['legitimate_review_plus'] * 100:.2f}% (Gate <= 6%)")
+    print(
+        f"  Legitimate REVIEW+: {exp_a['legitimate_review_plus'] * 100:.2f}% "
+        "(Gate <= 6%)"
+    )
     print(f"  Legitimate BLOCK : {exp_a['legitimate_block'] * 100:.2f}% (Gate <= 1%)")
 
     print("\nExperiment B (Model v3 + Policy v2 with Moderate Trust Suppression):")
@@ -66,7 +70,10 @@ def main() -> None:
     print("\n" + "=" * 80)
     print("CRITICAL SCENARIO BREAKDOWN (Validation Split)")
     print("=" * 80)
-    print(f"{'Scenario':<35} | {'Devices':<7} | {'REVIEW+':<8} | {'BLOCK':<8} | {'Mean Max Score'}")
+    print(
+        f"{'Scenario':<35} | {'Devices':<7} | {'REVIEW+':<8} | "
+        f"{'BLOCK':<8} | {'Mean Max Score'}"
+    )
     print("-" * 80)
     for sc, metrics in sorted(exp_a["scenario_metrics"].items()):
         print(

@@ -6,7 +6,6 @@ Usage:
 
 from __future__ import annotations
 
-import json
 import sys
 from pathlib import Path
 
@@ -22,7 +21,10 @@ CONFIG_PATH = ROOT / "configs/dataset_v4_1.yaml"
 
 def main() -> int:
     if not (DATA_DIR / "features_v3_1.csv").exists():
-        print(f"Error: {DATA_DIR / 'features_v3_1.csv'} does not exist. Run pipelines/generate_dataset_v4.py first.")
+        print(
+            f"Error: {DATA_DIR / 'features_v3_1.csv'} does not exist. "
+            "Run pipelines/generate_dataset_v4.py first."
+        )
         return 1
 
     print("Loading Dataset v4 artifacts...")
@@ -65,12 +67,16 @@ def main() -> int:
         print(f"  - {sc:<32}: {cnt:>4} devices [{status}]")
 
     print("\nSINGLE-FEATURE PR-AUC AUDIT TABLE:")
-    print(f"{'Feature Name':<35} | {'PR-AUC':<7} | {'ROC-AUC':<7} | {'Lift':<5} | {'Stab':<6} | {'Diagnostic Status'}")
+    print(
+        f"{'Feature Name':<35} | {'PR-AUC':<7} | {'ROC-AUC':<7} | "
+        f"{'Lift':<5} | {'Stab':<6} | {'Diagnostic Status'}"
+    )
     print("-" * 80)
     for row in report.summary["single_feature_audit"]:
         print(
             f"{row['feature']:<35} | {row['pr_auc']:<7.4f} | {row['roc_auc']:<7.4f} | "
-            f"{row['lift_over_prevalence']:<5.2f} | {row['train_val_stability_delta']:<6.4f} | "
+            f"{row['lift_over_prevalence']:<5.2f} | "
+            f"{row['train_val_stability_delta']:<6.4f} | "
             f"{row['diagnostic_verdict']}"
         )
 
